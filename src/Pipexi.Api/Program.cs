@@ -9,6 +9,8 @@ using Workforce.Persistence.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var runMigrationsOnStartup = builder.Configuration.GetValue<bool>("Database:RunMigrationsOnStartup");
+
 builder.Services
     .AddApi(builder.Configuration)
     .AddApplication()
@@ -17,12 +19,15 @@ builder.Services
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (runMigrationsOnStartup)
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate();
+}
 
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
 }
