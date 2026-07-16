@@ -1,0 +1,35 @@
+using System.Net;
+using MediatR;
+using Workforce.Application.Abstractions.Persistence;
+using Workforce.Application.Common.Models;
+using Workforce.Shared.Errors;
+using Workforce.Shared.Results;
+
+namespace Workforce.Application.Features.Roles.Commands.DeleteRole;
+
+public sealed record DeleteRoleCommand(Guid Id) : ICommand<Result<object?>>
+{
+    public sealed class Handler : IRequestHandler<DeleteRoleCommand, Result<object?>>
+    {
+        private readonly IRoleRepository _roleRepository;
+
+        public Handler(IRoleRepository roleRepository)
+        {
+            _roleRepository = roleRepository;
+        }
+
+        public async Task<Result<object?>> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
+        {
+            var role = await _roleRepository.GetByIdAsync(request.Id, cancellationToken);
+            if (role is null)
+            {
+                return Result<object?>.Failure(
+                    new AppError("roles.not_found", "Role not found."),
+                    (int)HttpStatusCode.NotFound);
+            }
+
+            await _roleRepository.DeleteAsync(role, cancellationToken);
+            return Result<object?>.Success(null, (int)HttpStatusCode.OK);
+        }
+    }
+}

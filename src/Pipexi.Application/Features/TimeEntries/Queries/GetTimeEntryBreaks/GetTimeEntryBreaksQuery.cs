@@ -1,0 +1,26 @@
+using MediatR;
+using Workforce.Application.Abstractions.Persistence;
+using Workforce.Application.Common.Models;
+using Workforce.Application.Features.TimeEntries.Dtos;
+using Workforce.Shared.Results;
+
+namespace Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryBreaks;
+
+public sealed record GetTimeEntryBreaksQuery(Guid TimeEntryId) : IQuery<Result<IReadOnlyCollection<TimeEntryBreakDto>>>
+{
+    public sealed class Handler : IRequestHandler<GetTimeEntryBreaksQuery, Result<IReadOnlyCollection<TimeEntryBreakDto>>>
+    {
+        private readonly ITimeEntryBreakRepository _timeEntryBreakRepository;
+
+        public Handler(ITimeEntryBreakRepository timeEntryBreakRepository)
+        {
+            _timeEntryBreakRepository = timeEntryBreakRepository;
+        }
+
+        public async Task<Result<IReadOnlyCollection<TimeEntryBreakDto>>> Handle(GetTimeEntryBreaksQuery request, CancellationToken cancellationToken)
+        {
+            var items = await _timeEntryBreakRepository.ListByTimeEntryIdAsync(request.TimeEntryId, cancellationToken);
+            return Result<IReadOnlyCollection<TimeEntryBreakDto>>.Success(items.Select(x => x.ToDto()).ToList());
+        }
+    }
+}

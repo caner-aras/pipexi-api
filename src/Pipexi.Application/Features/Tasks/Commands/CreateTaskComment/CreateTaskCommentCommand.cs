@@ -1,0 +1,83 @@
+using System.Net;
+using MediatR;
+using Workforce.Application.Abstractions.Persistence;
+using Workforce.Application.Common.Models;
+using Workforce.Application.Features.Tasks.Dtos;
+using Workforce.Domain.Entities;
+using Workforce.Shared.Errors;
+using Workforce.Shared.Results;
+
+namespace Workforce.Application.Features.Tasks.Commands.CreateTaskComment;
+
+public sealed record CreateTaskCommentCommand(
+    Guid WorkTaskId,
+    Guid UserId,
+    string Message) : ICommand<Result<TaskCommentDto>>
+{
+    public sealed class Handler : IRequestHandler<CreateTaskCommentCommand, Result<TaskCommentDto>>
+    {
+        private readonly IWorkTaskRepository _workTaskRepository;
+        private readonly IOrganizationMemberRepository _organizationMemberRepository;
+        private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly ITaskCommentRepository _taskCommentRepository;
+
+        public Handler(
+            IWorkTaskRepository workTaskRepository,
+            IOrganizationMemberRepository organizationMemberRepository,
+            ITeamMemberRepository teamMemberRepository,
+            ITeamRepository teamRepository,
+            ITaskCommentRepository taskCommentRepository)
+        {
+            _workTaskRepository = workTaskRepository;
+            _organizationMemberRepository = organizationMemberRepository;
+            _teamMemberRepository = teamMemberRepository;
+            _teamRepository = teamRepository;
+            _taskCommentRepository = taskCommentRepository;
+        }
+
+        public async Task<Result<TaskCommentDto>> Handle(CreateTaskCommentCommand request, CancellationToken cancellationToken)
+        {
+            var task = await _workTaskRepository.GetByIdAsync(request.WorkTaskId, cancellationToken);
+            if (task is null)
+            {
+                return Result<TaskCommentDto>.Failure(
+                    new AppError("task_comments.invalid_task", "Task not found."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var organizationMember = await _organizationMemberRepository.GetByOrganizationIdAndUserIdAsync(
+                task.OrganizationId,
+                request.UserId,
+                cancellationToken);
+            if (organizationMember is null)
+            {
+                return Result<TaskCommentDto>.Failure(
+                    new AppError("task_comments.invalid_member", "Team member not found for task organization."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var teamMembers = await _teamMemberRepository.ListByOrganizationMemberIdAsync(organizationMember.Id, cancellationToken);
+            var teamMember = teamMembers.FirstOrDefault();
+            if (teamMember is null)
+            {
+                return Result<TaskCommentDto>.Failure(
+                    new AppError("task_comments.invalid_member", "Team member not found for task organization."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var team = await _teamRepository.GetByIdAsync(teamMember.TeamId, cancellationToken);
+            if (team is null || team.OrganizationId != task.OrganizationId)
+            {
+                return Result<TaskCommentDto>.Failure(
+                    new AppError("task_comments.invalid_member", "Team member not found for task organization."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var comment = TaskComment.Create(request.WorkTaskId, teamMember.Id, request.Message);
+            await _taskCommentRepository.AddAsync(comment, cancellationToken);
+
+            return Result<TaskCommentDto>.Success(comment.ToDto(), (int)HttpStatusCode.Created);
+        }
+    }
+}

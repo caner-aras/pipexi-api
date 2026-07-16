@@ -1,0 +1,1599 @@
+{
+    "isSuccess": true,
+    "statusCode": 200,
+    "data": [
+        {
+            "id": "75eb4177-3062-477d-b9c6-23491e76e95b",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+            "organizationMember": {
+                "id": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "15a8db92-8d6e-46e8-a9fe-f41769e02d78",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Organization Owner",
+                "status": "active",
+                "createdAt": "2026-07-09T21:54:17.450252+00:00",
+                "updatedAt": "2026-07-10T22:19:32.167654+00:00",
+                "user": {
+                    "id": "15a8db92-8d6e-46e8-a9fe-f41769e02d78",
+                    "email": "caneraras@yahoo.com",
+                    "firstName": "Caner",
+                    "lastName": "Aras",
+                    "phone": "07709266032",
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Caner's shift",
+            "startAt": "2026-07-13T06:00:00+00:00",
+            "endAt": "2026-07-13T12:30:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:07:15.317153+00:00",
+            "updatedAt": null,
+            "breaks": [
+                {
+                    "id": "d6e1339e-45af-40f8-b9e9-31351ce89abd",
+                    "shiftId": "75eb4177-3062-477d-b9c6-23491e76e95b",
+                    "startAt": "2026-07-13T09:00:00+00:00",
+                    "endAt": "2026-07-13T09:30:00+00:00",
+                    "isPaid": true,
+                    "status": "active",
+                    "createdAt": "2026-07-11T14:07:15.317632+00:00",
+                    "updatedAt": null
+                }
+            ],
+            "timeEntries": [
+                {
+                    "id": "042840a4-0a22-4d89-8ffb-18bcdeb40606",
+                    "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                    "shiftId": "75eb4177-3062-477d-b9c6-23491e76e95b",
+                    "organizationMemberId": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+                    "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                    "clockInAt": "2026-07-13T06:11:00+00:00",
+                    "clockOutAt": "2026-07-13T12:45:00+00:00",
+                    "employeeNote": null,
+                    "managerNote": null,
+                    "status": "active",
+                    "createdAt": "2026-07-11T15:22:01.504833+00:00",
+                    "updatedAt": null,
+                    "breaks": [
+                        {
+                            "id": "bef203c8-9f8c-47d0-ae66-3e162d1c41cd",
+                            "timeEntryId": "042840a4-0a22-4d89-8ffb-18bcdeb40606",
+                            "startAt": "2026-07-13T09:00:00+00:00",
+                            "endAt": "2026-07-13T09:30:00+00:00",
+                            "isPaid": false,
+                            "status": "active",
+                            "createdAt": "2026-07-11T15:22:01.514686+00:00",
+                            "updatedAt": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "bd028ea6-4ee1-4c66-87ac-eff226bc714f",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-13T12:30:00+00:00",
+            "endAt": "2026-07-13T14:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:07:44.637079+00:00",
+            "updatedAt": null,
+            "breaks": [
+                {
+                    "id": "ed121c13-fd44-44d1-819a-1b69f73d3f6e",
+                    "shiftId": "bd028ea6-4ee1-4c66-87ac-eff226bc714f",
+                    "startAt": "2026-07-13T13:00:00+00:00",
+                    "endAt": "2026-07-13T13:30:00+00:00",
+                    "isPaid": true,
+                    "status": "active",
+                    "createdAt": "2026-07-11T14:07:44.63737+00:00",
+                    "updatedAt": null
+                }
+            ],
+            "timeEntries": []
+        },
+        {
+            "id": "e81ae414-afc5-49a6-b1ad-b08ce998612d",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+            "organizationMember": {
+                "id": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "15a8db92-8d6e-46e8-a9fe-f41769e02d78",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Organization Owner",
+                "status": "active",
+                "createdAt": "2026-07-09T21:54:17.450252+00:00",
+                "updatedAt": "2026-07-10T22:19:32.167654+00:00",
+                "user": {
+                    "id": "15a8db92-8d6e-46e8-a9fe-f41769e02d78",
+                    "email": "caneraras@yahoo.com",
+                    "firstName": "Caner",
+                    "lastName": "Aras",
+                    "phone": "07709266032",
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Caner's shift",
+            "startAt": "2026-07-14T06:00:00+00:00",
+            "endAt": "2026-07-14T14:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:08:30.337211+00:00",
+            "updatedAt": null,
+            "breaks": [
+                {
+                    "id": "5a77440b-6a32-4434-81d0-d4433ea1affb",
+                    "shiftId": "e81ae414-afc5-49a6-b1ad-b08ce998612d",
+                    "startAt": "2026-07-14T08:00:00+00:00",
+                    "endAt": "2026-07-14T08:30:00+00:00",
+                    "isPaid": true,
+                    "status": "active",
+                    "createdAt": "2026-07-11T14:08:30.33804+00:00",
+                    "updatedAt": null
+                },
+                {
+                    "id": "4070db38-0790-49f0-bce1-3f57d41ae397",
+                    "shiftId": "e81ae414-afc5-49a6-b1ad-b08ce998612d",
+                    "startAt": "2026-07-14T12:00:00+00:00",
+                    "endAt": "2026-07-14T12:30:00+00:00",
+                    "isPaid": true,
+                    "status": "active",
+                    "createdAt": "2026-07-11T14:08:30.338126+00:00",
+                    "updatedAt": null
+                }
+            ],
+            "timeEntries": []
+        },
+        {
+            "id": "48a69fd5-0ee8-4d4a-82be-b9475d104e7c",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-15T06:00:00+00:00",
+            "endAt": "2026-07-15T08:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:08:55.509767+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "4326e486-eb8e-45f1-bb08-8ba4efdc49d2",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "3562963b-69f9-4a59-a54e-4995b2902ce3",
+            "organizationMember": {
+                "id": "3562963b-69f9-4a59-a54e-4995b2902ce3",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "095b1a51-ae57-4d9b-b007-d6d10f0a1b76",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Owner",
+                "status": "active",
+                "createdAt": "2026-07-10T22:37:35.941225+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "095b1a51-ae57-4d9b-b007-d6d10f0a1b76",
+                    "email": "caner.aras@bakiyem.com",
+                    "firstName": "Caner",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Caner's shift",
+            "startAt": "2026-07-15T08:00:00+00:00",
+            "endAt": "2026-07-15T12:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:09:13.059171+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "3ab53124-60b6-4f7a-8430-ce049f4e0713",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "3562963b-69f9-4a59-a54e-4995b2902ce3",
+            "organizationMember": {
+                "id": "3562963b-69f9-4a59-a54e-4995b2902ce3",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "095b1a51-ae57-4d9b-b007-d6d10f0a1b76",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Owner",
+                "status": "active",
+                "createdAt": "2026-07-10T22:37:35.941225+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "095b1a51-ae57-4d9b-b007-d6d10f0a1b76",
+                    "email": "caner.aras@bakiyem.com",
+                    "firstName": "Caner",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-15T12:00:00+00:00",
+            "endAt": "2026-07-15T14:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:09:42.29526+00:00",
+            "updatedAt": null,
+            "breaks": [
+                {
+                    "id": "52db8420-e320-4802-a934-99c26d7692da",
+                    "shiftId": "3ab53124-60b6-4f7a-8430-ce049f4e0713",
+                    "startAt": "2026-07-15T13:00:00+00:00",
+                    "endAt": "2026-07-15T13:15:00+00:00",
+                    "isPaid": true,
+                    "status": "active",
+                    "createdAt": "2026-07-11T14:09:42.296259+00:00",
+                    "updatedAt": null
+                }
+            ],
+            "timeEntries": []
+        },
+        {
+            "id": "c180861d-c7f3-4962-9708-f5009101bf3c",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-16T06:00:00+00:00",
+            "endAt": "2026-07-16T08:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:45:30.709105+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "0f63a5ee-e136-46f5-89d0-03def40ebb0b",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-16T08:00:00+00:00",
+            "endAt": "2026-07-16T10:30:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:46:14.682879+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "e9febea3-99fe-4d9f-8cc6-b5ea53809cf4",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-16T11:00:00+00:00",
+            "endAt": "2026-07-16T13:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:45:41.869165+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "1d3a54ea-2ce4-4b10-b2a5-37d53d365cfc",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-16T13:00:00+00:00",
+            "endAt": "2026-07-16T14:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:45:48.499552+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "001072e5-c86e-478b-99b4-0e34c8a70397",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "10930ad3-517e-4629-8009-647f94ec350c",
+            "organizationMember": {
+                "id": "10930ad3-517e-4629-8009-647f94ec350c",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Manager",
+                "status": "active",
+                "createdAt": "2026-07-11T08:48:57.352274+00:00",
+                "updatedAt": null,
+                "user": {
+                    "id": "488827e8-723f-4e4d-8d8d-94606895aab3",
+                    "email": "esuaras@gmail.com",
+                    "firstName": "Su",
+                    "lastName": "Aras",
+                    "phone": null,
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Su's shift",
+            "startAt": "2026-07-17T06:00:00+00:00",
+            "endAt": "2026-07-17T06:30:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:49:36.49353+00:00",
+            "updatedAt": null,
+            "breaks": [],
+            "timeEntries": []
+        },
+        {
+            "id": "05feee3b-246f-437d-af79-1985f3b3b3ed",
+            "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+            "team": null,
+            "organizationMemberId": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+            "organizationMember": {
+                "id": "a9981add-00bb-4d4c-b1e8-2026ad47c4c3",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "userId": "15a8db92-8d6e-46e8-a9fe-f41769e02d78",
+                "roleId": "887d56ee-0758-48dd-9c97-97d0c0292961",
+                "jobTitle": "Organization Owner",
+                "status": "active",
+                "createdAt": "2026-07-09T21:54:17.450252+00:00",
+                "updatedAt": "2026-07-10T22:19:32.167654+00:00",
+                "user": {
+                    "id": "15a8db92-8d6e-46e8-a9fe-f41769e02d78",
+                    "email": "caneraras@yahoo.com",
+                    "firstName": "Caner",
+                    "lastName": "Aras",
+                    "phone": "07709266032",
+                    "avatarUrl": null
+                }
+            },
+            "location": {
+                "id": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                "organizationId": "bb4efc91-1a23-4f74-90ec-945c7a01b5a9",
+                "name": "Gölbaşı",
+                "address": "Gazi Teknokent B Blok Zemin Kat No:15 Gölbaşı / Ankara",
+                "latitude": 39.533115,
+                "longitude": 32.607277,
+                "geofenceRadiusMeters": 1,
+                "timezone": "Europe/Istanbul",
+                "status": "active",
+                "createdAt": "2026-07-10T11:01:06.761469+00:00",
+                "updatedAt": null,
+                "workingHours": [
+                    {
+                        "id": "f5e45cba-0cfb-41e7-928a-e256452ea156",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 0,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.707904+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "7724e4ed-8d68-4364-be15-ee7767719fa6",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 1,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.70824+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "8b2b6bfd-b8b9-480f-ab2e-8acacc6702ce",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 2,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708241+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "5567934b-74fe-4f09-8ffd-52c5fe7c43a5",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 3,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "1a66c2b0-9d93-491b-98a6-f5ecb953740e",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 4,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708242+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "472d7fb8-ea11-45c9-97e6-fd15130784c0",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 5,
+                        "isClosed": false,
+                        "opensAt": "09:00:00",
+                        "closesAt": "17:00:00",
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708243+00:00",
+                        "updatedAt": null
+                    },
+                    {
+                        "id": "4d7528a9-194b-41f3-b1ac-bb754894667d",
+                        "locationId": "ed54d28e-e638-4797-bcba-cef4361ab930",
+                        "dayOfWeek": 6,
+                        "isClosed": true,
+                        "opensAt": null,
+                        "closesAt": null,
+                        "status": "active",
+                        "createdAt": "2026-07-11T12:42:13.708244+00:00",
+                        "updatedAt": null
+                    }
+                ]
+            },
+            "title": "Caner's shift",
+            "startAt": "2026-07-17T06:30:00+00:00",
+            "endAt": "2026-07-17T14:00:00+00:00",
+            "notes": null,
+            "status": "active",
+            "createdAt": "2026-07-11T14:50:38.102221+00:00",
+            "updatedAt": null,
+            "breaks": [
+                {
+                    "id": "43540a89-100a-412b-8a9f-fd7a551074a1",
+                    "shiftId": "05feee3b-246f-437d-af79-1985f3b3b3ed",
+                    "startAt": "2026-07-17T09:00:00+00:00",
+                    "endAt": "2026-07-17T10:00:00+00:00",
+                    "isPaid": false,
+                    "status": "active",
+                    "createdAt": "2026-07-11T14:50:38.102705+00:00",
+                    "updatedAt": null
+                }
+            ],
+            "timeEntries": []
+        }
+    ],
+    "error": null
+}

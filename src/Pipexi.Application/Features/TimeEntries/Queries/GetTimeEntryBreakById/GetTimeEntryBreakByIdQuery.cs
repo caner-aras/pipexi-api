@@ -1,0 +1,35 @@
+using System.Net;
+using MediatR;
+using Workforce.Application.Abstractions.Persistence;
+using Workforce.Application.Common.Models;
+using Workforce.Application.Features.TimeEntries.Dtos;
+using Workforce.Shared.Errors;
+using Workforce.Shared.Results;
+
+namespace Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryBreakById;
+
+public sealed record GetTimeEntryBreakByIdQuery(Guid Id) : IQuery<Result<TimeEntryBreakDto>>
+{
+    public sealed class Handler : IRequestHandler<GetTimeEntryBreakByIdQuery, Result<TimeEntryBreakDto>>
+    {
+        private readonly ITimeEntryBreakRepository _timeEntryBreakRepository;
+
+        public Handler(ITimeEntryBreakRepository timeEntryBreakRepository)
+        {
+            _timeEntryBreakRepository = timeEntryBreakRepository;
+        }
+
+        public async Task<Result<TimeEntryBreakDto>> Handle(GetTimeEntryBreakByIdQuery request, CancellationToken cancellationToken)
+        {
+            var timeEntryBreak = await _timeEntryBreakRepository.GetByIdAsync(request.Id, cancellationToken);
+            if (timeEntryBreak is null)
+            {
+                return Result<TimeEntryBreakDto>.Failure(
+                    new AppError("time_entry_breaks.not_found", "Time entry break not found."),
+                    (int)HttpStatusCode.NotFound);
+            }
+
+            return Result<TimeEntryBreakDto>.Success(timeEntryBreak.ToDto());
+        }
+    }
+}
