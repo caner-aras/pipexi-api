@@ -1,4 +1,4 @@
-namespace Workforce.Api.Middleware;
+namespace Pipexi.Api.Middleware;
 
 public sealed class RequestContextMiddleware
 {

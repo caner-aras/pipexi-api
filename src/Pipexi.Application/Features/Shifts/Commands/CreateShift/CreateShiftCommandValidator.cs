@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Shifts.Commands.CreateShift;
+namespace Pipexi.Application.Features.Shifts.Commands.CreateShift;
 
 public sealed class CreateShiftCommandValidator : AbstractValidator<CreateShiftCommand>
 {

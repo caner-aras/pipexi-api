@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Forms.Commands.UpdateFormSubmission;
+namespace Pipexi.Application.Features.Forms.Commands.UpdateFormSubmission;
 
 public sealed class UpdateFormSubmissionCommandValidator : AbstractValidator<UpdateFormSubmissionCommand>
 {

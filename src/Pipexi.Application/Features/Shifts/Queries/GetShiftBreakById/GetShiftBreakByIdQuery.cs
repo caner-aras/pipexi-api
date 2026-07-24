@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Shifts.Queries.GetShiftBreakById;
+namespace Pipexi.Application.Features.Shifts.Queries.GetShiftBreakById;
 
 public sealed record GetShiftBreakByIdQuery(Guid Id) : IQuery<Result<ShiftBreakDto>>
 {

@@ -1,8 +1,8 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
 
-namespace Workforce.Application.Common.Behaviors;
+namespace Pipexi.Application.Common.Behaviors;
 
 public sealed class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

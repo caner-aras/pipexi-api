@@ -1,8 +1,8 @@
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Teams;
+namespace Pipexi.Application.Features.Teams;
 
 internal static class TeamMappings
 {

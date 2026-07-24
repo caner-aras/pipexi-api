@@ -1,6 +1,6 @@
-using Workforce.Domain.Time;
+using Pipexi.Domain.Time;
 
-namespace Workforce.Domain.Entities;
+namespace Pipexi.Domain.Entities;
 
 public sealed class Location : BaseEntity
 {

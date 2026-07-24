@@ -1,13 +1,13 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.AuditLogs.Dtos;
-using Workforce.Domain.Entities;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.AuditLogs.Dtos;
+using Pipexi.Domain.Entities;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.AuditLogs.Commands.CreateAuditLog;
+namespace Pipexi.Application.Features.AuditLogs.Commands.CreateAuditLog;
 
 public sealed record CreateAuditLogCommand(
     Guid OrganizationId,

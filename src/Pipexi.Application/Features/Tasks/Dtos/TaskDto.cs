@@ -1,8 +1,8 @@
-using Workforce.Application.Features.Locations.Dtos;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Application.Features.Teams.Dtos;
+using Pipexi.Application.Features.Locations.Dtos;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Application.Features.Teams.Dtos;
 
-namespace Workforce.Application.Features.Tasks.Dtos;
+namespace Pipexi.Application.Features.Tasks.Dtos;
 
 public sealed record TaskDto(
     Guid Id,

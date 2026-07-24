@@ -1,4 +1,4 @@
-# Technical Architecture — Deskless Workforce SaaS MVP
+# Technical Architecture — Deskless Pipexi SaaS MVP
 
 > Stack hedefi: Next.js Web Admin + React Native Mobile + .NET 9 Web API + Supabase PostgreSQL + Cloudflare R2 + Upstash Redis + Hangfire + Sentry.
 
@@ -257,18 +257,18 @@ Bu aşamada sadece iskeleti kuruyoruz. Entity ve business kuralları bir sonraki
 
 ```text
 src/
-  Workforce.Api/            # Presentation (HTTP)
-  Workforce.Application/    # Use case orchestration
-  Workforce.Domain/         # Core model (placeholder for now)
-  Workforce.Persistence/    # EF Core + PostgreSQL
-  Workforce.Infrastructure/ # External services (R2, email, push, Sentry)
-  Workforce.Contracts/      # Public request/response contracts
-  Workforce.Shared/         # Cross-cutting primitives
+  Pipexi.Api/            # Presentation (HTTP)
+  Pipexi.Application/    # Use case orchestration
+  Pipexi.Domain/         # Core model (placeholder for now)
+  Pipexi.Persistence/    # EF Core + PostgreSQL
+  Pipexi.Infrastructure/ # External services (R2, email, push, Sentry)
+  Pipexi.Contracts/      # Public request/response contracts
+  Pipexi.Shared/         # Cross-cutting primitives
 
 tests/
-  Workforce.UnitTests/
-  Workforce.IntegrationTests/
-  Workforce.ArchitectureTests/
+  Pipexi.UnitTests/
+  Pipexi.IntegrationTests/
+  Pipexi.ArchitectureTests/
 ```
 
 ### 7.2 Proje Bağımlılık Kuralları
@@ -295,7 +295,7 @@ Kritik kural: `Application` katmanı `Infrastructure` ve `Persistence` implement
 
 ## 8. Katman Sorumlulukları (Saf Mimari)
 
-### Workforce.Api
+### Pipexi.Api
 
 - Endpoint tanımları (Minimal API veya Controller)
 - AuthN/AuthZ middleware pipeline
@@ -303,7 +303,7 @@ Kritik kural: `Application` katmanı `Infrastructure` ve `Persistence` implement
 - OpenAPI/Swagger
 - Composition root (DI wiring start point)
 
-### Workforce.Application
+### Pipexi.Application
 
 - Use case akışları (Command/Query)
 - Input validation
@@ -311,20 +311,20 @@ Kritik kural: `Application` katmanı `Infrastructure` ve `Persistence` implement
 - Transaction boundary abstraction
 - Domain event dispatch contract'ları
 
-### Workforce.Domain
+### Pipexi.Domain
 
 - Şimdilik placeholder katman
 - Sonraki fazda entity, value object, domain event eklenecek
 - Dış teknoloji bağımlılığı olmayacak
 
-### Workforce.Persistence
+### Pipexi.Persistence
 
 - EF Core DbContext
 - Mapping/configuration
 - Migration yönetimi
 - Repository ve UnitOfWork implementasyonları
 
-### Workforce.Infrastructure
+### Pipexi.Infrastructure
 
 - Email/push provider adapter'ları
 - Object storage adapter'ı (R2)
@@ -332,13 +332,13 @@ Kritik kural: `Application` katmanı `Infrastructure` ve `Persistence` implement
 - Sentry/observability adapter'ları
 - Hangfire job runner implementasyonları
 
-### Workforce.Contracts
+### Pipexi.Contracts
 
 - API request/response contract'ları
 - Versionlanabilir DTO sınırı
 - Frontend ile paylaşılan stabil sözleşme
 
-### Workforce.Shared
+### Pipexi.Shared
 
 - Result/Error primitive'leri
 - Ortak exception tipleri
@@ -349,7 +349,7 @@ Kritik kural: `Application` katmanı `Infrastructure` ve `Persistence` implement
 ## 9. Backend Klasör İskeleti
 
 ```text
-Workforce.Api/
+Pipexi.Api/
   Program.cs
   DependencyInjection/
     ServiceRegistration.cs
@@ -362,7 +362,7 @@ Workforce.Api/
       EmployeeEndpoints.cs
   OpenApi/
 
-Workforce.Application/
+Pipexi.Application/
   DependencyInjection/
     ServiceRegistration.cs
   Abstractions/
@@ -389,12 +389,12 @@ Workforce.Application/
       Commands/
       Queries/
 
-Workforce.Domain/
+Pipexi.Domain/
   Primitives/
   Events/
   Specifications/
 
-Workforce.Persistence/
+Pipexi.Persistence/
   DependencyInjection/
     ServiceRegistration.cs
   Context/
@@ -403,7 +403,7 @@ Workforce.Persistence/
   Repositories/
   Migrations/
 
-Workforce.Infrastructure/
+Pipexi.Infrastructure/
   DependencyInjection/
     ServiceRegistration.cs
   Storage/
@@ -412,13 +412,13 @@ Workforce.Infrastructure/
   Jobs/
   Monitoring/
 
-Workforce.Contracts/
+Pipexi.Contracts/
   V1/
     Auth/
     Employees/
     Teams/
 
-Workforce.Shared/
+Pipexi.Shared/
   Results/
   Errors/
   Constants/
@@ -884,12 +884,12 @@ WORKDIR /src
 
 COPY . .
 RUN dotnet restore
-RUN dotnet publish src/Workforce.Api/Workforce.Api.csproj -c Release -o /app/publish
+RUN dotnet publish src/Pipexi.Api/Pipexi.Api.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "Workforce.Api.dll"]
+ENTRYPOINT ["dotnet", "Pipexi.Api.dll"]
 ```
 
 ---

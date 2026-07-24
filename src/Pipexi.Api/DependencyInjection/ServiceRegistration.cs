@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Workforce.Api.Identity;
-using Workforce.Application.Abstractions.Auth;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Infrastructure.Services;
+using Pipexi.Api.Identity;
+using Pipexi.Application.Abstractions.Auth;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Infrastructure.Services;
 
-namespace Workforce.Api.DependencyInjection;
+namespace Pipexi.Api.DependencyInjection;
 
 public static class ServiceRegistration
 {

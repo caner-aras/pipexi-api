@@ -1,21 +1,21 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Locations;
-using Workforce.Application.Features.Locations.Dtos;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Application.Features.Teams;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Application.Features.TimeEntries;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Locations;
+using Pipexi.Application.Features.Locations.Dtos;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Application.Features.Teams;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Application.Features.TimeEntries;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Shifts.Queries.GetShifts;
+namespace Pipexi.Application.Features.Shifts.Queries.GetShifts;
 
 public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemberId = null) : IQuery<Result<IReadOnlyCollection<ShiftDto>>>
 {
@@ -66,7 +66,7 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
                     (int)HttpStatusCode.Unauthorized);
             }
 
-            IReadOnlyCollection<Workforce.Domain.Entities.Shift> shifts;
+            IReadOnlyCollection<Pipexi.Domain.Entities.Shift> shifts;
             if (request.OrganizationMemberId.HasValue)
             {
                 shifts = await _shiftRepository.ListByOrganizationMemberIdAsync(request.OrganizationMemberId.Value, cancellationToken);

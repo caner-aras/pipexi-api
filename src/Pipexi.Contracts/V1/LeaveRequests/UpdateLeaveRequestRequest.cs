@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.LeaveRequests;
+namespace Pipexi.Contracts.V1.LeaveRequests;
 
 public sealed record UpdateLeaveRequestRequest(
     string? LeaveType,

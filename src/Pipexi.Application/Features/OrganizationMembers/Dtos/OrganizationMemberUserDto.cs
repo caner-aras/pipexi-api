@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.OrganizationMembers.Dtos;
+namespace Pipexi.Application.Features.OrganizationMembers.Dtos;
 
 public sealed record OrganizationMemberUserDto(
     Guid Id,

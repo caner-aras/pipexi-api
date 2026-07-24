@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.AuditLogs;
+namespace Pipexi.Contracts.V1.AuditLogs;
 
 public sealed record CreateAuditLogRequest(
     Guid OrganizationId,

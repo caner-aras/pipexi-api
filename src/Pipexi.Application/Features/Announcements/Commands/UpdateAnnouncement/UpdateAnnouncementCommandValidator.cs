@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Announcements.Commands.UpdateAnnouncement;
+namespace Pipexi.Application.Features.Announcements.Commands.UpdateAnnouncement;
 
 public sealed class UpdateAnnouncementCommandValidator : AbstractValidator<UpdateAnnouncementCommand>
 {

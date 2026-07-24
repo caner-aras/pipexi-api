@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Permissions.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Permissions.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Permissions.Queries.GetPermissionById;
+namespace Pipexi.Application.Features.Permissions.Queries.GetPermissionById;
 
 public sealed record GetPermissionByIdQuery(Guid Id) : IQuery<Result<PermissionDto>>
 {

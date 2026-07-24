@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Users.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Users.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Users.Queries.GetUserById;
+namespace Pipexi.Application.Features.Users.Queries.GetUserById;
 
 public sealed record GetUserByIdQuery(Guid Id) : IQuery<Result<UserDto>>
 {

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Workforce.Persistence.Migrations
+namespace Pipexi.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class TaskAssigneeTeamMember : Migration

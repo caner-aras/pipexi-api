@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Workforce.Persistence.Context;
+using Pipexi.Persistence.Context;
 
 #nullable disable
 
-namespace Workforce.Persistence.Migrations
+namespace Pipexi.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260709212819_SeedPermissions")]
@@ -25,7 +25,7 @@ namespace Workforce.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Workforce.Domain.Entities.Organization", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.Organization", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -75,7 +75,7 @@ namespace Workforce.Persistence.Migrations
                     b.ToTable("organizations", (string)null);
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.OrganizationMember", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.OrganizationMember", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -126,7 +126,7 @@ namespace Workforce.Persistence.Migrations
                     b.ToTable("organization_members", (string)null);
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.Permission", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -276,7 +276,7 @@ namespace Workforce.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.Role", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -316,7 +316,7 @@ namespace Workforce.Persistence.Migrations
                     b.ToTable("roles", (string)null);
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.RolePermission", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.RolePermission", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -356,7 +356,7 @@ namespace Workforce.Persistence.Migrations
                     b.ToTable("role_permissions", (string)null);
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.User", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -407,45 +407,45 @@ namespace Workforce.Persistence.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.OrganizationMember", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.OrganizationMember", b =>
                 {
-                    b.HasOne("Workforce.Domain.Entities.Organization", null)
+                    b.HasOne("Pipexi.Domain.Entities.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Workforce.Domain.Entities.Role", null)
+                    b.HasOne("Pipexi.Domain.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Workforce.Domain.Entities.User", null)
+                    b.HasOne("Pipexi.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.Role", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.Role", b =>
                 {
-                    b.HasOne("Workforce.Domain.Entities.Organization", null)
+                    b.HasOne("Pipexi.Domain.Entities.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Workforce.Domain.Entities.RolePermission", b =>
+            modelBuilder.Entity("Pipexi.Domain.Entities.RolePermission", b =>
                 {
-                    b.HasOne("Workforce.Domain.Entities.Permission", null)
+                    b.HasOne("Pipexi.Domain.Entities.Permission", null)
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Workforce.Domain.Entities.Role", null)
+                    b.HasOne("Pipexi.Domain.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

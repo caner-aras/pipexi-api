@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Tasks.Commands.UpdateTaskComment;
+namespace Pipexi.Application.Features.Tasks.Commands.UpdateTaskComment;
 
 public sealed class UpdateTaskCommentCommandValidator : AbstractValidator<UpdateTaskCommentCommand>
 {

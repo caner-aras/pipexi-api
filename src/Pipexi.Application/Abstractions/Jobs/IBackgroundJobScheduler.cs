@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Workforce.Application.Abstractions.Jobs;
+namespace Pipexi.Application.Abstractions.Jobs;
 
 public interface IBackgroundJobScheduler
 {

@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.Notifications.Commands.CreateNotification;
-using Workforce.Application.Features.Notifications.Commands.DeleteNotification;
-using Workforce.Application.Features.Notifications.Commands.UpdateNotification;
-using Workforce.Application.Features.Notifications.Queries.GetNotificationById;
-using Workforce.Application.Features.Notifications.Queries.GetNotifications;
-using Workforce.Contracts.V1.Notifications;
+using Pipexi.Application.Features.Notifications.Commands.CreateNotification;
+using Pipexi.Application.Features.Notifications.Commands.DeleteNotification;
+using Pipexi.Application.Features.Notifications.Commands.UpdateNotification;
+using Pipexi.Application.Features.Notifications.Queries.GetNotificationById;
+using Pipexi.Application.Features.Notifications.Queries.GetNotifications;
+using Pipexi.Contracts.V1.Notifications;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class NotificationEndpoints
 {

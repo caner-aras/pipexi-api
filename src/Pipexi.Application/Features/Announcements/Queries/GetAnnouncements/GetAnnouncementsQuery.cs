@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Announcements.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Announcements.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Announcements.Queries.GetAnnouncements;
+namespace Pipexi.Application.Features.Announcements.Queries.GetAnnouncements;
 
 public sealed record GetAnnouncementsQuery(
     Guid? OrganizationId,

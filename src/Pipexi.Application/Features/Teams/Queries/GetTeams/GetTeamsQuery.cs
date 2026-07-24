@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Queries.GetTeams;
+namespace Pipexi.Application.Features.Teams.Queries.GetTeams;
 
 public sealed record GetTeamsQuery(Guid? OrganizationId) : IQuery<Result<IReadOnlyCollection<TeamDto>>>
 {
@@ -45,7 +45,7 @@ public sealed record GetTeamsQuery(Guid? OrganizationId) : IQuery<Result<IReadOn
                 var userIds = managerMembers.Select(x => x.UserId).Distinct().ToList();
                 var users = userIds.Count > 0
                     ? await _userRepository.ListByIdsAsync(userIds, cancellationToken)
-                    : Array.Empty<Workforce.Domain.Entities.User>();
+                    : Array.Empty<Pipexi.Domain.Entities.User>();
                 var userMap = users.ToDictionary(x => x.Id, x => x.ToDto());
 
                 managerMemberMap = managerMembers.ToDictionary(

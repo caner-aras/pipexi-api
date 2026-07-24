@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Forms.Commands.UpdateStoredFile;
+namespace Pipexi.Application.Features.Forms.Commands.UpdateStoredFile;
 
 public sealed class UpdateStoredFileCommandValidator : AbstractValidator<UpdateStoredFileCommand>
 {

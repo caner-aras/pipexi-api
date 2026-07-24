@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.AuditLogs.Commands.CreateAuditLog;
+namespace Pipexi.Application.Features.AuditLogs.Commands.CreateAuditLog;
 
 public sealed class CreateAuditLogCommandValidator : AbstractValidator<CreateAuditLogCommand>
 {

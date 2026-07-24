@@ -1,6 +1,6 @@
-using Workforce.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
 
-namespace Workforce.Application.Features.Teams.Dtos;
+namespace Pipexi.Application.Features.Teams.Dtos;
 
 public sealed record TeamDto(
     Guid Id,

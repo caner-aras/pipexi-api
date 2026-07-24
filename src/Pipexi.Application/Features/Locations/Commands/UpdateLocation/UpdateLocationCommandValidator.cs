@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Locations.Commands.UpdateLocation;
+namespace Pipexi.Application.Features.Locations.Commands.UpdateLocation;
 
 public sealed class UpdateLocationCommandValidator : AbstractValidator<UpdateLocationCommand>
 {

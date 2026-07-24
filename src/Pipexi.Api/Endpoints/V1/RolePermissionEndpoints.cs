@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.RolePermissions.Commands.CreateRolePermission;
-using Workforce.Application.Features.RolePermissions.Commands.DeleteRolePermission;
-using Workforce.Application.Features.RolePermissions.Commands.UpdateRolePermission;
-using Workforce.Application.Features.RolePermissions.Queries.GetRolePermissionById;
-using Workforce.Application.Features.RolePermissions.Queries.GetRolePermissions;
-using Workforce.Contracts.V1.RolePermissions;
+using Pipexi.Application.Features.RolePermissions.Commands.CreateRolePermission;
+using Pipexi.Application.Features.RolePermissions.Commands.DeleteRolePermission;
+using Pipexi.Application.Features.RolePermissions.Commands.UpdateRolePermission;
+using Pipexi.Application.Features.RolePermissions.Queries.GetRolePermissionById;
+using Pipexi.Application.Features.RolePermissions.Queries.GetRolePermissions;
+using Pipexi.Contracts.V1.RolePermissions;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class RolePermissionEndpoints
 {

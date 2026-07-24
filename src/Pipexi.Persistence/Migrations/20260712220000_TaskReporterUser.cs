@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Workforce.Persistence.Context;
+using Pipexi.Persistence.Context;
 
 #nullable disable
 
-namespace Workforce.Persistence.Migrations;
+namespace Pipexi.Persistence.Migrations;
 
 [DbContext(typeof(ApplicationDbContext))]
 [Migration("20260712220000_TaskReporterUser")]

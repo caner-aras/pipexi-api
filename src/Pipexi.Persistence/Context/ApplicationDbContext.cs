@@ -1,16 +1,11 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Workforce.Domain.Entities;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Persistence.Context;
+namespace Pipexi.Persistence.Context;
 
-public sealed class ApplicationDbContext : DbContext
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<LocationWorkingHour> LocationWorkingHours => Set<LocationWorkingHour>();
@@ -38,6 +33,8 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<Position> Positions => Set<Position>();
+    public DbSet<MemberPositionHistory> MemberPositionHistories => Set<MemberPositionHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

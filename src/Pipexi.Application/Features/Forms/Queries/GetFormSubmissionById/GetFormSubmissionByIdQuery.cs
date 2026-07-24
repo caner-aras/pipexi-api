@@ -1,13 +1,13 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Forms.Queries.GetFormSubmissionById;
+namespace Pipexi.Application.Features.Forms.Queries.GetFormSubmissionById;
 
 public sealed record GetFormSubmissionByIdQuery(Guid Id) : IQuery<Result<FormSubmissionDto>>
 {

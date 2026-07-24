@@ -1,16 +1,16 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Domain.Entities;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Domain.Entities;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Forms.Queries.GetFormSubmissions;
+namespace Pipexi.Application.Features.Forms.Queries.GetFormSubmissions;
 
 public sealed record GetFormSubmissionsQuery(
     Guid? OrganizationId,
@@ -109,14 +109,14 @@ public sealed record GetFormSubmissionsQuery(
             var submittedByMemberMap = new Dictionary<Guid, OrganizationMemberDto>();
             if (submittedByMemberIds.Count > 0)
             {
-                IReadOnlyCollection<Workforce.Domain.Entities.OrganizationMember> submittedByMembers;
+                IReadOnlyCollection<Pipexi.Domain.Entities.OrganizationMember> submittedByMembers;
                 var allMembers = await _organizationMemberRepository.ListByOrganizationIdAsync(organizationId, cancellationToken);
                 submittedByMembers = allMembers.Where(x => submittedByMemberIds.Contains(x.Id)).ToList();
 
                 var userIds = submittedByMembers.Select(x => x.UserId).Distinct().ToList();
                 var users = userIds.Count > 0
                     ? await _userRepository.ListByIdsAsync(userIds, cancellationToken)
-                    : Array.Empty<Workforce.Domain.Entities.User>();
+                    : Array.Empty<Pipexi.Domain.Entities.User>();
                 var userMap = users.ToDictionary(x => x.Id, x => x.ToDto());
 
                 submittedByMemberMap = submittedByMembers.ToDictionary(

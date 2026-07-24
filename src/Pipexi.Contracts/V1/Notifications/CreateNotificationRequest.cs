@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.Notifications;
+namespace Pipexi.Contracts.V1.Notifications;
 
 public sealed record CreateNotificationRequest(
     Guid OrganizationId,

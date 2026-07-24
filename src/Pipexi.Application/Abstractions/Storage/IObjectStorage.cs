@@ -1,4 +1,4 @@
-namespace Workforce.Application.Abstractions.Storage;
+namespace Pipexi.Application.Abstractions.Storage;
 
 public interface IObjectStorage
 {

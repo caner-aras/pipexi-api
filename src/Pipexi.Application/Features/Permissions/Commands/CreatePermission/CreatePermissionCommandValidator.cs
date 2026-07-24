@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Permissions.Commands.CreatePermission;
+namespace Pipexi.Application.Features.Permissions.Commands.CreatePermission;
 
 public sealed class CreatePermissionCommandValidator : AbstractValidator<CreatePermissionCommand>
 {

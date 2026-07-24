@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.AuditLogs.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.AuditLogs.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.AuditLogs.Queries.GetAuditLogs;
+namespace Pipexi.Application.Features.AuditLogs.Queries.GetAuditLogs;
 
 public sealed record GetAuditLogsQuery(
     Guid? OrganizationId,

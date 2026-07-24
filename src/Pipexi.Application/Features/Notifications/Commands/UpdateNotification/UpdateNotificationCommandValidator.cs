@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Notifications.Commands.UpdateNotification;
+namespace Pipexi.Application.Features.Notifications.Commands.UpdateNotification;
 
 public sealed class UpdateNotificationCommandValidator : AbstractValidator<UpdateNotificationCommand>
 {

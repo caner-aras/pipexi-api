@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Queries.GetTeamMemberDayOffById;
+namespace Pipexi.Application.Features.Teams.Queries.GetTeamMemberDayOffById;
 
 public sealed record GetTeamMemberDayOffByIdQuery(Guid Id, Guid TeamMemberId) : IQuery<Result<TeamMemberDayOffDto>>;
 

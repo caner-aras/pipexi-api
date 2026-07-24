@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Locations.Commands.CreateLocation;
+namespace Pipexi.Application.Features.Locations.Commands.CreateLocation;
 
 public sealed class CreateLocationCommandValidator : AbstractValidator<CreateLocationCommand>
 {

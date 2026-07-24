@@ -1,4 +1,4 @@
-namespace Workforce.Domain.Entities;
+namespace Pipexi.Domain.Entities;
 
 public sealed class ShiftBreak : BaseEntity
 {

@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace Workforce.Api.Middleware;
+namespace Pipexi.Api.Middleware;
 
 public sealed class ExceptionHandlingMiddleware
 {

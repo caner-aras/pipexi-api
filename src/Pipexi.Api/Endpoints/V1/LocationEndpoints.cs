@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.Locations.Commands.CreateLocation;
-using Workforce.Application.Features.Locations.Commands.DeleteLocation;
-using Workforce.Application.Features.Locations.Commands.UpdateLocation;
-using Workforce.Application.Features.Locations.Queries.GetLocationById;
-using Workforce.Application.Features.Locations.Queries.GetLocations;
-using Workforce.Contracts.V1.Locations;
+using Pipexi.Application.Features.Locations.Commands.CreateLocation;
+using Pipexi.Application.Features.Locations.Commands.DeleteLocation;
+using Pipexi.Application.Features.Locations.Commands.UpdateLocation;
+using Pipexi.Application.Features.Locations.Queries.GetLocationById;
+using Pipexi.Application.Features.Locations.Queries.GetLocations;
+using Pipexi.Contracts.V1.Locations;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class LocationEndpoints
 {

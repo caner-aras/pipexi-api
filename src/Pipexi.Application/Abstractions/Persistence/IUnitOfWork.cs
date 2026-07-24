@@ -1,4 +1,4 @@
-namespace Workforce.Application.Abstractions.Persistence;
+namespace Pipexi.Application.Abstractions.Persistence;
 
 public interface IUnitOfWork
 {

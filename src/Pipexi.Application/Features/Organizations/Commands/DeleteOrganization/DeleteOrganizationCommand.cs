@@ -1,11 +1,11 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Organizations.Commands.DeleteOrganization;
+namespace Pipexi.Application.Features.Organizations.Commands.DeleteOrganization;
 
 public sealed record DeleteOrganizationCommand(Guid Id) : ICommand<Result<object?>>
 {

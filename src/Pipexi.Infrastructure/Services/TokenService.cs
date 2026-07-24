@@ -2,9 +2,9 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using Workforce.Application.Abstractions.Auth;
+using Pipexi.Application.Abstractions.Auth;
 
-namespace Workforce.Infrastructure.Services;
+namespace Pipexi.Infrastructure.Services;
 
 public sealed class TokenService : ITokenService
 {
@@ -20,7 +20,7 @@ public sealed class TokenService : ITokenService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Workforce.Shared.Results.Result<TokenResponse>> ExchangePasswordForTokenAsync(
+    public async Task<Pipexi.Shared.Results.Result<TokenResponse>> ExchangePasswordForTokenAsync(
         string email,
         string password,
         CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public sealed class TokenService : ITokenService
         if (string.IsNullOrWhiteSpace(authBaseUrl) || string.IsNullOrWhiteSpace(anonApiKey))
         {
 
-            return Workforce.Shared.Results.Result<TokenResponse>.Failure(new Workforce.Shared.Errors.AppError(
+            return Pipexi.Shared.Results.Result<TokenResponse>.Failure(new Pipexi.Shared.Errors.AppError(
                 "SupabaseAuthConfigurationMissing",
                 "Supabase auth configuration is missing."));
         }
@@ -55,8 +55,8 @@ public sealed class TokenService : ITokenService
 
         if (!response.IsSuccessStatusCode)
         {
-            return Workforce.Shared.Results.Result<TokenResponse>.Failure(
-                new Workforce.Shared.Errors.AppError(
+            return Pipexi.Shared.Results.Result<TokenResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
                     "AuthFailed",
                     responseBody));
         }
@@ -71,11 +71,11 @@ public sealed class TokenService : ITokenService
             accessToken ?? string.Empty,
             refreshToken ?? string.Empty);
 
-        return Workforce.Shared.Results.Result<TokenResponse>.Success(result);
+        return Pipexi.Shared.Results.Result<TokenResponse>.Success(result);
 
     }
 
-    public async Task<Workforce.Shared.Results.Result<RegisterResponse>> RegisterWithEmailPasswordAsync(
+    public async Task<Pipexi.Shared.Results.Result<RegisterResponse>> RegisterWithEmailPasswordAsync(
         string email,
         string password,
         CancellationToken cancellationToken)
@@ -85,8 +85,8 @@ public sealed class TokenService : ITokenService
 
         if (string.IsNullOrWhiteSpace(authBaseUrl) || string.IsNullOrWhiteSpace(anonApiKey))
         {
-            return Workforce.Shared.Results.Result<RegisterResponse>.Failure(
-                new Workforce.Shared.Errors.AppError(
+            return Pipexi.Shared.Results.Result<RegisterResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
                     "SupabaseAuthConfigurationMissing",
                     "Supabase auth configuration is missing."));
         }
@@ -108,8 +108,8 @@ public sealed class TokenService : ITokenService
 
         if (!response.IsSuccessStatusCode)
         {
-            return Workforce.Shared.Results.Result<RegisterResponse>.Failure(
-                new Workforce.Shared.Errors.AppError(
+            return Pipexi.Shared.Results.Result<RegisterResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
                     "AuthRegisterFailed",
                     responseBody),
                 (int)response.StatusCode);
@@ -118,8 +118,8 @@ public sealed class TokenService : ITokenService
         using var document = JsonDocument.Parse(responseBody);
         if (!document.RootElement.TryGetProperty("user", out var userElement))
         {
-            return Workforce.Shared.Results.Result<RegisterResponse>.Failure(
-                new Workforce.Shared.Errors.AppError(
+            return Pipexi.Shared.Results.Result<RegisterResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
                     "AuthRegisterFailed",
                     "Supabase register response does not include user payload."),
                 (int)response.StatusCode);
@@ -135,8 +135,8 @@ public sealed class TokenService : ITokenService
 
         if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(userEmail))
         {
-            return Workforce.Shared.Results.Result<RegisterResponse>.Failure(
-                new Workforce.Shared.Errors.AppError(
+            return Pipexi.Shared.Results.Result<RegisterResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
                     "AuthRegisterFailed",
                     "Supabase register response is missing user id or email."),
                 (int)response.StatusCode);
@@ -157,6 +157,6 @@ public sealed class TokenService : ITokenService
             accessToken,
             refreshToken);
 
-        return Workforce.Shared.Results.Result<RegisterResponse>.Success(result, (int)response.StatusCode);
+        return Pipexi.Shared.Results.Result<RegisterResponse>.Success(result, (int)response.StatusCode);
     }
 }

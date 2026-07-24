@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.Announcements.Commands.CreateAnnouncement;
-using Workforce.Application.Features.Announcements.Commands.DeleteAnnouncement;
-using Workforce.Application.Features.Announcements.Commands.UpdateAnnouncement;
-using Workforce.Application.Features.Announcements.Queries.GetAnnouncementById;
-using Workforce.Application.Features.Announcements.Queries.GetAnnouncements;
-using Workforce.Contracts.V1.Announcements;
+using Pipexi.Application.Features.Announcements.Commands.CreateAnnouncement;
+using Pipexi.Application.Features.Announcements.Commands.DeleteAnnouncement;
+using Pipexi.Application.Features.Announcements.Commands.UpdateAnnouncement;
+using Pipexi.Application.Features.Announcements.Queries.GetAnnouncementById;
+using Pipexi.Application.Features.Announcements.Queries.GetAnnouncements;
+using Pipexi.Contracts.V1.Announcements;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class AnnouncementEndpoints
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Users.Commands.CreateUser;
+namespace Pipexi.Application.Features.Users.Commands.CreateUser;
 
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {

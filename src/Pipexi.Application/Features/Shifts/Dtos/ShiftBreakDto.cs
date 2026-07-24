@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Shifts.Dtos;
+namespace Pipexi.Application.Features.Shifts.Dtos;
 
 public sealed record ShiftBreakDto(
     Guid Id,

@@ -1,7 +1,7 @@
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Organizations.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Organizations.Dtos;
 
-namespace Workforce.Application.Features.LeaveRequests.Dtos;
+namespace Pipexi.Application.Features.LeaveRequests.Dtos;
 
 public sealed record LeaveRequestDto(
     Guid Id,

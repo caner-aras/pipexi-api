@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Tasks.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Tasks.Commands.UpdateTaskComment;
+namespace Pipexi.Application.Features.Tasks.Commands.UpdateTaskComment;
 
 public sealed record UpdateTaskCommentCommand(
     Guid Id,

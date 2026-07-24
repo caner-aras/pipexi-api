@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.AuditLogs.Dtos;
+namespace Pipexi.Application.Features.AuditLogs.Dtos;
 
 public sealed record AuditLogDto(
     Guid Id,

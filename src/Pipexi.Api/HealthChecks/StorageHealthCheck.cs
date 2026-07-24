@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
-namespace Workforce.Api.HealthChecks;
+namespace Pipexi.Api.HealthChecks;
 
 public sealed class StorageHealthCheck : IHealthCheck
 {

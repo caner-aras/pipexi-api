@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Tasks.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Tasks.Queries.GetTaskComments;
+namespace Pipexi.Application.Features.Tasks.Queries.GetTaskComments;
 
 public sealed record GetTaskCommentsQuery(Guid WorkTaskId) : IQuery<Result<IReadOnlyCollection<TaskCommentDto>>>
 {
@@ -36,7 +36,7 @@ public sealed record GetTaskCommentsQuery(Guid WorkTaskId) : IQuery<Result<IRead
         }
 
         private async Task<Dictionary<Guid, TaskCommentMemberDto>> BuildMemberMapAsync(
-            IReadOnlyCollection<Workforce.Domain.Entities.TaskComment> comments,
+            IReadOnlyCollection<Pipexi.Domain.Entities.TaskComment> comments,
             CancellationToken cancellationToken)
         {
             var teamMemberIds = comments.Select(x => x.TeamMemberId).Distinct().ToList();

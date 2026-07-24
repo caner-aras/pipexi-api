@@ -1,12 +1,12 @@
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Application.Features.Locations.Dtos;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Application.Features.Locations.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Shifts;
+namespace Pipexi.Application.Features.Shifts;
 
 internal static class ShiftMappings
 {

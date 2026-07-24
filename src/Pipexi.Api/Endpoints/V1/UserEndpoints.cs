@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.Users.Commands.CreateUser;
-using Workforce.Application.Features.Users.Commands.DeleteUser;
-using Workforce.Application.Features.Users.Commands.UpdateUser;
-using Workforce.Application.Features.Users.Queries.GetUserById;
-using Workforce.Application.Features.Users.Queries.GetUsers;
-using Workforce.Contracts.V1.Users;
+using Pipexi.Application.Features.Users.Commands.CreateUser;
+using Pipexi.Application.Features.Users.Commands.DeleteUser;
+using Pipexi.Application.Features.Users.Commands.UpdateUser;
+using Pipexi.Application.Features.Users.Queries.GetUserById;
+using Pipexi.Application.Features.Users.Queries.GetUsers;
+using Pipexi.Contracts.V1.Users;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class UserEndpoints
 {

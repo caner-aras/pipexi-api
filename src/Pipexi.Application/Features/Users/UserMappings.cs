@@ -1,7 +1,7 @@
-using Workforce.Application.Features.Users.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Users.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Users;
+namespace Pipexi.Application.Features.Users;
 
 internal static class UserMappings
 {

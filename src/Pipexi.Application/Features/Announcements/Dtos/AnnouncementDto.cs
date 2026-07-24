@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Announcements.Dtos;
+namespace Pipexi.Application.Features.Announcements.Dtos;
 
 public sealed record AnnouncementDto(
     Guid Id,

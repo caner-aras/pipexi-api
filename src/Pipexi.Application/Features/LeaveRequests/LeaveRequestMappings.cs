@@ -1,9 +1,9 @@
-using Workforce.Application.Features.LeaveRequests.Dtos;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Organizations.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.LeaveRequests.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Organizations.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.LeaveRequests;
+namespace Pipexi.Application.Features.LeaveRequests;
 
 internal static class LeaveRequestMappings
 {

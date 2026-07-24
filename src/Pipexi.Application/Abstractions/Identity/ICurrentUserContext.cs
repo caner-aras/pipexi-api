@@ -1,4 +1,4 @@
-namespace Workforce.Application.Abstractions.Identity;
+namespace Pipexi.Application.Abstractions.Identity;
 
 public interface ICurrentUserContext
 {

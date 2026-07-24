@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Users.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Users.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Users.Queries.GetUsers;
+namespace Pipexi.Application.Features.Users.Queries.GetUsers;
 
 public sealed record GetUsersQuery() : IQuery<Result<IReadOnlyCollection<UserDto>>>
 {

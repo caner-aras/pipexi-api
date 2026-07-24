@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Reports.Dtos;
+namespace Pipexi.Application.Features.Reports.Dtos;
 
 public sealed record ReportSummaryDto(
     Guid OrganizationId,

@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Teams.Dtos;
+namespace Pipexi.Application.Features.Teams.Dtos;
 
 public sealed record TeamMemberDayOffDto(
     Guid Id,

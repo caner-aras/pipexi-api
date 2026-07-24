@@ -1,6 +1,6 @@
 using TimeZoneConverter;
 
-namespace Workforce.Domain.Time;
+namespace Pipexi.Domain.Time;
 
 public static class IanaTimeZone
 {

@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.Announcements;
+namespace Pipexi.Contracts.V1.Announcements;
 
 public sealed record UpdateAnnouncementRequest(
     string? Title,

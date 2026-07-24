@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.Roles.Commands.CreateRole;
-using Workforce.Application.Features.Roles.Commands.DeleteRole;
-using Workforce.Application.Features.Roles.Commands.UpdateRole;
-using Workforce.Application.Features.Roles.Queries.GetRoleById;
-using Workforce.Application.Features.Roles.Queries.GetRoles;
-using Workforce.Contracts.V1.Roles;
+using Pipexi.Application.Features.Roles.Commands.CreateRole;
+using Pipexi.Application.Features.Roles.Commands.DeleteRole;
+using Pipexi.Application.Features.Roles.Commands.UpdateRole;
+using Pipexi.Application.Features.Roles.Queries.GetRoleById;
+using Pipexi.Application.Features.Roles.Queries.GetRoles;
+using Pipexi.Contracts.V1.Roles;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class RoleEndpoints
 {

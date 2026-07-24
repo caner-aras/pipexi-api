@@ -1,18 +1,19 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Organizations.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Organizations.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Organizations.Commands.UpdateOrganization;
+namespace Pipexi.Application.Features.Organizations.Commands.UpdateOrganization;
 
 public sealed record UpdateOrganizationCommand(
     Guid Id,
     string? Name,
     string? Slug,
     string? Timezone,
+    string? Currency,
     string? Status) : ICommand<Result<OrganizationDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateOrganizationCommand, Result<OrganizationDto>>
@@ -49,7 +50,7 @@ public sealed record UpdateOrganizationCommand(
                     (int)HttpStatusCode.Conflict);
             }
 
-            organization.UpdateDetails(request.Name, request.Slug, request.Timezone, request.Status);
+            organization.UpdateDetails(request.Name, request.Slug, request.Timezone, request.Currency, request.Status);
             await _organizationRepository.UpdateAsync(organization, cancellationToken);
 
             return Result<OrganizationDto>.Success(organization.ToDto(), (int)HttpStatusCode.OK);

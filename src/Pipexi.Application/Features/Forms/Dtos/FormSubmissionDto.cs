@@ -1,6 +1,6 @@
-using Workforce.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
 
-namespace Workforce.Application.Features.Forms.Dtos;
+namespace Pipexi.Application.Features.Forms.Dtos;
 
 public sealed record FormSubmissionDto(
     Guid Id,

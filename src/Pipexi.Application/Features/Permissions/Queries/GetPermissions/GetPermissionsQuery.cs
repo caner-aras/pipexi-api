@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Permissions.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Permissions.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Permissions.Queries.GetPermissions;
+namespace Pipexi.Application.Features.Permissions.Queries.GetPermissions;
 
 public sealed record GetPermissionsQuery() : IQuery<Result<IReadOnlyCollection<PermissionDto>>>
 {

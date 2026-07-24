@@ -1,13 +1,13 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.TimeEntries.Queries.GetTimeEntries;
+namespace Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntries;
 
 public sealed record GetTimeEntriesQuery(Guid? OrganizationId, Guid? OrganizationMemberId = null) : IQuery<Result<IReadOnlyCollection<TimeEntryDto>>>
 {
@@ -37,7 +37,7 @@ public sealed record GetTimeEntriesQuery(Guid? OrganizationId, Guid? Organizatio
                     (int)HttpStatusCode.Unauthorized);
             }
 
-            IReadOnlyCollection<Workforce.Domain.Entities.TimeEntry> timeEntries;
+            IReadOnlyCollection<Pipexi.Domain.Entities.TimeEntry> timeEntries;
             if (request.OrganizationMemberId.HasValue)
             {
                 timeEntries = await _timeEntryRepository.ListByOrganizationMemberIdAsync(request.OrganizationMemberId.Value, cancellationToken);

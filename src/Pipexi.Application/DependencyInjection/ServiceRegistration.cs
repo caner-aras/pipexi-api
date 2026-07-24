@@ -1,9 +1,9 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Workforce.Application.Common.Behaviors;
+using Pipexi.Application.Common.Behaviors;
 
-namespace Workforce.Application.DependencyInjection;
+namespace Pipexi.Application.DependencyInjection;
 
 public static class ServiceRegistration
 {

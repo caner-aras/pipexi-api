@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Tasks.Dtos;
+namespace Pipexi.Application.Features.Tasks.Dtos;
 
 public sealed record TaskCommentMemberUserDto(
     Guid Id,

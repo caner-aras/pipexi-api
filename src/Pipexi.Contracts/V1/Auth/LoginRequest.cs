@@ -1,3 +1,3 @@
-namespace Workforce.Contracts.V1.Auth;
+namespace Pipexi.Contracts.V1.Auth;
 
 public sealed record LoginRequest(string Email, string Password);

@@ -1,14 +1,14 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Application.Features.TimeEntries;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Application.Features.TimeEntries;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Queries.GetTeamMembersWorkSummary;
+namespace Pipexi.Application.Features.Teams.Queries.GetTeamMembersWorkSummary;
 
 public sealed record GetTeamMembersWorkSummaryQuery(
     Guid TeamMemberId,
@@ -24,6 +24,8 @@ public sealed record GetTeamMembersWorkSummaryQuery(
         private readonly IShiftBreakRepository _shiftBreakRepository;
         private readonly ITimeEntryRepository _timeEntryRepository;
         private readonly ITimeEntryBreakRepository _timeEntryBreakRepository;
+        private readonly IMemberPositionHistoryRepository _memberPositionHistoryRepository;
+        private readonly IOrganizationRepository _organizationRepository;
 
         public Handler(
             ITeamMemberRepository teamMemberRepository,
@@ -31,7 +33,9 @@ public sealed record GetTeamMembersWorkSummaryQuery(
             IShiftRepository shiftRepository,
             IShiftBreakRepository shiftBreakRepository,
             ITimeEntryRepository timeEntryRepository,
-            ITimeEntryBreakRepository timeEntryBreakRepository)
+            ITimeEntryBreakRepository timeEntryBreakRepository,
+            IMemberPositionHistoryRepository memberPositionHistoryRepository,
+            IOrganizationRepository organizationRepository)
         {
             _teamMemberRepository = teamMemberRepository;
             _organizationMemberRepository = organizationMemberRepository;
@@ -39,6 +43,8 @@ public sealed record GetTeamMembersWorkSummaryQuery(
             _shiftBreakRepository = shiftBreakRepository;
             _timeEntryRepository = timeEntryRepository;
             _timeEntryBreakRepository = timeEntryBreakRepository;
+            _memberPositionHistoryRepository = memberPositionHistoryRepository;
+            _organizationRepository = organizationRepository;
         }
 
         public async Task<Result<TeamMembersWorkSummaryDto>> Handle(
@@ -96,13 +102,13 @@ public sealed record GetTeamMembersWorkSummaryQuery(
                 .ToList();
 
             var shiftIds = shifts.Select(x => x.Id).ToList();
-            var shiftBreakMap = new Dictionary<Guid, IReadOnlyCollection<Workforce.Domain.Entities.ShiftBreak>>();
+            var shiftBreakMap = new Dictionary<Guid, IReadOnlyCollection<Pipexi.Domain.Entities.ShiftBreak>>();
             if (shiftIds.Count > 0)
             {
                 var shiftBreaks = await _shiftBreakRepository.ListByShiftIdsAsync(shiftIds, cancellationToken);
                 shiftBreakMap = shiftBreaks
                     .GroupBy(x => x.ShiftId)
-                    .ToDictionary(g => g.Key, g => (IReadOnlyCollection<Workforce.Domain.Entities.ShiftBreak>)g.ToList());
+                    .ToDictionary(g => g.Key, g => (IReadOnlyCollection<Pipexi.Domain.Entities.ShiftBreak>)g.ToList());
             }
 
             var timeEntries = await _timeEntryRepository.ListByOrganizationMemberIdAsync(orgMemberId, cancellationToken);
@@ -113,18 +119,18 @@ public sealed record GetTeamMembersWorkSummaryQuery(
                 .ToList();
 
             var timeEntryIds = timeEntries.Select(x => x.Id).ToList();
-            var timeEntryBreakMap = new Dictionary<Guid, IReadOnlyCollection<Workforce.Domain.Entities.TimeEntryBreak>>();
+            var timeEntryBreakMap = new Dictionary<Guid, IReadOnlyCollection<Pipexi.Domain.Entities.TimeEntryBreak>>();
             if (timeEntryIds.Count > 0)
             {
                 var timeEntryBreaks = await _timeEntryBreakRepository.ListByTimeEntryIdsAsync(timeEntryIds, cancellationToken);
                 timeEntryBreakMap = timeEntryBreaks
                     .GroupBy(x => x.TimeEntryId)
-                    .ToDictionary(g => g.Key, g => (IReadOnlyCollection<Workforce.Domain.Entities.TimeEntryBreak>)g.ToList());
+                    .ToDictionary(g => g.Key, g => (IReadOnlyCollection<Pipexi.Domain.Entities.TimeEntryBreak>)g.ToList());
             }
 
             var timeEntriesByShift = timeEntries
                 .GroupBy(x => x.ShiftId)
-                .ToDictionary(g => g.Key, g => (IReadOnlyCollection<Workforce.Domain.Entities.TimeEntry>)g.ToList());
+                .ToDictionary(g => g.Key, g => (IReadOnlyCollection<Pipexi.Domain.Entities.TimeEntry>)g.ToList());
 
             var dailyRows = new List<TeamMemberWorkDayDto>(days.Count);
             foreach (var day in days)
@@ -137,13 +143,13 @@ public sealed record GetTeamMembersWorkSummaryQuery(
                     .Select(shift =>
                     {
                         var plannedShiftMinutes = GetMinutes(shift.StartAt, shift.EndAt);
-                        var shiftBreaks = shiftBreakMap.GetValueOrDefault(shift.Id) ?? Array.Empty<Workforce.Domain.Entities.ShiftBreak>();
+                        var shiftBreaks = shiftBreakMap.GetValueOrDefault(shift.Id) ?? Array.Empty<Pipexi.Domain.Entities.ShiftBreak>();
                         var plannedBreakMinutes = shiftBreaks.Sum(x => GetMinutes(x.StartAt, x.EndAt));
 
-                        var linkedTimeEntries = timeEntriesByShift.GetValueOrDefault(shift.Id) ?? Array.Empty<Workforce.Domain.Entities.TimeEntry>();
+                        var linkedTimeEntries = timeEntriesByShift.GetValueOrDefault(shift.Id) ?? Array.Empty<Pipexi.Domain.Entities.TimeEntry>();
                         var linkedTimeEntryDtos = linkedTimeEntries
                             .Select(te => te.ToDto(
-                                (timeEntryBreakMap.GetValueOrDefault(te.Id) ?? Array.Empty<Workforce.Domain.Entities.TimeEntryBreak>())
+                                (timeEntryBreakMap.GetValueOrDefault(te.Id) ?? Array.Empty<Pipexi.Domain.Entities.TimeEntryBreak>())
                                 .OrderBy(x => x.StartAt)
                                 .Select(x => x.ToDto())
                                 .ToList()))
@@ -153,7 +159,7 @@ public sealed record GetTeamMembersWorkSummaryQuery(
                             GetMinutes(te.ClockInAt, te.ClockOutAt ?? te.ClockInAt));
 
                         var timeEntryBreakMinutes = linkedTimeEntries.Sum(te =>
-                            (timeEntryBreakMap.GetValueOrDefault(te.Id) ?? Array.Empty<Workforce.Domain.Entities.TimeEntryBreak>())
+                            (timeEntryBreakMap.GetValueOrDefault(te.Id) ?? Array.Empty<Pipexi.Domain.Entities.TimeEntryBreak>())
                             .Sum(tb => GetMinutes(tb.StartAt, tb.EndAt)));
 
                         var workedMinutes = Math.Max(0, timeEntryMinutes - timeEntryBreakMinutes);
@@ -195,6 +201,18 @@ public sealed record GetTeamMembersWorkSummaryQuery(
                 .SelectMany(x => x.TimeEntries)
                 .Count();
 
+            var org = await _organizationRepository.GetByIdAsync(
+                organizationMemberMap.TryGetValue(teamMember.OrganizationMemberId, out var omember)
+                    ? omember.OrganizationId
+                    : request.OrganizationId ?? Guid.Empty,
+                cancellationToken);
+            var currency = org?.Currency ?? "USD";
+
+            var activePosition = await _memberPositionHistoryRepository.GetActiveByOrganizationMemberIdAsync(orgMemberId, cancellationToken);
+            decimal? totalEarnings = activePosition != null
+                ? Math.Round((totalWorkedDurationMinutes / 60m) * activePosition.HourlyRate, 2, MidpointRounding.AwayFromZero)
+                : null;
+
             var totals = new TeamMemberWorkTotalsDto(
                 dailyRows.Sum(x => x.Shifts.Count),
                 ToHours(totalShiftDurationMinutes),
@@ -205,7 +223,9 @@ public sealed record GetTeamMembersWorkSummaryQuery(
                 ToHours(totalWorkedDurationMinutes),
                 ToHourText(totalShiftDurationMinutes),
                 ToHourText(totalTimeEntryBreakDurationMinutes),
-                ToHourText(totalWorkedDurationMinutes));
+                ToHourText(totalWorkedDurationMinutes),
+                totalEarnings,
+                currency);
 
             members.Add(new TeamMemberWorkSummaryDto(
                 teamMember.Id,
@@ -247,7 +267,7 @@ public sealed record GetTeamMembersWorkSummaryQuery(
             var hours = safe / 60;
             var minutes = safe % 60;
 
-            return $"{hours}.{minutes:00} saat";
+            return $"{hours}.{minutes:00}/hours";
         }
     }
 }

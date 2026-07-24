@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Workforce.Persistence.Migrations
+namespace Pipexi.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class SeedPermissions : Migration

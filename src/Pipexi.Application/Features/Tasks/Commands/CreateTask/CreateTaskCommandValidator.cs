@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Tasks.Commands.CreateTask;
+namespace Pipexi.Application.Features.Tasks.Commands.CreateTask;
 
 public sealed class CreateTaskCommandValidator : AbstractValidator<CreateTaskCommand>
 {

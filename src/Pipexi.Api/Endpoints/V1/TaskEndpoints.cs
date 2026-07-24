@@ -1,19 +1,19 @@
 using MediatR;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Features.Tasks.Commands.CreateTask;
-using Workforce.Application.Features.Tasks.Commands.CreateTaskComment;
-using Workforce.Application.Features.Tasks.Commands.DeleteTask;
-using Workforce.Application.Features.Tasks.Commands.DeleteTaskComment;
-using Workforce.Application.Features.Tasks.Commands.UpdateTask;
-using Workforce.Application.Features.Tasks.Commands.UpdateTaskComment;
-using Workforce.Application.Features.Tasks.Queries.GetTaskById;
-using Workforce.Application.Features.Tasks.Queries.GetTaskCommentById;
-using Workforce.Application.Features.Tasks.Queries.GetTaskComments;
-using Workforce.Application.Features.Tasks.Queries.GetTasks;
-using Workforce.Contracts.V1.Tasks;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Features.Tasks.Commands.CreateTask;
+using Pipexi.Application.Features.Tasks.Commands.CreateTaskComment;
+using Pipexi.Application.Features.Tasks.Commands.DeleteTask;
+using Pipexi.Application.Features.Tasks.Commands.DeleteTaskComment;
+using Pipexi.Application.Features.Tasks.Commands.UpdateTask;
+using Pipexi.Application.Features.Tasks.Commands.UpdateTaskComment;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskById;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskCommentById;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskComments;
+using Pipexi.Application.Features.Tasks.Queries.GetTasks;
+using Pipexi.Contracts.V1.Tasks;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class TaskEndpoints
 {
@@ -70,14 +70,14 @@ public static class TaskEndpoints
 
         if (!result.IsSuccess)
         {
-            var failed = Result<IReadOnlyCollection<Workforce.Application.Features.Tasks.Dtos.TaskDto>>.Failure(
+            var failed = Result<IReadOnlyCollection<Pipexi.Application.Features.Tasks.Dtos.TaskDto>>.Failure(
                 result.Error!,
                 result.StatusCode);
 
             return Results.Json(failed, statusCode: failed.StatusCode);
         }
 
-        var successful = Result<IReadOnlyCollection<Workforce.Application.Features.Tasks.Dtos.TaskDto>>.Success(
+        var successful = Result<IReadOnlyCollection<Pipexi.Application.Features.Tasks.Dtos.TaskDto>>.Success(
             result.Data is null ? [] : [result.Data],
             result.StatusCode);
 

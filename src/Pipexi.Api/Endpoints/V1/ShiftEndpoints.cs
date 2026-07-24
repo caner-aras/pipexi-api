@@ -1,27 +1,27 @@
 using MediatR;
-using Workforce.Application.Features.Shifts.Commands.CreateShift;
-using Workforce.Application.Features.Shifts.Commands.CreateShiftBreak;
-using Workforce.Application.Features.Shifts.Commands.DeleteShift;
-using Workforce.Application.Features.Shifts.Commands.DeleteShiftBreak;
-using Workforce.Application.Features.Shifts.Commands.UpdateShift;
-using Workforce.Application.Features.Shifts.Commands.UpdateShiftBreak;
-using Workforce.Application.Features.Shifts.Queries.GetShiftBreakById;
-using Workforce.Application.Features.Shifts.Queries.GetShiftBreaks;
-using Workforce.Application.Features.Shifts.Queries.GetShiftById;
-using Workforce.Application.Features.Shifts.Queries.GetShifts;
-using Workforce.Application.Features.TimeEntries.Commands.CreateTimeEntry;
-using Workforce.Application.Features.TimeEntries.Commands.CreateTimeEntryBreak;
-using Workforce.Application.Features.TimeEntries.Commands.DeleteTimeEntry;
-using Workforce.Application.Features.TimeEntries.Commands.DeleteTimeEntryBreak;
-using Workforce.Application.Features.TimeEntries.Commands.UpdateTimeEntry;
-using Workforce.Application.Features.TimeEntries.Commands.UpdateTimeEntryBreak;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntries;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryBreakById;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryBreaks;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryById;
-using Workforce.Contracts.V1.Shifts;
+using Pipexi.Application.Features.Shifts.Commands.CreateShift;
+using Pipexi.Application.Features.Shifts.Commands.CreateShiftBreak;
+using Pipexi.Application.Features.Shifts.Commands.DeleteShift;
+using Pipexi.Application.Features.Shifts.Commands.DeleteShiftBreak;
+using Pipexi.Application.Features.Shifts.Commands.UpdateShift;
+using Pipexi.Application.Features.Shifts.Commands.UpdateShiftBreak;
+using Pipexi.Application.Features.Shifts.Queries.GetShiftBreakById;
+using Pipexi.Application.Features.Shifts.Queries.GetShiftBreaks;
+using Pipexi.Application.Features.Shifts.Queries.GetShiftById;
+using Pipexi.Application.Features.Shifts.Queries.GetShifts;
+using Pipexi.Application.Features.TimeEntries.Commands.CreateTimeEntry;
+using Pipexi.Application.Features.TimeEntries.Commands.CreateTimeEntryBreak;
+using Pipexi.Application.Features.TimeEntries.Commands.DeleteTimeEntry;
+using Pipexi.Application.Features.TimeEntries.Commands.DeleteTimeEntryBreak;
+using Pipexi.Application.Features.TimeEntries.Commands.UpdateTimeEntry;
+using Pipexi.Application.Features.TimeEntries.Commands.UpdateTimeEntryBreak;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntries;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntryBreakById;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntryBreaks;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntryById;
+using Pipexi.Contracts.V1.Shifts;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class ShiftEndpoints
 {

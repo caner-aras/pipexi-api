@@ -21,11 +21,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.Shared", "src\Pipexi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{73DA88D3-99B1-45A6-B446-1D4B48F75669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.UnitTests", "tests\Workforce.UnitTests\Workforce.UnitTests.csproj", "{3A3B4086-6987-409B-B147-558932A40295}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.UnitTests", "tests\Pipexi.UnitTests\Pipexi.UnitTests.csproj", "{3A3B4086-6987-409B-B147-558932A40295}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.IntegrationTests", "tests\Workforce.IntegrationTests\Workforce.IntegrationTests.csproj", "{9D1229BC-11E5-4650-8C31-CE41B06A50A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.IntegrationTests", "tests\Pipexi.IntegrationTests\Pipexi.IntegrationTests.csproj", "{9D1229BC-11E5-4650-8C31-CE41B06A50A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.ArchitectureTests", "tests\Workforce.ArchitectureTests\Workforce.ArchitectureTests.csproj", "{FBE382CD-ED31-43D2-A0CE-62126875EF17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipexi.ArchitectureTests", "tests\Pipexi.ArchitectureTests\Pipexi.ArchitectureTests.csproj", "{FBE382CD-ED31-43D2-A0CE-62126875EF17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

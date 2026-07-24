@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Organizations.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Organizations.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Organizations.Queries.GetOrganizationById;
+namespace Pipexi.Application.Features.Organizations.Queries.GetOrganizationById;
 
 public sealed record GetOrganizationByIdQuery(Guid Id) : IQuery<Result<OrganizationDto>>
 {

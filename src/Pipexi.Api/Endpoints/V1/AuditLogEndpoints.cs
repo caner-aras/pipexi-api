@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Features.AuditLogs.Commands.CreateAuditLog;
-using Workforce.Application.Features.AuditLogs.Queries.GetAuditLogById;
-using Workforce.Application.Features.AuditLogs.Queries.GetAuditLogs;
-using Workforce.Contracts.V1.AuditLogs;
+using Pipexi.Application.Features.AuditLogs.Commands.CreateAuditLog;
+using Pipexi.Application.Features.AuditLogs.Queries.GetAuditLogById;
+using Pipexi.Application.Features.AuditLogs.Queries.GetAuditLogs;
+using Pipexi.Contracts.V1.AuditLogs;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class AuditLogEndpoints
 {

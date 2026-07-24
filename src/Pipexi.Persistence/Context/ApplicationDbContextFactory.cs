@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Workforce.Persistence.Context;
+namespace Pipexi.Persistence.Context;
 
 public sealed class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
@@ -32,8 +32,8 @@ public sealed class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Ap
         var candidateDirectories = new[]
         {
             Directory.GetCurrentDirectory(),
-            Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "src/Workforce.Api")),
-            Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../Workforce.Api"))
+            Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "src/Pipexi.Api")),
+            Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../Pipexi.Api"))
         };
 
         foreach (var directory in candidateDirectories)

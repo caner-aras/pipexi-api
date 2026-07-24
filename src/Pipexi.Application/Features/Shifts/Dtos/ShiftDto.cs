@@ -1,10 +1,10 @@
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Application.Features.Locations.Dtos;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Application.Features.TimeEntries.Dtos;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Application.Features.Locations.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Application.Features.TimeEntries.Dtos;
 
-namespace Workforce.Application.Features.Shifts.Dtos;
+namespace Pipexi.Application.Features.Shifts.Dtos;
 
 public sealed record ShiftDto(
     Guid Id,

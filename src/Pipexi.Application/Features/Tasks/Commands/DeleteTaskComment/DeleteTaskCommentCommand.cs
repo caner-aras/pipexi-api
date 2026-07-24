@@ -1,11 +1,11 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Tasks.Commands.DeleteTaskComment;
+namespace Pipexi.Application.Features.Tasks.Commands.DeleteTaskComment;
 
 public sealed record DeleteTaskCommentCommand(Guid Id) : ICommand<Result<object?>>
 {

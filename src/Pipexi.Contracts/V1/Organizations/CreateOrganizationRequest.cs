@@ -1,3 +1,3 @@
-namespace Workforce.Contracts.V1.Organizations;
+namespace Pipexi.Contracts.V1.Organizations;
 
-public sealed record CreateOrganizationRequest(string Name, string Slug, string Timezone);
+public sealed record CreateOrganizationRequest(string Name, string Slug, string Timezone, string? Currency = null);

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.TimeEntries.Commands.UpdateTimeEntry;
+namespace Pipexi.Application.Features.TimeEntries.Commands.UpdateTimeEntry;
 
 public sealed class UpdateTimeEntryCommandValidator : AbstractValidator<UpdateTimeEntryCommand>
 {

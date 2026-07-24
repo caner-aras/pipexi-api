@@ -2,7 +2,7 @@ using System.Diagnostics;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Workforce.Application.Common.Behaviors;
+namespace Pipexi.Application.Common.Behaviors;
 
 public sealed class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

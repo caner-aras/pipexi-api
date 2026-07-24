@@ -1,4 +1,4 @@
-namespace Workforce.Application.Common.Exceptions;
+namespace Pipexi.Application.Common.Exceptions;
 
 public sealed class ForbiddenException : Exception
 {

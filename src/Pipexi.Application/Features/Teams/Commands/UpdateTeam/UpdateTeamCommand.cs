@@ -1,13 +1,13 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Commands.UpdateTeam;
+namespace Pipexi.Application.Features.Teams.Commands.UpdateTeam;
 
 public sealed record UpdateTeamCommand(
     Guid Id,
@@ -69,7 +69,7 @@ public sealed record UpdateTeamCommand(
             team.UpdateDetails(request.Name, request.ManagerMemberId, request.Status);
             await _teamRepository.UpdateAsync(team, cancellationToken);
 
-            Workforce.Application.Features.OrganizationMembers.Dtos.OrganizationMemberDto? managerMemberDto = null;
+            Pipexi.Application.Features.OrganizationMembers.Dtos.OrganizationMemberDto? managerMemberDto = null;
             if (team.ManagerMemberId.HasValue)
             {
                 var managerMember = await _organizationMemberRepository.GetByIdAsync(team.ManagerMemberId.Value, cancellationToken);

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Teams.Commands.UpdateTeamMember;
+namespace Pipexi.Application.Features.Teams.Commands.UpdateTeamMember;
 
 public sealed class UpdateTeamMemberCommandValidator : AbstractValidator<UpdateTeamMemberCommand>
 {

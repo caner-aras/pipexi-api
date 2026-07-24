@@ -1,7 +1,7 @@
 using FluentValidation;
 using MediatR;
 
-namespace Workforce.Application.Common.Behaviors;
+namespace Pipexi.Application.Common.Behaviors;
 
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

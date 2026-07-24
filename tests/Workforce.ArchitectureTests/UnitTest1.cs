@@ -8,13 +8,13 @@ public sealed class LayerDependencyTests
     public void Domain_Should_Not_Depend_On_Other_Layers()
     {
         var result = Types
-            .InAssembly(typeof(Workforce.Domain.Primitives.DomainMarker).Assembly)
+            .InAssembly(typeof(Pipexi.Domain.Primitives.DomainMarker).Assembly)
             .ShouldNot()
             .HaveDependencyOnAny(
-                "Workforce.Application",
-                "Workforce.Persistence",
-                "Workforce.Infrastructure",
-                "Workforce.Api")
+                "Pipexi.Application",
+                "Pipexi.Persistence",
+                "Pipexi.Infrastructure",
+                "Pipexi.Api")
             .GetResult();
 
         Assert.True(result.IsSuccessful);
@@ -24,12 +24,12 @@ public sealed class LayerDependencyTests
     public void Application_Should_Not_Depend_On_Infrastructure_Or_Persistence_Or_Api()
     {
         var result = Types
-            .InAssembly(typeof(Workforce.Application.DependencyInjection.ServiceRegistration).Assembly)
+            .InAssembly(typeof(Pipexi.Application.DependencyInjection.ServiceRegistration).Assembly)
             .ShouldNot()
             .HaveDependencyOnAny(
-                "Workforce.Infrastructure",
-                "Workforce.Persistence",
-                "Workforce.Api")
+                "Pipexi.Infrastructure",
+                "Pipexi.Persistence",
+                "Pipexi.Api")
             .GetResult();
 
         Assert.True(result.IsSuccessful);
@@ -39,15 +39,15 @@ public sealed class LayerDependencyTests
     public void Contracts_Should_Not_Depend_On_Other_Layers()
     {
         var result = Types
-            .InAssembly(typeof(Workforce.Contracts.V1.Auth.LoginRequest).Assembly)
+            .InAssembly(typeof(Pipexi.Contracts.V1.Auth.LoginRequest).Assembly)
             .ShouldNot()
             .HaveDependencyOnAny(
-                "Workforce.Api",
-                "Workforce.Application",
-                "Workforce.Domain",
-                "Workforce.Persistence",
-                "Workforce.Infrastructure",
-                "Workforce.Shared")
+                "Pipexi.Api",
+                "Pipexi.Application",
+                "Pipexi.Domain",
+                "Pipexi.Persistence",
+                "Pipexi.Infrastructure",
+                "Pipexi.Shared")
             .GetResult();
 
         Assert.True(result.IsSuccessful);

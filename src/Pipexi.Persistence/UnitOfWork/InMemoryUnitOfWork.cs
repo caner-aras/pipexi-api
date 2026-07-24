@@ -1,6 +1,6 @@
-using Workforce.Application.Abstractions.Persistence;
+using Pipexi.Application.Abstractions.Persistence;
 
-namespace Workforce.Persistence.UnitOfWork;
+namespace Pipexi.Persistence.UnitOfWork;
 
 public sealed class InMemoryUnitOfWork : IUnitOfWork
 {

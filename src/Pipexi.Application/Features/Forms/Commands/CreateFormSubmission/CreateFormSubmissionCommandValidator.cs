@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Forms.Commands.CreateFormSubmission;
+namespace Pipexi.Application.Features.Forms.Commands.CreateFormSubmission;
 
 public sealed class CreateFormSubmissionCommandValidator : AbstractValidator<CreateFormSubmissionCommand>
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Roles.Commands.UpdateRole;
+namespace Pipexi.Application.Features.Roles.Commands.UpdateRole;
 
 public sealed class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
 {

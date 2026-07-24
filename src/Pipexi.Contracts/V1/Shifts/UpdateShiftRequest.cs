@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.Shifts;
+namespace Pipexi.Contracts.V1.Shifts;
 
 public sealed record UpdateShiftRequest(
     Guid? TeamId,

@@ -1,7 +1,7 @@
 using FluentValidation;
-using Workforce.Domain.Time;
+using Pipexi.Domain.Time;
 
-namespace Workforce.Application.Features.Organizations.Commands.CreateOrganization;
+namespace Pipexi.Application.Features.Organizations.Commands.CreateOrganization;
 
 public sealed class CreateOrganizationCommandValidator : AbstractValidator<CreateOrganizationCommand>
 {

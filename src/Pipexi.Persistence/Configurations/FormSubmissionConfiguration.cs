@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Workforce.Domain.Entities;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Persistence.Configurations;
+namespace Pipexi.Persistence.Configurations;
 
 public sealed class FormSubmissionConfiguration : IEntityTypeConfiguration<FormSubmission>
 {

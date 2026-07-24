@@ -1,7 +1,7 @@
 using MediatR;
-using Workforce.Application.Features.Reports.Queries.GetReportSummary;
+using Pipexi.Application.Features.Reports.Queries.GetReportSummary;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class ReportEndpoints
 {

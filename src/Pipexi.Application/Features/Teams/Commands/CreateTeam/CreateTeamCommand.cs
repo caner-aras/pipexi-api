@@ -1,14 +1,14 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Domain.Entities;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Domain.Entities;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Commands.CreateTeam;
+namespace Pipexi.Application.Features.Teams.Commands.CreateTeam;
 
 public sealed record CreateTeamCommand(
     Guid OrganizationId,
@@ -70,7 +70,7 @@ public sealed record CreateTeamCommand(
             var team = Team.Create(request.OrganizationId, request.Name, request.ManagerMemberId);
             await _teamRepository.AddAsync(team, cancellationToken);
 
-            Workforce.Application.Features.OrganizationMembers.Dtos.OrganizationMemberDto? managerMemberDto = null;
+            Pipexi.Application.Features.OrganizationMembers.Dtos.OrganizationMemberDto? managerMemberDto = null;
             if (team.ManagerMemberId.HasValue)
             {
                 var managerMember = await _organizationMemberRepository.GetByIdAsync(team.ManagerMemberId.Value, cancellationToken);

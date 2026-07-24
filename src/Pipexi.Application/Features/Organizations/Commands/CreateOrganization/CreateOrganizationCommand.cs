@@ -1,20 +1,21 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Organizations.Dtos;
-using Workforce.Application.Features.Organizations.Provisioning;
-using Workforce.Domain.Entities;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Organizations.Dtos;
+using Pipexi.Application.Features.Organizations.Provisioning;
+using Pipexi.Domain.Entities;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Organizations.Commands.CreateOrganization;
+namespace Pipexi.Application.Features.Organizations.Commands.CreateOrganization;
 
 public sealed record CreateOrganizationCommand(
     string Name,
     string Slug,
-    string Timezone) : ICommand<Result<OrganizationDto>>
+    string Timezone,
+    string? Currency = null) : ICommand<Result<OrganizationDto>>
 {
     public sealed class Handler : IRequestHandler<CreateOrganizationCommand, Result<OrganizationDto>>
     {
@@ -83,7 +84,7 @@ public sealed record CreateOrganizationCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
-            var organization = Organization.Create(request.Name, request.Slug, request.Timezone);
+            var organization = Organization.Create(request.Name, request.Slug, request.Timezone, request.Currency);
             await _organizationRepository.AddAsync(organization, cancellationToken);
 
             var roles = new List<Role>

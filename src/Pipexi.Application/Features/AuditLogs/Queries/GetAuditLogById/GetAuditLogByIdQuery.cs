@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.AuditLogs.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.AuditLogs.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.AuditLogs.Queries.GetAuditLogById;
+namespace Pipexi.Application.Features.AuditLogs.Queries.GetAuditLogById;
 
 public sealed record GetAuditLogByIdQuery(Guid Id) : IQuery<Result<AuditLogDto>>
 {

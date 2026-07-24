@@ -1,7 +1,7 @@
-using Workforce.Application.Features.AuditLogs.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.AuditLogs.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.AuditLogs;
+namespace Pipexi.Application.Features.AuditLogs;
 
 internal static class AuditLogMappings
 {

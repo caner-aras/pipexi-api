@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Persistence.Context;
-using Workforce.Persistence.Repositories;
-using Workforce.Persistence.UnitOfWork;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Persistence.Context;
+using Pipexi.Persistence.Repositories;
+using Pipexi.Persistence.UnitOfWork;
 
-namespace Workforce.Persistence.DependencyInjection;
+namespace Pipexi.Persistence.DependencyInjection;
 
 public static class ServiceRegistration
 {
@@ -51,6 +51,8 @@ public static class ServiceRegistration
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
+        services.AddScoped<IPositionRepository, PositionRepository>();
+        services.AddScoped<IMemberPositionHistoryRepository, MemberPositionHistoryRepository>();
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
         return services;

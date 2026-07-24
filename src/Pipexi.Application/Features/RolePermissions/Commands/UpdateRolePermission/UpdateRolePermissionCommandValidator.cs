@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.RolePermissions.Commands.UpdateRolePermission;
+namespace Pipexi.Application.Features.RolePermissions.Commands.UpdateRolePermission;
 
 public sealed class UpdateRolePermissionCommandValidator : AbstractValidator<UpdateRolePermissionCommand>
 {

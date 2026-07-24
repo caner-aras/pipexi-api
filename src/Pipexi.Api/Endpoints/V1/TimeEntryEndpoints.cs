@@ -1,17 +1,17 @@
 using MediatR;
-using Workforce.Application.Features.TimeEntries.Commands.CreateTimeEntry;
-using Workforce.Application.Features.TimeEntries.Commands.CreateTimeEntryBreak;
-using Workforce.Application.Features.TimeEntries.Commands.DeleteTimeEntry;
-using Workforce.Application.Features.TimeEntries.Commands.DeleteTimeEntryBreak;
-using Workforce.Application.Features.TimeEntries.Commands.UpdateTimeEntry;
-using Workforce.Application.Features.TimeEntries.Commands.UpdateTimeEntryBreak;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntries;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryBreakById;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryBreaks;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntryById;
-using Workforce.Contracts.V1.TimeEntries;
+using Pipexi.Application.Features.TimeEntries.Commands.CreateTimeEntry;
+using Pipexi.Application.Features.TimeEntries.Commands.CreateTimeEntryBreak;
+using Pipexi.Application.Features.TimeEntries.Commands.DeleteTimeEntry;
+using Pipexi.Application.Features.TimeEntries.Commands.DeleteTimeEntryBreak;
+using Pipexi.Application.Features.TimeEntries.Commands.UpdateTimeEntry;
+using Pipexi.Application.Features.TimeEntries.Commands.UpdateTimeEntryBreak;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntries;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntryBreakById;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntryBreaks;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntryById;
+using Pipexi.Contracts.V1.TimeEntries;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class TimeEntryEndpoints
 {

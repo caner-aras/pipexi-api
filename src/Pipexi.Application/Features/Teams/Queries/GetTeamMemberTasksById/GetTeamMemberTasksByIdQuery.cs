@@ -1,16 +1,16 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Locations;
-using Workforce.Application.Features.Shifts;
-using Workforce.Application.Features.Tasks;
-using Workforce.Application.Features.Tasks.Dtos;
-using Workforce.Application.Features.Teams;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Locations;
+using Pipexi.Application.Features.Shifts;
+using Pipexi.Application.Features.Tasks;
+using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Application.Features.Teams;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Queries.GetTeamMemberTasksById;
+namespace Pipexi.Application.Features.Teams.Queries.GetTeamMemberTasksById;
 
 public sealed record GetTeamMemberTasksByIdQuery(Guid TeamMemberId) : IQuery<Result<IReadOnlyCollection<TaskDto>>>
 {

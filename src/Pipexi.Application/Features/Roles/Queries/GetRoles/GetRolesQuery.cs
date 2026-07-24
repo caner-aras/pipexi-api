@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Roles.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Roles.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Roles.Queries.GetRoles;
+namespace Pipexi.Application.Features.Roles.Queries.GetRoles;
 
 public sealed record GetRolesQuery(Guid? OrganizationId) : IQuery<Result<IReadOnlyCollection<RoleDto>>>
 {

@@ -1,7 +1,7 @@
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.TimeEntries;
+namespace Pipexi.Application.Features.TimeEntries;
 
 internal static class TimeEntryMappings
 {

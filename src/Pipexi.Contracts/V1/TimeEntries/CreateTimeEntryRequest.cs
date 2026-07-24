@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.TimeEntries;
+namespace Pipexi.Contracts.V1.TimeEntries;
 
 public sealed record CreateTimeEntryRequest(
     Guid OrganizationId,

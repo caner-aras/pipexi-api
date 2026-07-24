@@ -1,7 +1,7 @@
-using Workforce.Application.Features.Announcements.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Announcements.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Announcements;
+namespace Pipexi.Application.Features.Announcements;
 
 internal static class AnnouncementMappings
 {

@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.OrganizationMembers;
+namespace Pipexi.Contracts.V1.OrganizationMembers;
 
 public sealed record CreateOrganizationMemberRequest(
     Guid OrganizationId,

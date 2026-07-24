@@ -1,4 +1,4 @@
-namespace Workforce.Application.Abstractions.Notifications;
+namespace Pipexi.Application.Abstractions.Notifications;
 
 public interface INotificationSender
 {

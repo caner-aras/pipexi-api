@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Notifications.Dtos;
+namespace Pipexi.Application.Features.Notifications.Dtos;
 
 public sealed record NotificationDto(
     Guid Id,

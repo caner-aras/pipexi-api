@@ -1,7 +1,7 @@
-using Workforce.Application.Features.RolePermissions.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.RolePermissions.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.RolePermissions;
+namespace Pipexi.Application.Features.RolePermissions;
 
 internal static class RolePermissionMappings
 {

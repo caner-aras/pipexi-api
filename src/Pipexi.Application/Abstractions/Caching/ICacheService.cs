@@ -1,4 +1,4 @@
-namespace Workforce.Application.Abstractions.Caching;
+namespace Pipexi.Application.Abstractions.Caching;
 
 public interface ICacheService
 {

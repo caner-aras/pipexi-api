@@ -1,71 +1,74 @@
 using MediatR;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Features.Forms.Commands.CreateFormAnswer;
-using Workforce.Application.Features.Forms.Commands.CreateFormField;
-using Workforce.Application.Features.Forms.Commands.CreateFormSubmission;
-using Workforce.Application.Features.Forms.Commands.CreateFormTemplate;
-using Workforce.Application.Features.Forms.Commands.CreateStoredFile;
-using Workforce.Application.Features.Forms.Commands.DeleteFormAnswer;
-using Workforce.Application.Features.Forms.Commands.DeleteFormField;
-using Workforce.Application.Features.Forms.Commands.DeleteFormSubmission;
-using Workforce.Application.Features.Forms.Commands.DeleteFormTemplate;
-using Workforce.Application.Features.Forms.Commands.DeleteStoredFile;
-using Workforce.Application.Features.Forms.Commands.UpdateFormAnswer;
-using Workforce.Application.Features.Forms.Commands.UpdateFormField;
-using Workforce.Application.Features.Forms.Commands.UpdateFormSubmission;
-using Workforce.Application.Features.Forms.Commands.UpdateFormTemplate;
-using Workforce.Application.Features.Forms.Commands.UpdateStoredFile;
-using Workforce.Application.Features.Forms.Queries.GetFormAnswerById;
-using Workforce.Application.Features.Forms.Queries.GetFormAnswers;
-using Workforce.Application.Features.Forms.Queries.GetFormFieldById;
-using Workforce.Application.Features.Forms.Queries.GetFormFields;
-using Workforce.Application.Features.Forms.Queries.GetFormSubmissionById;
-using Workforce.Application.Features.Forms.Queries.GetFormSubmissions;
-using Workforce.Application.Features.Forms.Queries.GetFormTemplateById;
-using Workforce.Application.Features.Forms.Queries.GetFormTemplates;
-using Workforce.Application.Features.Forms.Queries.GetShiftFormTemplates;
-using Workforce.Application.Features.Forms.Queries.GetStoredFileById;
-using Workforce.Application.Features.Forms.Queries.GetStoredFiles;
-using Workforce.Application.Features.Locations.Commands.CreateLocation;
-using Workforce.Application.Features.Locations.Commands.SetLocationWorkingHours;
-using Workforce.Application.Features.Locations.Queries.GetLocations;
-using Workforce.Application.Features.Locations.Queries.GetLocationWorkingHours;
-using Workforce.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
-using Workforce.Application.Features.OrganizationMembers.Queries.GetOrganizationMembers;
-using Workforce.Application.Features.Organizations.Commands.CreateOrganization;
-using Workforce.Application.Features.Organizations.Commands.DeleteOrganization;
-using Workforce.Application.Features.Organizations.Commands.UpdateOrganization;
-using Workforce.Application.Features.Organizations.Dtos;
-using Workforce.Application.Features.Organizations.Queries.GetOrganizationById;
-using Workforce.Application.Features.Organizations.Queries.GetOrganizations;
-using Workforce.Application.Features.Roles.Commands.CreateRole;
-using Workforce.Application.Features.Roles.Queries.GetRoles;
-using Workforce.Application.Features.Shifts.Commands.CreateShift;
-using Workforce.Application.Features.Shifts.Commands.CreateShiftBreak;
-using Workforce.Application.Features.Shifts.Commands.DeleteShift;
-using Workforce.Application.Features.Shifts.Commands.DeleteShiftBreak;
-using Workforce.Application.Features.Shifts.Commands.UpdateShift;
-using Workforce.Application.Features.Shifts.Commands.UpdateShiftBreak;
-using Workforce.Application.Features.Shifts.Queries.GetOrganizationShifts;
-using Workforce.Application.Features.Shifts.Queries.GetShiftBreakById;
-using Workforce.Application.Features.Shifts.Queries.GetShiftBreaks;
-using Workforce.Application.Features.Shifts.Queries.GetShiftById;
-using Workforce.Application.Features.Shifts.Queries.GetShifts;
-using Workforce.Application.Features.Tasks.Commands.CreateTask;
-using Workforce.Application.Features.Tasks.Commands.CreateTaskComment;
-using Workforce.Application.Features.Tasks.Commands.DeleteTask;
-using Workforce.Application.Features.Tasks.Commands.DeleteTaskComment;
-using Workforce.Application.Features.Tasks.Commands.UpdateTask;
-using Workforce.Application.Features.Tasks.Commands.UpdateTaskComment;
-using Workforce.Application.Features.Tasks.Queries.GetTaskById;
-using Workforce.Application.Features.Tasks.Queries.GetTaskCommentById;
-using Workforce.Application.Features.Tasks.Queries.GetTaskComments;
-using Workforce.Application.Features.Tasks.Queries.GetTasks;
-using Workforce.Contracts.V1.Organizations;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Features.Forms.Commands.CreateFormAnswer;
+using Pipexi.Application.Features.Forms.Commands.CreateFormField;
+using Pipexi.Application.Features.Forms.Commands.CreateFormSubmission;
+using Pipexi.Application.Features.Forms.Commands.CreateFormTemplate;
+using Pipexi.Application.Features.Forms.Commands.CreateStoredFile;
+using Pipexi.Application.Features.Forms.Commands.DeleteFormAnswer;
+using Pipexi.Application.Features.Forms.Commands.DeleteFormField;
+using Pipexi.Application.Features.Forms.Commands.DeleteFormSubmission;
+using Pipexi.Application.Features.Forms.Commands.DeleteFormTemplate;
+using Pipexi.Application.Features.Forms.Commands.DeleteStoredFile;
+using Pipexi.Application.Features.Forms.Commands.UpdateFormAnswer;
+using Pipexi.Application.Features.Forms.Commands.UpdateFormField;
+using Pipexi.Application.Features.Forms.Commands.UpdateFormSubmission;
+using Pipexi.Application.Features.Forms.Commands.UpdateFormTemplate;
+using Pipexi.Application.Features.Forms.Commands.UpdateStoredFile;
+using Pipexi.Application.Features.Forms.Queries.GetFormAnswerById;
+using Pipexi.Application.Features.Forms.Queries.GetFormAnswers;
+using Pipexi.Application.Features.Forms.Queries.GetFormFieldById;
+using Pipexi.Application.Features.Forms.Queries.GetFormFields;
+using Pipexi.Application.Features.Forms.Queries.GetFormSubmissionById;
+using Pipexi.Application.Features.Forms.Queries.GetFormSubmissions;
+using Pipexi.Application.Features.Forms.Queries.GetFormTemplateById;
+using Pipexi.Application.Features.Forms.Queries.GetFormTemplates;
+using Pipexi.Application.Features.Forms.Queries.GetShiftFormTemplates;
+using Pipexi.Application.Features.Forms.Queries.GetStoredFileById;
+using Pipexi.Application.Features.Forms.Queries.GetStoredFiles;
+using Pipexi.Application.Features.Locations.Commands.CreateLocation;
+using Pipexi.Application.Features.Locations.Commands.SetLocationWorkingHours;
+using Pipexi.Application.Features.Locations.Queries.GetLocations;
+using Pipexi.Application.Features.Locations.Queries.GetLocationWorkingHours;
+using Pipexi.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
+using Pipexi.Application.Features.OrganizationMembers.Queries.GetOrganizationMembers;
+using Pipexi.Application.Features.Positions.Commands.CreatePosition;
+using Pipexi.Application.Features.Positions.Queries.GetPositions;
+using Pipexi.Contracts.V1.Positions;
+using Pipexi.Application.Features.Organizations.Commands.CreateOrganization;
+using Pipexi.Application.Features.Organizations.Commands.DeleteOrganization;
+using Pipexi.Application.Features.Organizations.Commands.UpdateOrganization;
+using Pipexi.Application.Features.Organizations.Dtos;
+using Pipexi.Application.Features.Organizations.Queries.GetOrganizationById;
+using Pipexi.Application.Features.Organizations.Queries.GetOrganizations;
+using Pipexi.Application.Features.Roles.Commands.CreateRole;
+using Pipexi.Application.Features.Roles.Queries.GetRoles;
+using Pipexi.Application.Features.Shifts.Commands.CreateShift;
+using Pipexi.Application.Features.Shifts.Commands.CreateShiftBreak;
+using Pipexi.Application.Features.Shifts.Commands.DeleteShift;
+using Pipexi.Application.Features.Shifts.Commands.DeleteShiftBreak;
+using Pipexi.Application.Features.Shifts.Commands.UpdateShift;
+using Pipexi.Application.Features.Shifts.Commands.UpdateShiftBreak;
+using Pipexi.Application.Features.Shifts.Queries.GetOrganizationShifts;
+using Pipexi.Application.Features.Shifts.Queries.GetShiftBreakById;
+using Pipexi.Application.Features.Shifts.Queries.GetShiftBreaks;
+using Pipexi.Application.Features.Shifts.Queries.GetShiftById;
+using Pipexi.Application.Features.Shifts.Queries.GetShifts;
+using Pipexi.Application.Features.Tasks.Commands.CreateTask;
+using Pipexi.Application.Features.Tasks.Commands.CreateTaskComment;
+using Pipexi.Application.Features.Tasks.Commands.DeleteTask;
+using Pipexi.Application.Features.Tasks.Commands.DeleteTaskComment;
+using Pipexi.Application.Features.Tasks.Commands.UpdateTask;
+using Pipexi.Application.Features.Tasks.Commands.UpdateTaskComment;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskById;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskCommentById;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskComments;
+using Pipexi.Application.Features.Tasks.Queries.GetTasks;
+using Pipexi.Contracts.V1.Organizations;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class OrganizationEndpoints
 {
@@ -86,6 +89,9 @@ public static class OrganizationEndpoints
 
         group.MapGet("/{organizationId:guid}/roles", ListRolesAsync);
         group.MapPost("/{organizationId:guid}/roles", CreateRoleAsync);
+
+        group.MapGet("/{organizationId:guid}/positions", ListPositionsAsync);
+        group.MapPost("/{organizationId:guid}/positions", CreatePositionAsync);
 
         group.MapGet("/{organizationId:guid}/locations", ListLocationsAsync);
         group.MapPost("/{organizationId:guid}/locations", CreateLocationAsync);
@@ -172,7 +178,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var command = new CreateOrganizationCommand(request.Name, request.Slug, request.Timezone);
+        var command = new CreateOrganizationCommand(request.Name, request.Slug, request.Timezone, request.Currency);
         var result = await sender.Send(command, cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
@@ -188,6 +194,7 @@ public static class OrganizationEndpoints
             request.Name,
             request.Slug,
             request.Timezone,
+            request.Currency,
             request.Status);
 
         var result = await sender.Send(command, cancellationToken);
@@ -241,6 +248,32 @@ public static class OrganizationEndpoints
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(new CreateRoleCommand(organizationId, request.Name), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ListPositionsAsync(
+        Guid organizationId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetPositionsQuery(organizationId), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> CreatePositionAsync(
+        Guid organizationId,
+        CreatePositionRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new CreatePositionCommand(
+                organizationId,
+                request.Title,
+                request.DefaultHourlyRate,
+                request.Description),
+            cancellationToken);
+
         return Results.Json(result, statusCode: result.StatusCode);
     }
 

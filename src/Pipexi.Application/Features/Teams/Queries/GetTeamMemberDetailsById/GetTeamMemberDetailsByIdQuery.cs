@@ -1,19 +1,19 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Locations;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Application.Features.Shifts;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Application.Features.Teams.Dtos;
-using Workforce.Application.Features.TimeEntries;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Locations;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Shifts;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Application.Features.TimeEntries;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Teams.Queries.GetTeamMemberDetailsById;
+namespace Pipexi.Application.Features.Teams.Queries.GetTeamMemberDetailsById;
 
 public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? FromDate = null) : IQuery<Result<TeamMemberDetailsDto>>
 {
@@ -98,13 +98,13 @@ public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? From
                 .ToList();
             var shiftTeams = teamIds.Count > 0
                 ? await _teamRepository.GetByIdsAsync(teamIds, cancellationToken)
-                : Array.Empty<Workforce.Domain.Entities.Team>();
+                : Array.Empty<Pipexi.Domain.Entities.Team>();
             var shiftTeamMap = shiftTeams.ToDictionary(x => x.Id, x => x.ToDto());
 
             var locationIds = shifts.Select(x => x.LocationId).Distinct().ToList();
             var shiftLocations = locationIds.Count > 0
                 ? await _locationRepository.GetByIdsAsync(locationIds, cancellationToken)
-                : Array.Empty<Workforce.Domain.Entities.Location>();
+                : Array.Empty<Pipexi.Domain.Entities.Location>();
             var shiftLocationMap = shiftLocations.ToDictionary(x => x.Id, x => x.ToDto());
 
             var shiftIds = shifts.Select(x => x.Id).ToList();
@@ -132,7 +132,7 @@ public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? From
                 var shiftUserIds = shiftOrganizationMembers.Select(x => x.UserId).Distinct().ToList();
                 var shiftUsers = shiftUserIds.Count > 0
                     ? await _userRepository.ListByIdsAsync(shiftUserIds, cancellationToken)
-                    : Array.Empty<Workforce.Domain.Entities.User>();
+                    : Array.Empty<Pipexi.Domain.Entities.User>();
                 var shiftUserMap = shiftUsers.ToDictionary(x => x.Id, x => x.ToDto());
 
                 shiftOrganizationMemberMap = shiftOrganizationMembers.ToDictionary(

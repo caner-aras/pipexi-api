@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.Users;
+namespace Pipexi.Contracts.V1.Users;
 
 public sealed record UpdateUserRequest(
     string? FirstName,

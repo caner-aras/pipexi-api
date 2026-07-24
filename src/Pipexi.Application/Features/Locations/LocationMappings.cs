@@ -1,7 +1,7 @@
-using Workforce.Application.Features.Locations.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Locations.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Locations;
+namespace Pipexi.Application.Features.Locations;
 
 internal static class LocationMappings
 {

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Domain.Entities;
-using Workforce.Persistence.Context;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Domain.Entities;
+using Pipexi.Persistence.Context;
 
-namespace Workforce.Persistence.Repositories;
+namespace Pipexi.Persistence.Repositories;
 
 public sealed class TeamRepository : Repository<Team>, ITeamRepository
 {

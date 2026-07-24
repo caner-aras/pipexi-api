@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.LeaveRequests.Commands.CreateLeaveRequest;
+namespace Pipexi.Application.Features.LeaveRequests.Commands.CreateLeaveRequest;
 
 public sealed class CreateLeaveRequestCommandValidator : AbstractValidator<CreateLeaveRequestCommand>
 {

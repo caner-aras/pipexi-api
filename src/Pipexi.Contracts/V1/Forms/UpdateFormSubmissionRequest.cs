@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.Forms;
+namespace Pipexi.Contracts.V1.Forms;
 
 public sealed record UpdateFormSubmissionRequest(
     Guid? TaskId,

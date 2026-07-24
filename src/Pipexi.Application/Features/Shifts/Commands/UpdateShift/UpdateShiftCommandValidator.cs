@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Shifts.Commands.UpdateShift;
+namespace Pipexi.Application.Features.Shifts.Commands.UpdateShift;
 
 public sealed class UpdateShiftCommandValidator : AbstractValidator<UpdateShiftCommand>
 {

@@ -1,17 +1,17 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
-using Workforce.Application.Features.OrganizationMembers.Commands.DeleteOrganizationMember;
-using Workforce.Application.Features.OrganizationMembers.Commands.UpdateOrganizationMember;
-using Workforce.Application.Features.OrganizationMembers.Queries.GetOrganizationMemberById;
-using Workforce.Application.Features.OrganizationMembers.Queries.GetOrganizationMembers;
-using Workforce.Application.Features.Shifts.Queries.GetShifts;
-using Workforce.Application.Features.Tasks.Queries.GetTaskCommentsByOrganizationMemberId;
-using Workforce.Application.Features.Tasks.Queries.GetTasks;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntries;
-using Workforce.Contracts.V1.OrganizationMembers;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
+using Pipexi.Application.Features.OrganizationMembers.Commands.DeleteOrganizationMember;
+using Pipexi.Application.Features.OrganizationMembers.Commands.UpdateOrganizationMember;
+using Pipexi.Application.Features.OrganizationMembers.Queries.GetOrganizationMemberById;
+using Pipexi.Application.Features.OrganizationMembers.Queries.GetOrganizationMembers;
+using Pipexi.Application.Features.Shifts.Queries.GetShifts;
+using Pipexi.Application.Features.Tasks.Queries.GetTaskCommentsByOrganizationMemberId;
+using Pipexi.Application.Features.Tasks.Queries.GetTasks;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntries;
+using Pipexi.Contracts.V1.OrganizationMembers;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class OrganizationMemberEndpoints
 {

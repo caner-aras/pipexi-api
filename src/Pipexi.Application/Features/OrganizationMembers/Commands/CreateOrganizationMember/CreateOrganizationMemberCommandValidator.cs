@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
+namespace Pipexi.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
 
 public sealed class CreateOrganizationMemberCommandValidator : AbstractValidator<CreateOrganizationMemberCommand>
 {

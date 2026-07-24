@@ -1,4 +1,4 @@
-namespace Workforce.Application.Abstractions.Observability;
+namespace Pipexi.Application.Abstractions.Observability;
 
 public interface IAppTelemetry
 {

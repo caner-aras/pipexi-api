@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Forms.Queries.GetFormFields;
+namespace Pipexi.Application.Features.Forms.Queries.GetFormFields;
 
 public sealed record GetFormFieldsQuery(Guid FormTemplateId) : IQuery<Result<IReadOnlyCollection<FormFieldDto>>>
 {

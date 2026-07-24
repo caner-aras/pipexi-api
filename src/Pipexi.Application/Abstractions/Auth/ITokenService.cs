@@ -1,13 +1,13 @@
-namespace Workforce.Application.Abstractions.Auth;
+namespace Pipexi.Application.Abstractions.Auth;
 
 public interface ITokenService
 {
-    Task<Workforce.Shared.Results.Result<TokenResponse>> ExchangePasswordForTokenAsync(
+    Task<Pipexi.Shared.Results.Result<TokenResponse>> ExchangePasswordForTokenAsync(
         string email,
         string password,
         CancellationToken cancellationToken);
 
-    Task<Workforce.Shared.Results.Result<RegisterResponse>> RegisterWithEmailPasswordAsync(
+    Task<Pipexi.Shared.Results.Result<RegisterResponse>> RegisterWithEmailPasswordAsync(
         string email,
         string password,
         CancellationToken cancellationToken);

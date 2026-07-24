@@ -1,7 +1,7 @@
-using Workforce.Application.Features.Organizations.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Organizations.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Organizations;
+namespace Pipexi.Application.Features.Organizations;
 
 internal static class OrganizationMappings
 {
@@ -12,6 +12,7 @@ internal static class OrganizationMappings
             organization.Name,
             organization.Slug,
             organization.Timezone,
+            organization.Currency,
             organization.Status,
             organization.CreatedAt,
             organization.UpdatedAt);

@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.TimeEntries.Dtos;
+namespace Pipexi.Application.Features.TimeEntries.Dtos;
 
 public sealed record TimeEntryDto(
     Guid Id,

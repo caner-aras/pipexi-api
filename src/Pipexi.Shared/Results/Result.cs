@@ -1,7 +1,7 @@
 using System.Net;
-using Workforce.Shared.Errors;
+using Pipexi.Shared.Errors;
 
-namespace Workforce.Shared.Results;
+namespace Pipexi.Shared.Results;
 
 
 public sealed class Result<T>

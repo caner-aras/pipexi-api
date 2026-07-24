@@ -2,14 +2,14 @@ using System.Net.Mail;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Workforce.Application.Abstractions.Auth;
-using Workforce.Application.Abstractions.Identity;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Features.Users.Commands.CreateUser;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Auth;
+using Pipexi.Application.Abstractions.Identity;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Features.Users.Commands.CreateUser;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class AuthEndpoints
 {

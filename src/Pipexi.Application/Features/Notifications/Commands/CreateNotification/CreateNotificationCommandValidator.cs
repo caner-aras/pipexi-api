@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Notifications.Commands.CreateNotification;
+namespace Pipexi.Application.Features.Notifications.Commands.CreateNotification;
 
 public sealed class CreateNotificationCommandValidator : AbstractValidator<CreateNotificationCommand>
 {

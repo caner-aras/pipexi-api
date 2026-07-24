@@ -1,7 +1,7 @@
-using Workforce.Application.Features.Tasks.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Tasks;
+namespace Pipexi.Application.Features.Tasks;
 
 internal static class TaskMappings
 {

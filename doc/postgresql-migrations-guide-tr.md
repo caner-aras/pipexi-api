@@ -1,13 +1,13 @@
-# PostgreSQL Migration Rehberi (Workforce)
+# PostgreSQL Migration Rehberi (Pipexi)
 
-Bu dokuman, Workforce projesinde EF Core migration yonetimi icin adim adim kullanim rehberidir.
+Bu dokuman, Pipexi projesinde EF Core migration yonetimi icin adim adim kullanim rehberidir.
 
 ## 1. Mimari Ozet
 
 - Persistence katmani EF Core + Npgsql kullanir.
-- DbContext sinifi: src/Workforce.Persistence/Context/ApplicationDbContext.cs
-- Ilk migration: src/Workforce.Persistence/Migrations/20260709130130_CreateOrganizations.cs
-- Startup (Development) ortami acilisinda otomatik migration calisir: src/Workforce.Api/Program.cs
+- DbContext sinifi: src/Pipexi.Persistence/Context/ApplicationDbContext.cs
+- Ilk migration: src/Pipexi.Persistence/Migrations/20260709130130_CreateOrganizations.cs
+- Startup (Development) ortami acilisinda otomatik migration calisir: src/Pipexi.Api/Program.cs
 
 ## 2. On Kosullar
 
@@ -20,7 +20,7 @@ Ornek (Development):
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=...;Port=5432;Database=workforce;Username=...;Password=..."
+    "DefaultConnection": "Host=...;Port=5432;Database=Pipexi;Username=...;Password=..."
   }
 }
 ```
@@ -29,11 +29,11 @@ Ornek (Development):
 
 Asagidaki paketler projede tanimlidir:
 
-- Workforce.Persistence.csproj
+- Pipexi.Persistence.csproj
   - Microsoft.EntityFrameworkCore
   - Microsoft.EntityFrameworkCore.Design
   - Npgsql.EntityFrameworkCore.PostgreSQL
-- Workforce.Api.csproj
+- Pipexi.Api.csproj
   - Microsoft.EntityFrameworkCore.Design (EF tool startup gereksinimi)
 
 ## 4. Migration Komutlari
@@ -44,9 +44,9 @@ Komutlar repo root altinda calistirilmalidir.
 
 ```bash
 ASPNETCORE_ENVIRONMENT=Development dotnet ef migrations add <MigrationName> \
-  --project src/Workforce.Persistence/Workforce.Persistence.csproj \
-  --startup-project src/Workforce.Api/Workforce.Api.csproj \
-  --context Workforce.Persistence.Context.ApplicationDbContext \
+  --project src/Pipexi.Persistence/Pipexi.Persistence.csproj \
+  --startup-project src/Pipexi.Api/Pipexi.Api.csproj \
+  --context Pipexi.Persistence.Context.ApplicationDbContext \
   --output-dir Migrations
 
 PGPASSWORD='WfMcDe4Pgz38nN#' psql "host=db.niqqiurqcutcanlehsop.supabase.co port=5432 dbname=postgres user=postgres sslmode=require" -c "\dt public.*" -c "select * from \"__EFMigrationsHistory\";"
@@ -54,7 +54,7 @@ PGPASSWORD='WfMcDe4Pgz38nN#' psql "host=db.niqqiurqcutcanlehsop.supabase.co port
 PGPASSWORD='WfMcDe4Pgz38nN#' psql "host=db.niqqiurqcutcanlehsop.supabase.co port=5432 dbname=postgres user=postgres sslmode=require" -c "select \"MigrationId\" from \"__EFMigrationsHistory\" order by \"MigrationId\";" -c "\dt public.*"
 
 
-dotnet ef database update --project src/Workforce.Persistence/Workforce.Persistence.csproj --startup-project src/Workforce.Api/Workforce.Api.csproj --context Workforce.Persistence.Context.ApplicationDbContext --connection "Host=db.niqqiurqcutcanlehsop.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=WfMcDe4Pgz38nN#;SSL Mode=Require;Trust Server Certificate=true" 
+dotnet ef database update --project src/Pipexi.Persistence/Pipexi.Persistence.csproj --startup-project src/Pipexi.Api/Pipexi.Api.csproj --context Pipexi.Persistence.Context.ApplicationDbContext --connection "Host=db.niqqiurqcutcanlehsop.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=WfMcDe4Pgz38nN#;SSL Mode=Require;Trust Server Certificate=true" 
 
 ```
 
@@ -62,9 +62,9 @@ Ornek:
 
 ```bash
 ASPNETCORE_ENVIRONMENT=Development dotnet ef migrations add AddEmployeeTable \
-  --project src/Workforce.Persistence/Workforce.Persistence.csproj \
-  --startup-project src/Workforce.Api/Workforce.Api.csproj \
-  --context Workforce.Persistence.Context.ApplicationDbContext \
+  --project src/Pipexi.Persistence/Pipexi.Persistence.csproj \
+  --startup-project src/Pipexi.Api/Pipexi.Api.csproj \
+  --context Pipexi.Persistence.Context.ApplicationDbContext \
   --output-dir Migrations
 ```
 
@@ -72,9 +72,9 @@ ASPNETCORE_ENVIRONMENT=Development dotnet ef migrations add AddEmployeeTable \
 
 ```bash
 ASPNETCORE_ENVIRONMENT=Development dotnet ef database update \
-  --project src/Workforce.Persistence/Workforce.Persistence.csproj \
-  --startup-project src/Workforce.Api/Workforce.Api.csproj \
-  --context Workforce.Persistence.Context.ApplicationDbContext
+  --project src/Pipexi.Persistence/Pipexi.Persistence.csproj \
+  --startup-project src/Pipexi.Api/Pipexi.Api.csproj \
+  --context Pipexi.Persistence.Context.ApplicationDbContext
 ```
 
 ### Son migrationi geri alma (dosya)
@@ -83,18 +83,18 @@ Sadece migration dosyasini geri alir, DB degisikliklerini geri almaz:
 
 ```bash
 dotnet ef migrations remove \
-  --project src/Workforce.Persistence/Workforce.Persistence.csproj \
-  --startup-project src/Workforce.Api/Workforce.Api.csproj \
-  --context Workforce.Persistence.Context.ApplicationDbContext
+  --project src/Pipexi.Persistence/Pipexi.Persistence.csproj \
+  --startup-project src/Pipexi.Api/Pipexi.Api.csproj \
+  --context Pipexi.Persistence.Context.ApplicationDbContext
 ```
 
 ### SQL script uretme
 
 ```bash
 dotnet ef migrations script \
-  --project src/Workforce.Persistence/Workforce.Persistence.csproj \
-  --startup-project src/Workforce.Api/Workforce.Api.csproj \
-  --context Workforce.Persistence.Context.ApplicationDbContext \
+  --project src/Pipexi.Persistence/Pipexi.Persistence.csproj \
+  --startup-project src/Pipexi.Api/Pipexi.Api.csproj \
+  --context Pipexi.Persistence.Context.ApplicationDbContext \
   --output migration.sql
 ```
 
@@ -102,7 +102,7 @@ dotnet ef migrations script \
 
 Organization entity map'i su dosyadadir:
 
-- src/Workforce.Persistence/Configurations/OrganizationConfiguration.cs
+- src/Pipexi.Persistence/Configurations/OrganizationConfiguration.cs
 
 Olusan tablo ozeti:
 
@@ -140,7 +140,7 @@ Belirti:
 
 Cozum:
 
-- Startup proje (Workforce.Api) icine `Microsoft.EntityFrameworkCore.Design` paketini ekleyin.
+- Startup proje (Pipexi.Api) icine `Microsoft.EntityFrameworkCore.Design` paketini ekleyin.
 
 ### Hata: ConnectionStrings:DefaultConnection yok
 

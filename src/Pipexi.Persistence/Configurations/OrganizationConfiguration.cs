@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Workforce.Domain.Entities;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Persistence.Configurations;
+namespace Pipexi.Persistence.Configurations;
 
 public sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 {
@@ -32,6 +32,12 @@ public sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organiz
             .HasColumnName("timezone")
             .HasMaxLength(100)
             .HasDefaultValue("UTC")
+            .IsRequired();
+
+        builder.Property(x => x.Currency)
+            .HasColumnName("currency")
+            .HasMaxLength(10)
+            .HasDefaultValue("USD")
             .IsRequired();
 
         builder.Property(x => x.Status)

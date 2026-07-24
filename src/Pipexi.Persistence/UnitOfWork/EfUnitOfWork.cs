@@ -1,7 +1,7 @@
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Persistence.Context;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Persistence.Context;
 
-namespace Workforce.Persistence.UnitOfWork;
+namespace Pipexi.Persistence.UnitOfWork;
 
 public sealed class EfUnitOfWork : IUnitOfWork
 {

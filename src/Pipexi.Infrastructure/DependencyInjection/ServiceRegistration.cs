@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Workforce.Infrastructure.DependencyInjection;
+namespace Pipexi.Infrastructure.DependencyInjection;
 
 public static class ServiceRegistration
 {

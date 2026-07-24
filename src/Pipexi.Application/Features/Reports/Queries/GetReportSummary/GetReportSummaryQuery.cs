@@ -1,12 +1,12 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Reports.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Reports.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Reports.Queries.GetReportSummary;
+namespace Pipexi.Application.Features.Reports.Queries.GetReportSummary;
 
 public sealed record GetReportSummaryQuery(Guid OrganizationId, int TrendDays = 7, int FutureDays = 7)
     : IQuery<Result<ReportSummaryDto>>;
@@ -75,7 +75,7 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             .ToList();
 
         var users = memberUserIds.Count == 0
-            ? Array.Empty<Workforce.Domain.Entities.User>()
+            ? Array.Empty<Pipexi.Domain.Entities.User>()
             : await _userRepository.ListByIdsAsync(memberUserIds, cancellationToken);
         var teams = await _teamRepository
             .ListByOrganizationIdAsync(request.OrganizationId, cancellationToken);
@@ -148,7 +148,7 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
     }
 
     private async Task<int> CountMissingRequiredShiftFormsAsync(
-        IReadOnlyCollection<Workforce.Domain.Entities.Shift> shifts,
+        IReadOnlyCollection<Pipexi.Domain.Entities.Shift> shifts,
         CancellationToken cancellationToken)
     {
         var missingCount = 0;
@@ -186,10 +186,10 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
     }
 
     private static IReadOnlyCollection<ReportDailyActivityDto> BuildDailyActivity(
-        IReadOnlyCollection<Workforce.Domain.Entities.WorkTask> tasks,
-        IReadOnlyCollection<Workforce.Domain.Entities.TimeEntry> timeEntries,
-        IReadOnlyCollection<Workforce.Domain.Entities.FormSubmission> formSubmissions,
-        IReadOnlyCollection<Workforce.Domain.Entities.Shift> shifts,
+        IReadOnlyCollection<Pipexi.Domain.Entities.WorkTask> tasks,
+        IReadOnlyCollection<Pipexi.Domain.Entities.TimeEntry> timeEntries,
+        IReadOnlyCollection<Pipexi.Domain.Entities.FormSubmission> formSubmissions,
+        IReadOnlyCollection<Pipexi.Domain.Entities.Shift> shifts,
         IReadOnlyDictionary<Guid, string> memberNameByOrganizationMemberId,
         DateTimeOffset trendStart,
         int trendDays)

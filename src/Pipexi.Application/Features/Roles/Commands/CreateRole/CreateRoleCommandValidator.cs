@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Roles.Commands.CreateRole;
+namespace Pipexi.Application.Features.Roles.Commands.CreateRole;
 
 public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
 {

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.TimeEntries.Commands.CreateTimeEntryBreak;
+namespace Pipexi.Application.Features.TimeEntries.Commands.CreateTimeEntryBreak;
 
 public sealed class CreateTimeEntryBreakCommandValidator : AbstractValidator<CreateTimeEntryBreakCommand>
 {

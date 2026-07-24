@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Organizations.Provisioning;
+namespace Pipexi.Application.Features.Organizations.Provisioning;
 
 public enum OrganizationRoleType
 {

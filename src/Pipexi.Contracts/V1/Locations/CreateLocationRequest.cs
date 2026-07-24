@@ -1,4 +1,4 @@
-namespace Workforce.Contracts.V1.Locations;
+namespace Pipexi.Contracts.V1.Locations;
 
 public sealed record CreateLocationRequest(
     Guid OrganizationId,

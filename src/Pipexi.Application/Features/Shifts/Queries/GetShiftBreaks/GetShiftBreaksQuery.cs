@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Shifts.Queries.GetShiftBreaks;
+namespace Pipexi.Application.Features.Shifts.Queries.GetShiftBreaks;
 
 public sealed record GetShiftBreaksQuery(Guid ShiftId) : IQuery<Result<IReadOnlyCollection<ShiftBreakDto>>>
 {

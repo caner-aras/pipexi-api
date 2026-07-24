@@ -1,13 +1,13 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Permissions.Dtos;
-using Workforce.Domain.Entities;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Permissions.Dtos;
+using Pipexi.Domain.Entities;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Permissions.Commands.CreatePermission;
+namespace Pipexi.Application.Features.Permissions.Commands.CreatePermission;
 
 public sealed record CreatePermissionCommand(string Key)
     : ICommand<Result<PermissionDto>>

@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using Workforce.Application.Abstractions.Identity;
+using Pipexi.Application.Abstractions.Identity;
 
-namespace Workforce.Api.Identity;
+namespace Pipexi.Api.Identity;
 
 public sealed class HttpCurrentUserContext : ICurrentUserContext
 {

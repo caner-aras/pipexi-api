@@ -1,12 +1,12 @@
 using MediatR;
-using Workforce.Application.Features.LeaveRequests.Commands.CreateLeaveRequest;
-using Workforce.Application.Features.LeaveRequests.Commands.DeleteLeaveRequest;
-using Workforce.Application.Features.LeaveRequests.Commands.UpdateLeaveRequest;
-using Workforce.Application.Features.LeaveRequests.Queries.GetLeaveRequestById;
-using Workforce.Application.Features.LeaveRequests.Queries.GetLeaveRequests;
-using Workforce.Contracts.V1.LeaveRequests;
+using Pipexi.Application.Features.LeaveRequests.Commands.CreateLeaveRequest;
+using Pipexi.Application.Features.LeaveRequests.Commands.DeleteLeaveRequest;
+using Pipexi.Application.Features.LeaveRequests.Commands.UpdateLeaveRequest;
+using Pipexi.Application.Features.LeaveRequests.Queries.GetLeaveRequestById;
+using Pipexi.Application.Features.LeaveRequests.Queries.GetLeaveRequests;
+using Pipexi.Contracts.V1.LeaveRequests;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class LeaveRequestEndpoints
 {

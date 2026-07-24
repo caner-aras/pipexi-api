@@ -12,7 +12,7 @@ Bu doküman, mevcut backend iskeletinde kullanılan temel bileşenleri tek nokta
 Bu projede endpoint'ler controller/action yerine Minimal API yaklaşımıyla map ediliyor.
 
 Ana map noktası:
-- `src/Workforce.Api/Program.cs`
+- `src/Pipexi.Api/Program.cs`
 
 Endpoint gruplarının map edildiği çağrılar:
 - `app.MapHealthEndpoints();`
@@ -31,17 +31,17 @@ Neden önemli:
 
 | Bileşen / Symbol | Referans | Ne İş Yapar | Neden Önemli |
 |---|---|---|---|
-| `MapHealthEndpoints` | `src/Workforce.Api/Endpoints/V1/HealthEndpoints.cs` | `/health`, `/health/db`, `/health/redis`, `/health/storage` route'larını map eder | Operasyonel sağlık kontrolü (readiness/liveness benzeri) |
-| `MapEmployeeEndpoints` | `src/Workforce.Api/Endpoints/V1/EmployeeEndpoints.cs` | Employee domain route grubunu (`/api/v1/employees`) map eder | Employee API yüzeyi tek yerde yönetilir |
-| `MapAuthEndpoints` | `src/Workforce.Api/Endpoints/V1/AuthEndpoints.cs` | Auth route grubunu map eder | Auth endpoint düzeni net olur |
-| `MapInternalAuthEndpoints` | `src/Workforce.Api/Endpoints/V1/InternalAuthEndpoints.cs` | Internal test token endpointini map eder | QA/test akışında token alma kolaylığı |
-| `RequestContextMiddleware` | `src/Workforce.Api/Middleware/RequestContextMiddleware.cs` | `X-Request-Id` üretir/aktarır, `TraceIdentifier` set eder | Log ve hata izleme korelasyonu sağlar |
-| `ExceptionHandlingMiddleware` | `src/Workforce.Api/Middleware/ExceptionHandlingMiddleware.cs` | Unhandled exception'ları yakalayıp standart response döner | Tutarlı hata çıktısı + merkezi loglama |
-| `AppError` | `src/Workforce.Shared/Errors/AppError.cs` | Uygulama içi standart hata modeli (`Code`, `Message`) | Katmanlar arası hata dilini standartlaştırır |
-| `Result` | `src/Workforce.Shared/Results/Result.cs` | İş katmanı başarı/hata temsil modeli | Domain/Application sonucu HTTP'den bağımsız taşır |
-| `DomainMarker` | `src/Workforce.Domain/Primitives/DomainMarker.cs` | Assembly referansı için marker class | Architecture testlerinde assembly yakalamayı kolaylaştırır |
-| API DI (`AddApi`) | `src/Workforce.Api/DependencyInjection/ServiceRegistration.cs` | JWT, Authorization, HealthChecks, Swagger kayıtlarını yapar | API composition root düzeni |
-| App DI (`AddApplication`) | `src/Workforce.Application/DependencyInjection/ServiceRegistration.cs` | MediatR, FluentValidation, pipeline behavior kayıtları | Use-case hattı ve cross-cutting yönetimi |
+| `MapHealthEndpoints` | `src/Pipexi.Api/Endpoints/V1/HealthEndpoints.cs` | `/health`, `/health/db`, `/health/redis`, `/health/storage` route'larını map eder | Operasyonel sağlık kontrolü (readiness/liveness benzeri) |
+| `MapEmployeeEndpoints` | `src/Pipexi.Api/Endpoints/V1/EmployeeEndpoints.cs` | Employee domain route grubunu (`/api/v1/employees`) map eder | Employee API yüzeyi tek yerde yönetilir |
+| `MapAuthEndpoints` | `src/Pipexi.Api/Endpoints/V1/AuthEndpoints.cs` | Auth route grubunu map eder | Auth endpoint düzeni net olur |
+| `MapInternalAuthEndpoints` | `src/Pipexi.Api/Endpoints/V1/InternalAuthEndpoints.cs` | Internal test token endpointini map eder | QA/test akışında token alma kolaylığı |
+| `RequestContextMiddleware` | `src/Pipexi.Api/Middleware/RequestContextMiddleware.cs` | `X-Request-Id` üretir/aktarır, `TraceIdentifier` set eder | Log ve hata izleme korelasyonu sağlar |
+| `ExceptionHandlingMiddleware` | `src/Pipexi.Api/Middleware/ExceptionHandlingMiddleware.cs` | Unhandled exception'ları yakalayıp standart response döner | Tutarlı hata çıktısı + merkezi loglama |
+| `AppError` | `src/Pipexi.Shared/Errors/AppError.cs` | Uygulama içi standart hata modeli (`Code`, `Message`) | Katmanlar arası hata dilini standartlaştırır |
+| `Result` | `src/Pipexi.Shared/Results/Result.cs` | İş katmanı başarı/hata temsil modeli | Domain/Application sonucu HTTP'den bağımsız taşır |
+| `DomainMarker` | `src/Pipexi.Domain/Primitives/DomainMarker.cs` | Assembly referansı için marker class | Architecture testlerinde assembly yakalamayı kolaylaştırır |
+| API DI (`AddApi`) | `src/Pipexi.Api/DependencyInjection/ServiceRegistration.cs` | JWT, Authorization, HealthChecks, Swagger kayıtlarını yapar | API composition root düzeni |
+| App DI (`AddApplication`) | `src/Pipexi.Application/DependencyInjection/ServiceRegistration.cs` | MediatR, FluentValidation, pipeline behavior kayıtları | Use-case hattı ve cross-cutting yönetimi |
 
 ---
 
@@ -76,7 +76,7 @@ Ne zaman:
 
 ---
 
-## 4) `Results.Created` vs `Workforce.Shared.Results.Result`
+## 4) `Results.Created` vs `Pipexi.Shared.Results.Result`
 
 Bunlar aynı seviyede şeyler değildir.
 
@@ -93,13 +93,13 @@ Neden önemli:
 
 ---
 
-## 5) `Workforce.Contracts` Katmanı Ne İş Yapar?
+## 5) `Pipexi.Contracts` Katmanı Ne İş Yapar?
 
 Katman amacı:
 - Dış dünya ile yapılan request/response sözleşmelerini tutar.
 
 Örnek içerik:
-- `src/Workforce.Contracts/V1/...`
+- `src/Pipexi.Contracts/V1/...`
 
 Neden önemli:
 - Domain modeli dışarı sızmaz.
@@ -126,7 +126,7 @@ Gerçek gizleme örneği:
 ## 7) Internal Supabase Token Endpointi
 
 Referans:
-- `src/Workforce.Api/Endpoints/V1/InternalAuthEndpoints.cs`
+- `src/Pipexi.Api/Endpoints/V1/InternalAuthEndpoints.cs`
 
 Amaç:
 - Test/QA için Supabase password grant üzerinden access token alma.

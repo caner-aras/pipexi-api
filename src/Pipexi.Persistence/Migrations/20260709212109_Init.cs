@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Workforce.Persistence.Migrations
+namespace Pipexi.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration

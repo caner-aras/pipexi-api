@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Users.Commands.UpdateUser;
+namespace Pipexi.Application.Features.Users.Commands.UpdateUser;
 
 public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {

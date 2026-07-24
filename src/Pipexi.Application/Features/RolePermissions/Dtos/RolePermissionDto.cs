@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.RolePermissions.Dtos;
+namespace Pipexi.Application.Features.RolePermissions.Dtos;
 
 public sealed record RolePermissionDto(
     Guid Id,

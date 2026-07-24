@@ -1,6 +1,6 @@
-using Workforce.Domain.Entities;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Abstractions.Persistence;
+namespace Pipexi.Application.Abstractions.Persistence;
 
 public interface IAuditLogRepository : IRepository<AuditLog>
 {

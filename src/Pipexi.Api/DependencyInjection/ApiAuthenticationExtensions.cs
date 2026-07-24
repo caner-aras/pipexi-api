@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Workforce.Api.DependencyInjection;
+namespace Pipexi.Api.DependencyInjection;
 
 public static class ApiAuthenticationExtensions
 {

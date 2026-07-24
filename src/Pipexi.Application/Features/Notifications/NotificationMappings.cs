@@ -1,7 +1,7 @@
-using Workforce.Application.Features.Notifications.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Notifications.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Notifications;
+namespace Pipexi.Application.Features.Notifications;
 
 internal static class NotificationMappings
 {

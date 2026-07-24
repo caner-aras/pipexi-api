@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Workforce.Application.Common.Models;
+namespace Pipexi.Application.Common.Models;
 
 public interface IQuery<out TResponse> : IRequest<TResponse>
 {

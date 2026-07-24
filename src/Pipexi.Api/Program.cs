@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Workforce.Api.DependencyInjection;
-using Workforce.Api.Endpoints.V1;
-using Workforce.Api.Middleware;
-using Workforce.Application.DependencyInjection;
-using Workforce.Infrastructure.DependencyInjection;
-using Workforce.Persistence.Context;
-using Workforce.Persistence.DependencyInjection;
+using Pipexi.Api.DependencyInjection;
+using Pipexi.Api.Endpoints.V1;
+using Pipexi.Api.Middleware;
+using Pipexi.Application.DependencyInjection;
+using Pipexi.Infrastructure.DependencyInjection;
+using Pipexi.Persistence.Context;
+using Pipexi.Persistence.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +56,8 @@ app.MapRoleEndpoints();
 app.MapPermissionEndpoints();
 app.MapRolePermissionEndpoints();
 app.MapReportEndpoints();
+app.MapPositionEndpoints();
+app.MapMemberPositionEndpoints();
 
 
 app.Run();

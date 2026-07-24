@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.TimeEntries.Queries.GetTimeEntriesByTeamId;
+namespace Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntriesByTeamId;
 
 public sealed record GetTimeEntriesByTeamIdQuery(Guid TeamId, Guid? OrganizationId = null)
     : IQuery<Result<IReadOnlyCollection<TimeEntryDto>>>

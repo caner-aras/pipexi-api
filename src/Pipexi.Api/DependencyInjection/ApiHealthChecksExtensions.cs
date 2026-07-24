@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Workforce.Api.HealthChecks;
+using Pipexi.Api.HealthChecks;
 
-namespace Workforce.Api.DependencyInjection;
+namespace Pipexi.Api.DependencyInjection;
 
 public static class ApiHealthChecksExtensions
 {

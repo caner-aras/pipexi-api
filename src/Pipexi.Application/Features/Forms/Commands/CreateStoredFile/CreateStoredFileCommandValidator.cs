@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Forms.Commands.CreateStoredFile;
+namespace Pipexi.Application.Features.Forms.Commands.CreateStoredFile;
 
 public sealed class CreateStoredFileCommandValidator : AbstractValidator<CreateStoredFileCommand>
 {

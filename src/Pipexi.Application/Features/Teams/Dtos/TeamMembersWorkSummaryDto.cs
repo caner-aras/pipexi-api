@@ -1,6 +1,6 @@
-using Workforce.Application.Features.TimeEntries.Dtos;
+using Pipexi.Application.Features.TimeEntries.Dtos;
 
-namespace Workforce.Application.Features.Teams.Dtos;
+namespace Pipexi.Application.Features.Teams.Dtos;
 
 public sealed record TeamMembersWorkSummaryDto(
     DateOnly FromDate,
@@ -39,4 +39,6 @@ public sealed record TeamMemberWorkTotalsDto(
     decimal TotalWorkedDurationHours,
     string TotalShiftDurationText,
     string TotalBreakDurationText,
-    string TotalWorkedDurationText);
+    string TotalWorkedDurationText,
+    decimal? TotalEarnings = null,
+    string Currency = "USD");

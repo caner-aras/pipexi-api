@@ -1,8 +1,8 @@
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.Forms;
+namespace Pipexi.Application.Features.Forms;
 
 internal static class FormMappings
 {

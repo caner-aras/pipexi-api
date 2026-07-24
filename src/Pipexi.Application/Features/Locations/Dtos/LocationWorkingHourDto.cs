@@ -1,4 +1,4 @@
-namespace Workforce.Application.Features.Locations.Dtos;
+namespace Pipexi.Application.Features.Locations.Dtos;
 
 public sealed record LocationWorkingHourDto(
     Guid Id,

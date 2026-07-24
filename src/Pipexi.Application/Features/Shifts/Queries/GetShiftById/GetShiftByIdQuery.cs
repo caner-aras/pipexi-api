@@ -1,18 +1,18 @@
 using System.Net;
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Forms.Dtos;
-using Workforce.Application.Features.Locations;
-using Workforce.Application.Features.OrganizationMembers;
-using Workforce.Application.Features.Shifts.Dtos;
-using Workforce.Application.Features.Teams;
-using Workforce.Application.Features.TimeEntries;
-using Workforce.Application.Features.TimeEntries.Dtos;
-using Workforce.Shared.Errors;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Forms.Dtos;
+using Pipexi.Application.Features.Locations;
+using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.Shifts.Dtos;
+using Pipexi.Application.Features.Teams;
+using Pipexi.Application.Features.TimeEntries;
+using Pipexi.Application.Features.TimeEntries.Dtos;
+using Pipexi.Shared.Errors;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Shifts.Queries.GetShiftById;
+namespace Pipexi.Application.Features.Shifts.Queries.GetShiftById;
 
 public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
 {
@@ -80,8 +80,8 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
                 ? null
                 : await _userRepository.GetByIdAsync(organizationMember.UserId, cancellationToken);
             var location = await _locationRepository.GetByIdAsync(shift.LocationId, cancellationToken);
-            IReadOnlyCollection<Workforce.Application.Features.Locations.Dtos.LocationWorkingHourDto> locationWorkingHours = location is null
-                ? Array.Empty<Workforce.Application.Features.Locations.Dtos.LocationWorkingHourDto>()
+            IReadOnlyCollection<Pipexi.Application.Features.Locations.Dtos.LocationWorkingHourDto> locationWorkingHours = location is null
+                ? Array.Empty<Pipexi.Application.Features.Locations.Dtos.LocationWorkingHourDto>()
                 : (await _locationWorkingHourRepository.ListByLocationIdAsync(location.Id, cancellationToken))
                     .OrderBy(x => x.DayOfWeek)
                     .Select(x => x.ToDto())

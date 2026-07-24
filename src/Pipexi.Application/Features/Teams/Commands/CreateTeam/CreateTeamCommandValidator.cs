@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Workforce.Application.Features.Teams.Commands.CreateTeam;
+namespace Pipexi.Application.Features.Teams.Commands.CreateTeam;
 
 public sealed class CreateTeamCommandValidator : AbstractValidator<CreateTeamCommand>
 {

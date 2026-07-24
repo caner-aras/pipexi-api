@@ -1,7 +1,7 @@
-using Workforce.Application.Features.OrganizationMembers.Dtos;
-using Workforce.Domain.Entities;
+using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Domain.Entities;
 
-namespace Workforce.Application.Features.OrganizationMembers;
+namespace Pipexi.Application.Features.OrganizationMembers;
 
 internal static class OrganizationMemberMappings
 {

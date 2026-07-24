@@ -1,10 +1,10 @@
 using MediatR;
-using Workforce.Application.Abstractions.Persistence;
-using Workforce.Application.Common.Models;
-using Workforce.Application.Features.Tasks.Dtos;
-using Workforce.Shared.Results;
+using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Shared.Results;
 
-namespace Workforce.Application.Features.Tasks.Queries.GetTasks;
+namespace Pipexi.Application.Features.Tasks.Queries.GetTasks;
 
 public sealed record GetTasksQuery(
     Guid? OrganizationId,
@@ -32,7 +32,7 @@ public sealed record GetTasksQuery(
 
         public async Task<Result<IReadOnlyCollection<TaskDto>>> Handle(GetTasksQuery request, CancellationToken cancellationToken)
         {
-            IReadOnlyCollection<Workforce.Domain.Entities.WorkTask> tasks;
+            IReadOnlyCollection<Pipexi.Domain.Entities.WorkTask> tasks;
             if (request.TeamId.HasValue)
             {
                 tasks = await _workTaskRepository.ListByAssignedTeamIdAsync(request.TeamId.Value, cancellationToken);
@@ -92,7 +92,7 @@ public sealed record GetTasksQuery(
             return Result<IReadOnlyCollection<TaskDto>>.Success(dtos);
         }
 
-        private async Task<IReadOnlyCollection<Workforce.Domain.Entities.OrganizationMember>> ResolveOrganizationScopedMemberAsync(
+        private async Task<IReadOnlyCollection<Pipexi.Domain.Entities.OrganizationMember>> ResolveOrganizationScopedMemberAsync(
             Guid organizationId,
             Guid userId,
             CancellationToken cancellationToken)

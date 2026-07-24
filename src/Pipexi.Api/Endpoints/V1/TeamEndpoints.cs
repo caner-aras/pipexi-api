@@ -1,29 +1,29 @@
 using MediatR;
-using Workforce.Application.Features.Tasks.Queries.GetTasks;
-using Workforce.Application.Features.Teams.Commands.CreateTeam;
-using Workforce.Application.Features.Teams.Commands.CreateTeamMember;
-using Workforce.Application.Features.Teams.Commands.CreateTeamMemberDayOff;
-using Workforce.Application.Features.Teams.Commands.CreateTeamMemberWithUser;
-using Workforce.Application.Features.Teams.Commands.DeleteTeam;
-using Workforce.Application.Features.Teams.Commands.DeleteTeamMember;
-using Workforce.Application.Features.Teams.Commands.DeleteTeamMemberDayOff;
-using Workforce.Application.Features.Teams.Commands.UpdateTeam;
-using Workforce.Application.Features.Teams.Commands.UpdateTeamMember;
-using Workforce.Application.Features.Teams.Commands.UpdateTeamMemberDayOff;
-using Workforce.Application.Features.Teams.Queries.GetTeamById;
-using Workforce.Application.Features.Teams.Queries.GetTeamDayOffs;
-using Workforce.Application.Features.Teams.Queries.GetTeamMemberById;
-using Workforce.Application.Features.Teams.Queries.GetTeamMemberDayOffById;
-using Workforce.Application.Features.Teams.Queries.GetTeamMemberDayOffs;
-using Workforce.Application.Features.Teams.Queries.GetTeamMemberDetailsById;
-using Workforce.Application.Features.Teams.Queries.GetTeamMembers;
-using Workforce.Application.Features.Teams.Queries.GetTeamMembersWorkSummary;
-using Workforce.Application.Features.Teams.Queries.GetTeamMemberTasksById;
-using Workforce.Application.Features.Teams.Queries.GetTeams;
-using Workforce.Application.Features.TimeEntries.Queries.GetTimeEntriesByTeamId;
-using Workforce.Contracts.V1.Teams;
+using Pipexi.Application.Features.Tasks.Queries.GetTasks;
+using Pipexi.Application.Features.Teams.Commands.CreateTeam;
+using Pipexi.Application.Features.Teams.Commands.CreateTeamMember;
+using Pipexi.Application.Features.Teams.Commands.CreateTeamMemberDayOff;
+using Pipexi.Application.Features.Teams.Commands.CreateTeamMemberWithUser;
+using Pipexi.Application.Features.Teams.Commands.DeleteTeam;
+using Pipexi.Application.Features.Teams.Commands.DeleteTeamMember;
+using Pipexi.Application.Features.Teams.Commands.DeleteTeamMemberDayOff;
+using Pipexi.Application.Features.Teams.Commands.UpdateTeam;
+using Pipexi.Application.Features.Teams.Commands.UpdateTeamMember;
+using Pipexi.Application.Features.Teams.Commands.UpdateTeamMemberDayOff;
+using Pipexi.Application.Features.Teams.Queries.GetTeamById;
+using Pipexi.Application.Features.Teams.Queries.GetTeamDayOffs;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMemberById;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDayOffById;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDayOffs;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDetailsById;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMembers;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMembersWorkSummary;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMemberTasksById;
+using Pipexi.Application.Features.Teams.Queries.GetTeams;
+using Pipexi.Application.Features.TimeEntries.Queries.GetTimeEntriesByTeamId;
+using Pipexi.Contracts.V1.Teams;
 
-namespace Workforce.Api.Endpoints.V1;
+namespace Pipexi.Api.Endpoints.V1;
 
 public static class TeamEndpoints
 {
