@@ -58,10 +58,22 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
                 (int)HttpStatusCode.NotFound);
         }
 
+        var tz = TimeZoneInfo.Utc;
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(organization.Timezone))
+            {
+                tz = TimeZoneConverter.TZConvert.GetTimeZoneInfo(organization.Timezone);
+            }
+        }
+        catch { }
+
         var trendDays = Math.Clamp(request.TrendDays, 7, 90);
         var futureDays = Math.Clamp(request.FutureDays, 0, 30);
         var now = DateTimeOffset.UtcNow;
-        var todayStart = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
+        
+        var nowLocal = TimeZoneInfo.ConvertTime(now, tz);
+        var todayStart = new DateTimeOffset(nowLocal.Year, nowLocal.Month, nowLocal.Day, 0, 0, 0, nowLocal.Offset);
         var todayEnd = todayStart.AddDays(1);
         var trendStart = todayStart.AddDays(-(trendDays - 1));
         var totalActivityDays = trendDays + futureDays;
@@ -141,7 +153,7 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             BuildStatusDistribution(tasks.Select(x => x.Priority)),
             BuildStatusDistribution(shifts.Select(x => x.Status)),
             BuildStatusDistribution(leaveRequests.Select(x => x.Status)),
-            BuildDailyActivity(tasks, timeEntries, formSubmissions, shifts, memberNameByOrganizationMemberId, trendStart, totalActivityDays),
+            BuildDailyActivity(tasks, timeEntries, formSubmissions, shifts, memberNameByOrganizationMemberId, trendStart, totalActivityDays, tz),
             BuildSignals(overview));
 
         return Result<ReportSummaryDto>.Success(dto);
@@ -192,21 +204,22 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         IReadOnlyCollection<Pipexi.Domain.Entities.Shift> shifts,
         IReadOnlyDictionary<Guid, string> memberNameByOrganizationMemberId,
         DateTimeOffset trendStart,
-        int trendDays)
+        int trendDays,
+        TimeZoneInfo timezone)
     {
         var taskMap = tasks
             .Where(x => x.CreatedAt >= trendStart)
-            .GroupBy(x => DateOnly.FromDateTime(x.CreatedAt.UtcDateTime.Date))
+            .GroupBy(x => DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.CreatedAt, timezone).DateTime))
             .ToDictionary(g => g.Key, g => g.Count());
 
         var timeEntryMap = timeEntries
             .Where(x => x.CreatedAt >= trendStart)
-            .GroupBy(x => DateOnly.FromDateTime(x.CreatedAt.UtcDateTime.Date))
+            .GroupBy(x => DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.CreatedAt, timezone).DateTime))
             .ToDictionary(g => g.Key, g => g.Count());
 
         var submissionMap = formSubmissions
             .Where(x => x.CreatedAt >= trendStart)
-            .GroupBy(x => DateOnly.FromDateTime(x.CreatedAt.UtcDateTime.Date))
+            .GroupBy(x => DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.CreatedAt, timezone).DateTime))
             .ToDictionary(g => g.Key, g => g.Count());
 
         var timeEntriesByShiftId = timeEntries
@@ -216,9 +229,10 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         var points = new List<ReportDailyActivityDto>(trendDays);
         for (var day = 0; day < trendDays; day++)
         {
-            var date = DateOnly.FromDateTime(trendStart.UtcDateTime.Date.AddDays(day));
             var dayStart = trendStart.AddDays(day);
             var dayEnd = dayStart.AddDays(1);
+            var localTime = TimeZoneInfo.ConvertTime(dayStart, timezone);
+            var date = new DateOnly(localTime.Year, localTime.Month, localTime.Day);
 
             var shiftAssignments = shifts
                 .Where(x => x.StartAt < dayEnd && x.EndAt > dayStart)
@@ -242,8 +256,8 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
                     x.Shift.OrganizationMemberId.HasValue
                         ? memberNameByOrganizationMemberId.GetValueOrDefault(x.Shift.OrganizationMemberId.Value, "Unknown")
                         : "Unassigned",
-                    TimeOnly.FromDateTime(x.Start.UtcDateTime),
-                    TimeOnly.FromDateTime(x.End.UtcDateTime),
+                    TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.Start, timezone).DateTime),
+                    TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.End, timezone).DateTime),
                     (timeEntriesByShiftId.GetValueOrDefault(x.Shift.Id) ?? [])
                         .Select(te =>
                         {
@@ -265,8 +279,8 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
                             te.TimeEntry.Id,
                             te.TimeEntry.OrganizationMemberId,
                             memberNameByOrganizationMemberId.GetValueOrDefault(te.TimeEntry.OrganizationMemberId, "Unknown"),
-                            TimeOnly.FromDateTime(te.Start.UtcDateTime),
-                            te.TimeEntry.ClockOutAt.HasValue ? TimeOnly.FromDateTime(te.End.UtcDateTime) : null,
+                            TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(te.Start, timezone).DateTime),
+                            te.TimeEntry.ClockOutAt.HasValue ? TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(te.End, timezone).DateTime) : null,
                             te.TimeEntry.Status))
                         .ToList()))
                 .ToList();
