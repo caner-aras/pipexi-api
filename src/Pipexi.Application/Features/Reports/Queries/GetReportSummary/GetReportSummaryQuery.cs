@@ -68,8 +68,17 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         }
         catch { }
 
-        var trendDays = Math.Clamp(request.TrendDays, 7, 90);
-        var futureDays = Math.Clamp(request.FutureDays, 0, 30);
+        var trendDays = request.TrendDays;
+        var futureDays = request.FutureDays;
+
+        if (trendDays < 0)
+        {
+            trendDays = Math.Abs(trendDays);
+            futureDays = 0;
+        }
+
+        trendDays = Math.Clamp(trendDays, 1, 90);
+        futureDays = Math.Clamp(futureDays, 0, 30);
         var now = DateTimeOffset.UtcNow;
         
         var nowLocal = TimeZoneInfo.ConvertTime(now, tz);
