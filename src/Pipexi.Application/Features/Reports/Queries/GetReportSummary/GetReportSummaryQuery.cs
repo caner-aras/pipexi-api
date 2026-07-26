@@ -68,24 +68,24 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         }
         catch { }
 
-        var trendDays = request.TrendDays;
-        var futureDays = request.FutureDays;
-
-        if (trendDays < 0)
-        {
-            trendDays = Math.Abs(trendDays);
-            futureDays = 0;
-        }
-
-        trendDays = Math.Clamp(trendDays, 1, 90);
-        futureDays = Math.Clamp(futureDays, 0, 30);
+        var trendDays = Math.Clamp(request.TrendDays, -90, 90);
+        var futureDays = Math.Clamp(request.FutureDays, -90, 90);
         var now = DateTimeOffset.UtcNow;
         
         var nowLocal = TimeZoneInfo.ConvertTime(now, tz);
         var todayStart = new DateTimeOffset(nowLocal.Year, nowLocal.Month, nowLocal.Day, 0, 0, 0, nowLocal.Offset);
         var todayEnd = todayStart.AddDays(1);
-        var trendStart = todayStart.AddDays(-(trendDays - 1));
-        var totalActivityDays = trendDays + futureDays;
+
+        // Convert trendDays and futureDays to signed offsets
+        int startOffset = -trendDays;
+        int endOffset = futureDays;
+
+        var trendStart = todayStart.AddDays(startOffset);
+        var totalActivityDays = endOffset - startOffset;
+        if (totalActivityDays <= 0)
+        {
+            totalActivityDays = 1;
+        }
 
         // Use sequential repository calls because repositories share one scoped DbContext.
         var members = await _organizationMemberRepository

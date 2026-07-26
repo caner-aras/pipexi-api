@@ -23,8 +23,8 @@ public static class ReportEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        int queryTrendDays = trendDays ?? 1;
-        int queryFutureDays = futureDays ?? (queryTrendDays < 0 ? 0 : 7);
+        int queryTrendDays = trendDays ?? 0;
+        int queryFutureDays = futureDays ?? 14;
 
         var result = await sender.Send(
             new GetReportSummaryQuery(organizationId, queryTrendDays, queryFutureDays),
