@@ -1,6 +1,7 @@
 using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Organizations.Provisioning;
 using Pipexi.Application.Features.Tasks.Dtos;
 using Pipexi.Shared.Results;
 
@@ -17,17 +18,20 @@ public sealed record GetTasksQuery(
         // private readonly ITaskCommentRepository _taskCommentRepository;
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
+        private readonly IRoleRepository _roleRepository;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
             // ITaskCommentRepository taskCommentRepository,
             ITeamMemberRepository teamMemberRepository,
-            IOrganizationMemberRepository organizationMemberRepository)
+            IOrganizationMemberRepository organizationMemberRepository,
+            IRoleRepository roleRepository)
         {
             _workTaskRepository = workTaskRepository;
             // _taskCommentRepository = taskCommentRepository;
             _teamMemberRepository = teamMemberRepository;
             _organizationMemberRepository = organizationMemberRepository;
+            _roleRepository = roleRepository;
         }
 
         public async Task<Result<IReadOnlyCollection<TaskDto>>> Handle(GetTasksQuery request, CancellationToken cancellationToken)
@@ -48,7 +52,8 @@ public sealed record GetTasksQuery(
                     : await _workTaskRepository.GetAllAsync(cancellationToken);
             }
 
-            if (request.UserId.HasValue)
+            if (request.UserId.HasValue &&
+                !await IsOrganizationOwnerAsync(request.OrganizationId, request.UserId.Value, cancellationToken))
             {
                 var organizationMembers = request.OrganizationId.HasValue
                     ? await ResolveOrganizationScopedMemberAsync(request.OrganizationId.Value, request.UserId.Value, cancellationToken)
@@ -90,6 +95,36 @@ public sealed record GetTasksQuery(
                 .ToList();
 
             return Result<IReadOnlyCollection<TaskDto>>.Success(dtos);
+        }
+
+        private async Task<bool> IsOrganizationOwnerAsync(
+            Guid? organizationId,
+            Guid userId,
+            CancellationToken cancellationToken)
+        {
+            if (!organizationId.HasValue)
+            {
+                return false;
+            }
+
+            var membership = await _organizationMemberRepository
+                .GetByOrganizationIdAndUserIdAsync(organizationId.Value, userId, cancellationToken);
+
+            if (membership is null)
+            {
+                return false;
+            }
+
+            var role = await _roleRepository.GetByIdAsync(membership.RoleId, cancellationToken);
+            if (role is null)
+            {
+                return false;
+            }
+
+            return string.Equals(
+                role.Name,
+                OrganizationRoleType.Owner.ToRoleName(),
+                StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task<IReadOnlyCollection<Pipexi.Domain.Entities.OrganizationMember>> ResolveOrganizationScopedMemberAsync(
