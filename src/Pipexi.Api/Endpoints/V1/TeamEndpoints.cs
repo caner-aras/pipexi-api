@@ -16,6 +16,7 @@ using Pipexi.Application.Features.Teams.Queries.GetTeamMemberById;
 using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDayOffById;
 using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDayOffs;
 using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDetailsById;
+using Pipexi.Application.Features.Teams.Queries.GetTeamMemberDetailsByOrganizationMember;
 using Pipexi.Application.Features.Teams.Queries.GetTeamMembers;
 using Pipexi.Application.Features.Teams.Queries.GetTeamMembersWorkSummary;
 using Pipexi.Application.Features.Teams.Queries.GetTeamMemberTasksById;
@@ -42,6 +43,9 @@ public static class TeamEndpoints
         organizationGroup.MapGet("/{teamId:guid}/tasks", ListTeamTasksInOrganizationAsync);
         organizationGroup.MapGet("/{teamId:guid}/time-entries", ListTeamTimeEntriesInOrganizationAsync);
         organizationGroup.MapGet("/members/work-summary", GetTeamMembersWorkSummaryInOrganizationAsync);
+        organizationGroup.MapGet(
+            "/organization-members/{organizationMemberId:guid}/details",
+            GetTeamMemberDetailsByOrganizationMemberInOrganizationAsync);
         organizationGroup.MapPost("/{teamId:guid}/members", CreateTeamMemberInOrganizationAsync);
         organizationGroup.MapPost("/{teamId:guid}/members/onboard", CreateTeamMemberWithUserInOrganizationAsync);
         organizationGroup.MapPut("/{teamId:guid}/members/{teamMemberId:guid}", UpdateTeamMemberInOrganizationAsync);
@@ -138,6 +142,25 @@ public static class TeamEndpoints
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(new GetTimeEntriesByTeamIdQuery(teamId, organizationId), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> GetTeamMemberDetailsByOrganizationMemberInOrganizationAsync(
+        Guid organizationId,
+        Guid organizationMemberId,
+        DateTimeOffset? fromDate,
+        Guid? teamId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new GetTeamMemberDetailsByOrganizationMemberQuery(
+                organizationId,
+                organizationMemberId,
+                fromDate,
+                teamId),
+            cancellationToken);
+
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
