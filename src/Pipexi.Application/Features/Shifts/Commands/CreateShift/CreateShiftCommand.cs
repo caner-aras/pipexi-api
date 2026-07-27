@@ -4,6 +4,7 @@ using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Locations;
 using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.Shifts;
 using Pipexi.Application.Features.Shifts.Dtos;
 using Pipexi.Application.Features.Teams;
 using Pipexi.Domain.Entities;
@@ -268,12 +269,21 @@ public sealed record CreateShiftCommand(
                 ? null
                 : await _userRepository.GetByIdAsync(organizationMember.UserId, cancellationToken);
 
+            var teamMemberLookup = await ShiftTeamMemberLookup.CreateAsync(
+                _teamMemberRepository,
+                new[] { firstCreatedShift },
+                cancellationToken);
+
             return Result<ShiftDto>.Success(
                 firstCreatedShift.ToDto(
                     team?.ToDto(),
                     organizationMember?.ToDto(user?.ToDto()),
                     location.ToDto(),
-                    firstCreatedBreaks),
+                    firstCreatedBreaks,
+                    teamMemberId: ShiftTeamMemberLookup.Resolve(
+                        firstCreatedShift.TeamId,
+                        firstCreatedShift.OrganizationMemberId,
+                        teamMemberLookup)),
                 (int)HttpStatusCode.Created);
         }
 

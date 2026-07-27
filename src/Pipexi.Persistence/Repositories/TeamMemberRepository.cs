@@ -44,4 +44,19 @@ public sealed class TeamMemberRepository : Repository<TeamMember>, ITeamMemberRe
             .OrderBy(x => x.CreatedAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<TeamMember>> ListByOrganizationMemberIdsAsync(
+        IReadOnlyCollection<Guid> organizationMemberIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (organizationMemberIds.Count == 0)
+        {
+            return Array.Empty<TeamMember>();
+        }
+
+        return await DbSet
+            .Where(x => organizationMemberIds.Contains(x.OrganizationMemberId))
+            .OrderBy(x => x.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

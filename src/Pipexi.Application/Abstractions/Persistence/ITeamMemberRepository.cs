@@ -17,4 +17,8 @@ public interface ITeamMemberRepository : IRepository<TeamMember>
     Task<IReadOnlyCollection<TeamMember>> ListByOrganizationMemberIdAsync(
         Guid organizationMemberId,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<TeamMember>> ListByOrganizationMemberIdsAsync(
+        IReadOnlyCollection<Guid> organizationMemberIds,
+        CancellationToken cancellationToken = default);
 }

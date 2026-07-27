@@ -5,6 +5,7 @@ using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
 using Pipexi.Application.Features.Locations;
 using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.Shifts;
 using Pipexi.Application.Features.Shifts.Dtos;
 using Pipexi.Application.Features.Teams;
 using Pipexi.Application.Features.TimeEntries;
@@ -30,6 +31,7 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
         private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
         private readonly IFormTemplateRepository _formTemplateRepository;
         private readonly IFormSubmissionRepository _formSubmissionRepository;
+        private readonly ITeamMemberRepository _teamMemberRepository;
 
         public Handler(
             IShiftRepository shiftRepository,
@@ -43,7 +45,8 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
             IUserRepository userRepository,
             IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
             IFormTemplateRepository formTemplateRepository,
-            IFormSubmissionRepository formSubmissionRepository)
+            IFormSubmissionRepository formSubmissionRepository,
+            ITeamMemberRepository teamMemberRepository)
         {
             _shiftRepository = shiftRepository;
             _shiftBreakRepository = shiftBreakRepository;
@@ -57,6 +60,7 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
             _shiftRequiredFormTemplateRepository = shiftRequiredFormTemplateRepository;
             _formTemplateRepository = formTemplateRepository;
             _formSubmissionRepository = formSubmissionRepository;
+            _teamMemberRepository = teamMemberRepository;
         }
 
         public async Task<Result<ShiftDto>> Handle(GetShiftByIdQuery request, CancellationToken cancellationToken)
@@ -132,6 +136,15 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
                     .ToList();
             }
 
+            var teamMemberLookup = await ShiftTeamMemberLookup.CreateAsync(
+                _teamMemberRepository,
+                new[] { shift },
+                cancellationToken);
+            var teamMemberId = ShiftTeamMemberLookup.Resolve(
+                shift.TeamId,
+                shift.OrganizationMemberId,
+                teamMemberLookup);
+
             return Result<ShiftDto>.Success(
                 shift.ToDto(
                     team?.ToDto(),
@@ -139,7 +152,8 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
                     location?.ToDto(locationWorkingHours),
                     breaks.Select(x => x.ToDto()).ToList(),
                     timeEntryDtos,
-                    shiftFormTemplates));
+                    shiftFormTemplates,
+                    teamMemberId));
         }
     }
 }

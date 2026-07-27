@@ -17,7 +17,8 @@ internal static class ShiftMappings
         LocationDto? location = null,
         IReadOnlyCollection<ShiftBreakDto>? breaks = null,
         IReadOnlyCollection<TimeEntryDto>? timeEntries = null,
-        IReadOnlyCollection<ShiftFormTemplateDto>? shiftFormTemplates = null)
+        IReadOnlyCollection<ShiftFormTemplateDto>? shiftFormTemplates = null,
+        Guid? teamMemberId = null)
     {
         return new ShiftDto(
             shift.Id,
@@ -25,6 +26,7 @@ internal static class ShiftMappings
             team,
             shift.OrganizationMemberId,
             organizationMember,
+            teamMemberId,
             location,
             shift.Title,
             shift.StartAt,
@@ -56,7 +58,8 @@ internal static class ShiftMappings
         TeamDto? team = null,
         OrganizationMemberDto? organizationMember = null,
         IReadOnlyCollection<ShiftBreakDto>? breaks = null,
-        IReadOnlyCollection<TimeEntryDto>? timeEntries = null)
+        IReadOnlyCollection<TimeEntryDto>? timeEntries = null,
+        Guid? teamMemberId = null)
     {
         return new OrganizationShiftDto(
             shift.Id,
@@ -64,6 +67,7 @@ internal static class ShiftMappings
             team,
             shift.OrganizationMemberId,
             organizationMember,
+            teamMemberId,
             shift.LocationId,
             shift.Title,
             shift.StartAt,

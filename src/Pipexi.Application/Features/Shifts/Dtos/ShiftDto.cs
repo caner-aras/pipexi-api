@@ -12,6 +12,7 @@ public sealed record ShiftDto(
     TeamDto? Team,
     Guid? OrganizationMemberId,
     OrganizationMemberDto? OrganizationMember,
+    Guid? TeamMemberId,
     LocationDto? Location,
     string? Title,
     DateTimeOffset StartAt,

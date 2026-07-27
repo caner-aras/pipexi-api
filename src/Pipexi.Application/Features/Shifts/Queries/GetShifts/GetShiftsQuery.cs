@@ -7,6 +7,7 @@ using Pipexi.Application.Features.Locations;
 using Pipexi.Application.Features.Locations.Dtos;
 using Pipexi.Application.Features.OrganizationMembers;
 using Pipexi.Application.Features.OrganizationMembers.Dtos;
+using Pipexi.Application.Features.Shifts;
 using Pipexi.Application.Features.Shifts.Dtos;
 using Pipexi.Application.Features.Teams;
 using Pipexi.Application.Features.Teams.Dtos;
@@ -31,6 +32,7 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IUserRepository _userRepository;
         private readonly ICurrentUserContext _currentUserContext;
+        private readonly ITeamMemberRepository _teamMemberRepository;
 
         public Handler(
             IShiftRepository shiftRepository,
@@ -42,7 +44,8 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
             ITimeEntryBreakRepository timeEntryBreakRepository,
             IOrganizationMemberRepository organizationMemberRepository,
             IUserRepository userRepository,
-            ICurrentUserContext currentUserContext)
+            ICurrentUserContext currentUserContext,
+            ITeamMemberRepository teamMemberRepository)
         {
             _shiftRepository = shiftRepository;
             _shiftBreakRepository = shiftBreakRepository;
@@ -54,6 +57,7 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
             _organizationMemberRepository = organizationMemberRepository;
             _userRepository = userRepository;
             _currentUserContext = currentUserContext;
+            _teamMemberRepository = teamMemberRepository;
         }
 
         public async Task<Result<IReadOnlyCollection<ShiftDto>>> Handle(GetShiftsQuery request, CancellationToken cancellationToken)
@@ -172,6 +176,11 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
                     x => x.ToDto(userMap.GetValueOrDefault(x.UserId)));
             }
 
+            var teamMemberLookup = await ShiftTeamMemberLookup.CreateAsync(
+                _teamMemberRepository,
+                shifts,
+                cancellationToken);
+
             var dtos = shifts
                 .Select(x => x.ToDto(
                     x.TeamId.HasValue ? teamMap.GetValueOrDefault(x.TeamId.Value) : null,
@@ -180,7 +189,11 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
                         : null,
                     locationMap.GetValueOrDefault(x.LocationId),
                     breakMap.GetValueOrDefault(x.Id) ?? Array.Empty<ShiftBreakDto>(),
-                    timeEntriesByShiftId.GetValueOrDefault(x.Id) ?? Array.Empty<TimeEntryDto>()))
+                    timeEntriesByShiftId.GetValueOrDefault(x.Id) ?? Array.Empty<TimeEntryDto>(),
+                    teamMemberId: ShiftTeamMemberLookup.Resolve(
+                        x.TeamId,
+                        x.OrganizationMemberId,
+                        teamMemberLookup)))
                 .ToList();
 
             return Result<IReadOnlyCollection<ShiftDto>>.Success(dtos);

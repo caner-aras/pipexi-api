@@ -4,6 +4,7 @@ using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Locations;
 using Pipexi.Application.Features.OrganizationMembers;
+using Pipexi.Application.Features.Shifts;
 using Pipexi.Application.Features.Shifts.Dtos;
 using Pipexi.Application.Features.Teams;
 using Pipexi.Domain.Entities;
@@ -33,6 +34,7 @@ public sealed record UpdateShiftCommand(
         private readonly ILocationRepository _locationRepository;
         private readonly IFormTemplateRepository _formTemplateRepository;
         private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
+        private readonly ITeamMemberRepository _teamMemberRepository;
 
         public Handler(
             IShiftRepository shiftRepository,
@@ -41,7 +43,8 @@ public sealed record UpdateShiftCommand(
             IUserRepository userRepository,
             ILocationRepository locationRepository,
             IFormTemplateRepository formTemplateRepository,
-            IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository)
+            IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
+            ITeamMemberRepository teamMemberRepository)
         {
             _shiftRepository = shiftRepository;
             _teamRepository = teamRepository;
@@ -50,6 +53,7 @@ public sealed record UpdateShiftCommand(
             _locationRepository = locationRepository;
             _formTemplateRepository = formTemplateRepository;
             _shiftRequiredFormTemplateRepository = shiftRequiredFormTemplateRepository;
+            _teamMemberRepository = teamMemberRepository;
         }
 
         public async Task<Result<ShiftDto>> Handle(UpdateShiftCommand request, CancellationToken cancellationToken)
@@ -164,11 +168,20 @@ public sealed record UpdateShiftCommand(
                 : await _userRepository.GetByIdAsync(resolvedOrganizationMember.UserId, cancellationToken);
             var resolvedLocation = await _locationRepository.GetByIdAsync(shift.LocationId, cancellationToken);
 
+            var teamMemberLookup = await ShiftTeamMemberLookup.CreateAsync(
+                _teamMemberRepository,
+                new[] { shift },
+                cancellationToken);
+
             return Result<ShiftDto>.Success(
                 shift.ToDto(
                     resolvedTeam?.ToDto(),
                     resolvedOrganizationMember?.ToDto(resolvedUser?.ToDto()),
-                    resolvedLocation?.ToDto()),
+                    resolvedLocation?.ToDto(),
+                    teamMemberId: ShiftTeamMemberLookup.Resolve(
+                        shift.TeamId,
+                        shift.OrganizationMemberId,
+                        teamMemberLookup)),
                 (int)HttpStatusCode.OK);
         }
     }
