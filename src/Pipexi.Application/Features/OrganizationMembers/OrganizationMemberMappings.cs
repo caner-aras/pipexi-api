@@ -1,3 +1,4 @@
+using Pipexi.Application.Common;
 using Pipexi.Application.Features.OrganizationMembers.Dtos;
 using Pipexi.Domain.Entities;
 
@@ -29,6 +30,6 @@ internal static class OrganizationMemberMappings
             user.FirstName,
             user.LastName,
             user.Phone,
-            user.AvatarUrl);
+            AvatarUrls.Resolve(user.Id, user.AvatarUrl));
     }
 }

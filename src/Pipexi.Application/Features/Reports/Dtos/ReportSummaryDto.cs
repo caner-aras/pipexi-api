@@ -37,6 +37,7 @@ public sealed record ReportDailyShiftAssignmentDto(
     Guid ShiftId,
     Guid? OrganizationMemberId,
     string MemberName,
+    string? AvatarUrl,
     TimeOnly StartTime,
     TimeOnly EndTime,
     IReadOnlyCollection<ReportShiftTimeEntryDto> TimeEntries);

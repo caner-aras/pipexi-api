@@ -1,6 +1,7 @@
 using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Users.Dtos;
 using Pipexi.Domain.Entities;
@@ -42,7 +43,7 @@ public sealed record CreateUserCommand(
                 request.FirstName,
                 request.LastName,
                 request.Phone,
-                request.AvatarUrl);
+                AvatarUrls.Resolve(userId, request.AvatarUrl));
 
             await _userRepository.AddAsync(user, cancellationToken);
             return Result<UserDto>.Success(user.ToDto(), (int)HttpStatusCode.Created);

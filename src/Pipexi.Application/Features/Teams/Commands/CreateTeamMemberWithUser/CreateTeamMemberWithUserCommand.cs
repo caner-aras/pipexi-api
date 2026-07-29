@@ -1,6 +1,7 @@
 using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.OrganizationMembers;
 using Pipexi.Application.Features.Teams.Dtos;
@@ -68,14 +69,15 @@ public sealed record CreateTeamMemberWithUserCommand(
                     ? $"local:{Guid.NewGuid():N}"
                     : request.AuthProviderId;
 
+                var userId = Guid.NewGuid();
                 user = User.Create(
-                    Guid.NewGuid(),
+                    userId,
                     authProviderId,
                     request.Email,
                     request.FirstName,
                     request.LastName,
                     request.Phone,
-                    request.AvatarUrl);
+                    AvatarUrls.Resolve(userId, request.AvatarUrl));
 
                 await _userRepository.AddAsync(user, cancellationToken);
             }

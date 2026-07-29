@@ -1,3 +1,4 @@
+using Pipexi.Application.Common;
 using Pipexi.Application.Features.Users.Dtos;
 using Pipexi.Domain.Entities;
 
@@ -14,6 +15,6 @@ internal static class UserMappings
             user.FirstName,
             user.LastName,
             user.Phone,
-            user.AvatarUrl);
+            AvatarUrls.Resolve(user.Id, user.AvatarUrl));
     }
 }

@@ -1,3 +1,4 @@
+using Pipexi.Application.Common;
 using Pipexi.Application.Features.Tasks.Dtos;
 using Pipexi.Domain.Entities;
 
@@ -59,6 +60,6 @@ internal static class TaskMappings
             user.Email,
             user.FirstName,
             user.LastName,
-            user.AvatarUrl);
+            AvatarUrls.Resolve(user.Id, user.AvatarUrl));
     }
 }

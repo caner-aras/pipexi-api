@@ -1,6 +1,7 @@
 using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Reports.Dtos;
 using Pipexi.Shared.Errors;
@@ -151,9 +152,17 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
                 ? x.Email
                 : $"{x.FirstName} {x.LastName}".Trim());
 
+        var userAvatarById = users.ToDictionary(
+            x => x.Id,
+            x => AvatarUrls.Resolve(x.Id, x.AvatarUrl));
+
         var memberNameByOrganizationMemberId = members.ToDictionary(
             x => x.Id,
             x => userNameById.GetValueOrDefault(x.UserId, "Unknown"));
+
+        var memberAvatarByOrganizationMemberId = members.ToDictionary(
+            x => x.Id,
+            x => userAvatarById.GetValueOrDefault(x.UserId));
 
         var dto = new ReportSummaryDto(
             request.OrganizationId,
@@ -162,7 +171,16 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             BuildStatusDistribution(tasks.Select(x => x.Priority)),
             BuildStatusDistribution(shifts.Select(x => x.Status)),
             BuildStatusDistribution(leaveRequests.Select(x => x.Status)),
-            BuildDailyActivity(tasks, timeEntries, formSubmissions, shifts, memberNameByOrganizationMemberId, trendStart, totalActivityDays, tz),
+            BuildDailyActivity(
+                tasks,
+                timeEntries,
+                formSubmissions,
+                shifts,
+                memberNameByOrganizationMemberId,
+                memberAvatarByOrganizationMemberId,
+                trendStart,
+                totalActivityDays,
+                tz),
             BuildSignals(overview));
 
         return Result<ReportSummaryDto>.Success(dto);
@@ -212,6 +230,7 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         IReadOnlyCollection<Pipexi.Domain.Entities.FormSubmission> formSubmissions,
         IReadOnlyCollection<Pipexi.Domain.Entities.Shift> shifts,
         IReadOnlyDictionary<Guid, string> memberNameByOrganizationMemberId,
+        IReadOnlyDictionary<Guid, string> memberAvatarByOrganizationMemberId,
         DateTimeOffset trendStart,
         int trendDays,
         TimeZoneInfo timezone)
@@ -265,6 +284,9 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
                     x.Shift.OrganizationMemberId.HasValue
                         ? memberNameByOrganizationMemberId.GetValueOrDefault(x.Shift.OrganizationMemberId.Value, "Unknown")
                         : "Unassigned",
+                    x.Shift.OrganizationMemberId.HasValue
+                        ? memberAvatarByOrganizationMemberId.GetValueOrDefault(x.Shift.OrganizationMemberId.Value)
+                        : null,
                     TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.Start, timezone).DateTime),
                     TimeOnly.FromDateTime(TimeZoneInfo.ConvertTime(x.End, timezone).DateTime),
                     (timeEntriesByShiftId.GetValueOrDefault(x.Shift.Id) ?? [])
