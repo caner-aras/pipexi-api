@@ -7,16 +7,26 @@ public interface ITokenService
         string password,
         CancellationToken cancellationToken);
 
+    Task<Pipexi.Shared.Results.Result<TokenResponse>> ExchangeRefreshTokenAsync(
+        string refreshToken,
+        CancellationToken cancellationToken);
+
     Task<Pipexi.Shared.Results.Result<RegisterResponse>> RegisterWithEmailPasswordAsync(
         string email,
         string password,
         CancellationToken cancellationToken);
 }
 
-public sealed record TokenResponse(int StatusCode, string access_token, string refresh_token);
+public sealed record TokenResponse(
+    int StatusCode,
+    string access_token,
+    string refresh_token,
+    int expires_in);
+
 public sealed record RegisterResponse(
     int StatusCode,
     string user_id,
     string email,
     string? access_token,
-    string? refresh_token);
+    string? refresh_token,
+    int? expires_in);

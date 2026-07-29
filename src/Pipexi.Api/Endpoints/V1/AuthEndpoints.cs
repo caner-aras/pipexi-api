@@ -21,6 +21,7 @@ public static class AuthEndpoints
         //.ExcludeFromDescription();
 
         group.MapPost("/token", HandleSupabaseTokenAsync);
+        group.MapPost("/refresh", RefreshTokenAsync);
         group.MapPost("/register", RegisterAsync);
         group.MapPost("/sync", SyncProfileAsync)
             .RequireAuthorization();
@@ -39,6 +40,27 @@ public static class AuthEndpoints
         var tokenResponse = await tokenService.ExchangePasswordForTokenAsync(
             request.Email,
             request.Password,
+            cancellationToken);
+
+        return Results.Json(tokenResponse, statusCode: tokenResponse.StatusCode);
+    }
+
+    private static async Task<IResult> RefreshTokenAsync(
+        ITokenService tokenService,
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.refresh_token))
+        {
+            var invalid = Result<TokenResponse>.Failure(
+                new AppError("auth.invalid_refresh_token", "Refresh token is required."),
+                StatusCodes.Status400BadRequest);
+
+            return Results.Json(invalid, statusCode: invalid.StatusCode);
+        }
+
+        var tokenResponse = await tokenService.ExchangeRefreshTokenAsync(
+            request.refresh_token,
             cancellationToken);
 
         return Results.Json(tokenResponse, statusCode: tokenResponse.StatusCode);
@@ -133,7 +155,8 @@ public static class AuthEndpoints
                 registerResult.Data.user_id,
                 registerResult.Data.email,
                 registerResult.Data.access_token,
-                registerResult.Data.refresh_token),
+                registerResult.Data.refresh_token,
+                registerResult.Data.expires_in),
             StatusCodes.Status201Created);
 
         return Results.Json(response, statusCode: response.StatusCode);
@@ -340,6 +363,7 @@ public static class AuthEndpoints
 }
 
 public sealed record TokenRequest(string Email, string Password);
+public sealed record RefreshTokenRequest(string refresh_token);
 public sealed record RegisterRequest(string FirstName, string LastName, string Email, string Password);
 public sealed record SyncProfileRequest(
     string? Email,
