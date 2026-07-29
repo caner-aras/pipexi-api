@@ -2,6 +2,7 @@ using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Organizations.Provisioning;
+using Pipexi.Application.Features.Tasks;
 using Pipexi.Application.Features.Tasks.Dtos;
 using Pipexi.Shared.Results;
 
@@ -15,23 +16,23 @@ public sealed record GetTasksQuery(
     public sealed class Handler : IRequestHandler<GetTasksQuery, Result<IReadOnlyCollection<TaskDto>>>
     {
         private readonly IWorkTaskRepository _workTaskRepository;
-        // private readonly ITaskCommentRepository _taskCommentRepository;
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IUserRepository _userRepository;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
-            // ITaskCommentRepository taskCommentRepository,
             ITeamMemberRepository teamMemberRepository,
             IOrganizationMemberRepository organizationMemberRepository,
-            IRoleRepository roleRepository)
+            IRoleRepository roleRepository,
+            IUserRepository userRepository)
         {
             _workTaskRepository = workTaskRepository;
-            // _taskCommentRepository = taskCommentRepository;
             _teamMemberRepository = teamMemberRepository;
             _organizationMemberRepository = organizationMemberRepository;
             _roleRepository = roleRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<IReadOnlyCollection<TaskDto>>> Handle(GetTasksQuery request, CancellationToken cancellationToken)
@@ -77,21 +78,24 @@ public sealed record GetTasksQuery(
                     .ToList();
             }
 
-            // var commentMap = new Dictionary<Guid, IReadOnlyCollection<TaskCommentDto>>();
-            // var taskIds = tasks.Select(x => x.Id).ToList();
-            // if (taskIds.Count > 0)
-            // {
-            //     var comments = await _taskCommentRepository.ListByWorkTaskIdsAsync(taskIds, cancellationToken);
-            //     commentMap = comments
-            //         .GroupBy(x => x.WorkTaskId)
-            //         .ToDictionary(
-            //             g => g.Key,
-            //             g => (IReadOnlyCollection<TaskCommentDto>)g.OrderBy(x => x.CreatedAt).Select(x => x.ToDto()).ToList());
-            // }
+            var reporterIds = tasks
+                .Where(x => x.ReporterUserId.HasValue)
+                .Select(x => x.ReporterUserId!.Value)
+                .Distinct()
+                .ToList();
+
+            var reporters = reporterIds.Count == 0
+                ? []
+                : await _userRepository.ListByIdsAsync(reporterIds, cancellationToken);
+            var reporterMap = reporters.ToDictionary(x => x.Id, x => x.ToTaskCommentMemberUserDto());
 
             var dtos = tasks
-                // .Select(x => x.ToDto(commentMap.GetValueOrDefault(x.Id) ?? Array.Empty<TaskCommentDto>()))
-                .Select(x => x.ToDto())
+                .Select(x => x.ToDto() with
+                {
+                    Reporter = x.ReporterUserId.HasValue
+                        ? reporterMap.GetValueOrDefault(x.ReporterUserId.Value)
+                        : null
+                })
                 .ToList();
 
             return Result<IReadOnlyCollection<TaskDto>>.Success(dtos);

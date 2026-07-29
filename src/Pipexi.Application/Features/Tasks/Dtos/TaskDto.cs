@@ -21,5 +21,6 @@ public sealed record TaskDto(
     DateTimeOffset? UpdatedAt,
     IReadOnlyCollection<TaskCommentDto> Comments,
     TeamMemberDto? AssignedToTeamMember = null,
+    TaskCommentMemberUserDto? Reporter = null,
     LocationDto? Location = null,
     ShiftDto? Shift = null);

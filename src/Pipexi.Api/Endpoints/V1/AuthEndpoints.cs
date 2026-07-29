@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pipexi.Application.Abstractions.Auth;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common;
 using Pipexi.Application.Features.Users.Commands.CreateUser;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
@@ -207,7 +208,7 @@ public static class AuthEndpoints
                     createResult.Data.FirstName,
                     createResult.Data.LastName,
                     createResult.Data.Phone,
-                    createResult.Data.AvatarUrl,
+                    AvatarUrls.Resolve(createResult.Data.Id, createResult.Data.AvatarUrl),
                     true));
 
             return Results.Json(created, statusCode: created.StatusCode);
@@ -228,7 +229,7 @@ public static class AuthEndpoints
                 user.FirstName,
                 user.LastName,
                 user.Phone,
-                user.AvatarUrl,
+                AvatarUrls.Resolve(user.Id, user.AvatarUrl),
                 false));
 
         return Results.Json(updated, statusCode: updated.StatusCode);
@@ -271,7 +272,7 @@ public static class AuthEndpoints
             user.FirstName,
             user.LastName,
             user.Phone,
-            user.AvatarUrl));
+            AvatarUrls.Resolve(user.Id, user.AvatarUrl)));
 
         return Results.Json(response, statusCode: response.StatusCode);
     }
