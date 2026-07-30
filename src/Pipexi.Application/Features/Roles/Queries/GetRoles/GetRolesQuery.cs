@@ -3,6 +3,8 @@ using MediatR;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
+using Pipexi.Application.Features.Organizations.Provisioning;
+using Pipexi.Application.Features.Roles;
 using Pipexi.Application.Features.Roles.Dtos;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
@@ -32,9 +34,16 @@ public sealed record GetRolesQuery(Guid? OrganizationId) : IQuery<Result<IReadOn
                     (int)HttpStatusCode.Forbidden);
             }
 
-            var items = await _roleRepository.ListByOrganizationIdAsync(organizationId, cancellationToken);
+            var items = await OrganizationDefaultRoleProvisioner.EnsureDefaultRolesAsync(
+                _roleRepository,
+                organizationId,
+                cancellationToken);
 
-            return Result<IReadOnlyCollection<RoleDto>>.Success(items.Select(x => x.ToDto()).ToList());
+            return Result<IReadOnlyCollection<RoleDto>>.Success(
+                items
+                    .OrderBy(role => role.Name, StringComparer.OrdinalIgnoreCase)
+                    .Select(x => x.ToDto())
+                    .ToList());
         }
     }
 }

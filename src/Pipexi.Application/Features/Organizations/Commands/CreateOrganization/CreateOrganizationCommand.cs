@@ -88,12 +88,10 @@ public sealed record CreateOrganizationCommand(
             var organization = Organization.Create(request.Name, request.Slug, request.Timezone, request.Currency);
             await _organizationRepository.AddAsync(organization, cancellationToken);
 
-            var roles = new List<Role>
-            {
-                Role.Create(organization.Id, OrganizationRoleType.Owner.ToRoleName())
-            };
-
-            await _roleRepository.AddRangeAsync(roles, cancellationToken);
+            var roles = (await OrganizationDefaultRoleProvisioner.EnsureDefaultRolesAsync(
+                _roleRepository,
+                organization.Id,
+                cancellationToken)).ToList();
 
             var ownerRole = roles.First(x => x.Name == OrganizationRoleType.Owner.ToRoleName());
             var ownerMembership = OrganizationMember.Create(
