@@ -30,8 +30,8 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 ## P2 — API kalite
 
 - [ ] `ValidationException` → 400 (şu an 500)
-- [ ] Report summary: bellek yükü + shift başına N+1 azalt
-- [ ] Task list/detail hydration tutarlılığı (reporter / assignee / comments)
+- [x] Report summary: bellek yükü + shift başına N+1 azalt
+- [x] Task list/detail hydration tutarlılığı (reporter / assignee / comments)
 - [ ] Eksik FluentValidation’lar (özellikle delete + day-off + positions)
 
 ## P3 — App

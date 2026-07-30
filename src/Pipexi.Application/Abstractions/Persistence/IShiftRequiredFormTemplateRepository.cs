@@ -11,4 +11,8 @@ public interface IShiftRequiredFormTemplateRepository : IRepository<ShiftRequire
     Task<IReadOnlyCollection<Guid>> ListRequiredTemplateIdsByShiftIdAsync(
         Guid shiftId,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<Guid>>> ListRequiredTemplateIdsByShiftIdsAsync(
+        IReadOnlyCollection<Guid> shiftIds,
+        CancellationToken cancellationToken = default);
 }

@@ -3,7 +3,6 @@ using MediatR;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
-using Pipexi.Application.Features.Tasks;
 using Pipexi.Application.Features.Tasks.Dtos;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
@@ -16,18 +15,27 @@ public sealed record GetTaskByIdQuery(Guid Id, Guid? ScopedOrganizationId = null
     {
         private readonly IWorkTaskRepository _workTaskRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
+        private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IUserRepository _userRepository;
         private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
             ITaskCommentRepository taskCommentRepository,
+            ITeamMemberRepository teamMemberRepository,
+            ITeamRepository teamRepository,
+            IOrganizationMemberRepository organizationMemberRepository,
             IUserRepository userRepository,
             IOrganizationAccessService organizationAccess)
         {
             _organizationAccess = organizationAccess;
             _workTaskRepository = workTaskRepository;
             _taskCommentRepository = taskCommentRepository;
+            _teamMemberRepository = teamMemberRepository;
+            _teamRepository = teamRepository;
+            _organizationMemberRepository = organizationMemberRepository;
             _userRepository = userRepository;
         }
 
@@ -45,19 +53,17 @@ public sealed record GetTaskByIdQuery(Guid Id, Guid? ScopedOrganizationId = null
                 task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
             if (accessDenied is not null) return accessDenied;
 
-            var comments = await _taskCommentRepository.ListByWorkTaskIdAsync(task.Id, cancellationToken);
-            TaskCommentMemberUserDto? reporter = null;
-            if (task.ReporterUserId.HasValue)
-            {
-                var reporterUser = await _userRepository.GetByIdAsync(task.ReporterUserId.Value, cancellationToken);
-                reporter = reporterUser?.ToTaskCommentMemberUserDto();
-            }
+            var dtos = await TaskHydration.BuildDtosAsync(
+                [task],
+                includeComments: true,
+                taskCommentRepository: _taskCommentRepository,
+                teamMemberRepository: _teamMemberRepository,
+                teamRepository: _teamRepository,
+                organizationMemberRepository: _organizationMemberRepository,
+                userRepository: _userRepository,
+                cancellationToken);
 
-            return Result<TaskDto>.Success(
-                task.ToDto(comments.Select(x => x.ToDto()).ToList()) with
-                {
-                    Reporter = reporter
-                });
+            return Result<TaskDto>.Success(dtos.Single());
         }
     }
 }

@@ -4,7 +4,6 @@ using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Organizations.Provisioning;
-using Pipexi.Application.Features.Tasks;
 using Pipexi.Application.Features.Tasks.Dtos;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
@@ -20,6 +19,7 @@ public sealed record GetTasksQuery(
     {
         private readonly IWorkTaskRepository _workTaskRepository;
         private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly ITeamRepository _teamRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
@@ -28,6 +28,7 @@ public sealed record GetTasksQuery(
         public Handler(
             IWorkTaskRepository workTaskRepository,
             ITeamMemberRepository teamMemberRepository,
+            ITeamRepository teamRepository,
             IOrganizationMemberRepository organizationMemberRepository,
             IRoleRepository roleRepository,
             IUserRepository userRepository,
@@ -35,6 +36,7 @@ public sealed record GetTasksQuery(
         {
             _workTaskRepository = workTaskRepository;
             _teamMemberRepository = teamMemberRepository;
+            _teamRepository = teamRepository;
             _organizationMemberRepository = organizationMemberRepository;
             _roleRepository = roleRepository;
             _userRepository = userRepository;
@@ -90,25 +92,15 @@ public sealed record GetTasksQuery(
                     .ToList();
             }
 
-            var reporterIds = tasks
-                .Where(x => x.ReporterUserId.HasValue)
-                .Select(x => x.ReporterUserId!.Value)
-                .Distinct()
-                .ToList();
-
-            var reporters = reporterIds.Count == 0
-                ? []
-                : await _userRepository.ListByIdsAsync(reporterIds, cancellationToken);
-            var reporterMap = reporters.ToDictionary(x => x.Id, x => x.ToTaskCommentMemberUserDto());
-
-            var dtos = tasks
-                .Select(x => x.ToDto() with
-                {
-                    Reporter = x.ReporterUserId.HasValue
-                        ? reporterMap.GetValueOrDefault(x.ReporterUserId.Value)
-                        : null
-                })
-                .ToList();
+            var dtos = await TaskHydration.BuildDtosAsync(
+                tasks,
+                includeComments: false,
+                taskCommentRepository: null,
+                teamMemberRepository: _teamMemberRepository,
+                teamRepository: _teamRepository,
+                organizationMemberRepository: _organizationMemberRepository,
+                userRepository: _userRepository,
+                cancellationToken);
 
             return Result<IReadOnlyCollection<TaskDto>>.Success(dtos);
         }

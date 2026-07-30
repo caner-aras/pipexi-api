@@ -20,4 +20,8 @@ public interface IFormSubmissionRepository : IRepository<FormSubmission>
         Guid shiftId,
         Guid organizationMemberId,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<Guid>>> ListSubmittedTemplateIdsByShiftIdsAsync(
+        IReadOnlyCollection<Guid> shiftIds,
+        CancellationToken cancellationToken = default);
 }

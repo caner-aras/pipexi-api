@@ -132,6 +132,14 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
 
         var missingRequiredShiftForms = await CountMissingRequiredShiftFormsAsync(shifts, cancellationToken);
 
+        var activityEnd = trendStart.AddDays(totalActivityDays);
+        var shiftsForActivity = shifts
+            .Where(x => x.StartAt < activityEnd && x.EndAt > trendStart)
+            .ToList();
+        var timeEntriesForActivity = timeEntries
+            .Where(x => x.ClockInAt < activityEnd && (x.ClockOutAt ?? x.ClockInAt) >= trendStart)
+            .ToList();
+
         var overview = new ReportOverviewDto(
             MembersCount: members.Count,
             TeamsCount: teams.Count,
@@ -162,7 +170,7 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
 
         var memberAvatarByOrganizationMemberId = members.ToDictionary(
             x => x.Id,
-            x => userAvatarById.GetValueOrDefault(x.UserId));
+            x => userAvatarById.GetValueOrDefault(x.UserId) ?? string.Empty);
 
         var dto = new ReportSummaryDto(
             request.OrganizationId,
@@ -173,9 +181,9 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             BuildStatusDistribution(leaveRequests.Select(x => x.Status)),
             BuildDailyActivity(
                 tasks,
-                timeEntries,
+                timeEntriesForActivity,
                 formSubmissions,
-                shifts,
+                shiftsForActivity,
                 memberNameByOrganizationMemberId,
                 memberAvatarByOrganizationMemberId,
                 trendStart,
@@ -190,19 +198,27 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         IReadOnlyCollection<Pipexi.Domain.Entities.Shift> shifts,
         CancellationToken cancellationToken)
     {
-        var missingCount = 0;
-        foreach (var shift in shifts)
+        if (shifts.Count == 0)
         {
-            var requiredTemplateIds = await _shiftRequiredFormTemplateRepository
-                .ListRequiredTemplateIdsByShiftIdAsync(shift.Id, cancellationToken);
+            return 0;
+        }
 
-            if (requiredTemplateIds.Count == 0)
+        var shiftIds = shifts.Select(x => x.Id).ToList();
+        var requiredByShift = await _shiftRequiredFormTemplateRepository
+            .ListRequiredTemplateIdsByShiftIdsAsync(shiftIds, cancellationToken);
+        var submittedByShift = await _formSubmissionRepository
+            .ListSubmittedTemplateIdsByShiftIdsAsync(shiftIds, cancellationToken);
+
+        var missingCount = 0;
+        foreach (var shiftId in shiftIds)
+        {
+            if (!requiredByShift.TryGetValue(shiftId, out var requiredTemplateIds) || requiredTemplateIds.Count == 0)
             {
                 continue;
             }
 
-            var submittedTemplateIds = await _formSubmissionRepository
-                .ListSubmittedTemplateIdsByShiftAsync(shift.Id, cancellationToken);
+            submittedByShift.TryGetValue(shiftId, out var submittedTemplateIds);
+            submittedTemplateIds ??= [];
 
             if (requiredTemplateIds.Except(submittedTemplateIds).Any())
             {
