@@ -36,13 +36,18 @@ public sealed class CachingCurrentUserMembershipResolver : ICurrentUserMembershi
 
         var membership = await _inner.ResolveAsync(userId, requestedOrganizationId, cancellationToken);
 
-        _cache.Set(
-            cacheKey,
-            new CachedMembership(membership),
-            new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = CacheDuration
-            });
+        // Do not cache misses — a brief race (e.g. membership created just after
+        // first auth) would otherwise stick for CacheDuration and hide the role.
+        if (membership is not null)
+        {
+            _cache.Set(
+                cacheKey,
+                new CachedMembership(membership),
+                new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = CacheDuration
+                });
+        }
 
         return membership;
     }
