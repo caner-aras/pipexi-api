@@ -10,4 +10,6 @@ public sealed record TeamDto(
     string Status,
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt,
-    OrganizationMemberDto? ManagerMember);
+    OrganizationMemberDto? ManagerMember,
+    int MemberCount = 0,
+    Guid? ManagerTeamMemberId = null);

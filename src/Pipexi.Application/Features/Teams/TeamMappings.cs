@@ -6,7 +6,11 @@ namespace Pipexi.Application.Features.Teams;
 
 internal static class TeamMappings
 {
-    public static TeamDto ToDto(this Team team, OrganizationMemberDto? managerMember = null)
+    public static TeamDto ToDto(
+        this Team team,
+        OrganizationMemberDto? managerMember = null,
+        int memberCount = 0,
+        Guid? managerTeamMemberId = null)
     {
         return new TeamDto(
             team.Id,
@@ -16,7 +20,9 @@ internal static class TeamMappings
             team.Status,
             team.CreatedAt,
             team.UpdatedAt,
-            managerMember);
+            managerMember,
+            memberCount,
+            managerTeamMemberId);
     }
 
     public static TeamMemberDto ToDto(

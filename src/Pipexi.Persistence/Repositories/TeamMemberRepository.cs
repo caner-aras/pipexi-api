@@ -59,4 +59,39 @@ public sealed class TeamMemberRepository : Repository<TeamMember>, ITeamMemberRe
             .OrderBy(x => x.CreatedAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyDictionary<Guid, int>> CountByTeamIdsAsync(
+        IReadOnlyCollection<Guid> teamIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (teamIds.Count == 0)
+        {
+            return new Dictionary<Guid, int>();
+        }
+
+        var counts = await DbSet
+            .Where(x => teamIds.Contains(x.TeamId))
+            .GroupBy(x => x.TeamId)
+            .Select(g => new { TeamId = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        return counts.ToDictionary(x => x.TeamId, x => x.Count);
+    }
+
+    public async Task<IReadOnlyCollection<TeamMember>> ListByTeamIdsAndOrganizationMemberIdsAsync(
+        IReadOnlyCollection<Guid> teamIds,
+        IReadOnlyCollection<Guid> organizationMemberIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (teamIds.Count == 0 || organizationMemberIds.Count == 0)
+        {
+            return Array.Empty<TeamMember>();
+        }
+
+        return await DbSet
+            .Where(x =>
+                teamIds.Contains(x.TeamId) &&
+                organizationMemberIds.Contains(x.OrganizationMemberId))
+            .ToListAsync(cancellationToken);
+    }
 }
