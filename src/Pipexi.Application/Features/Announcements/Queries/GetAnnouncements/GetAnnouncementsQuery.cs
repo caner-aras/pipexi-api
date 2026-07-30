@@ -1,7 +1,10 @@
+using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Announcements.Dtos;
+using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Announcements.Queries.GetAnnouncements;
@@ -14,17 +17,25 @@ public sealed record GetAnnouncementsQuery(
     public sealed class Handler : IRequestHandler<GetAnnouncementsQuery, Result<IReadOnlyCollection<AnnouncementDto>>>
     {
         private readonly IAnnouncementRepository _announcementRepository;
+        private readonly ICurrentUserContext _currentUserContext;
 
-        public Handler(IAnnouncementRepository announcementRepository)
+        public Handler(IAnnouncementRepository announcementRepository, ICurrentUserContext currentUserContext)
         {
             _announcementRepository = announcementRepository;
+            _currentUserContext = currentUserContext;
         }
 
         public async Task<Result<IReadOnlyCollection<AnnouncementDto>>> Handle(GetAnnouncementsQuery request, CancellationToken cancellationToken)
         {
-            var announcements = request.OrganizationId.HasValue
-                ? await _announcementRepository.ListByOrganizationIdAsync(request.OrganizationId.Value, cancellationToken)
-                : await _announcementRepository.GetAllAsync(cancellationToken);
+            var organizationId = request.OrganizationId ?? _currentUserContext.OrganizationId;
+            if (organizationId == Guid.Empty)
+            {
+                return Result<IReadOnlyCollection<AnnouncementDto>>.Failure(
+                    new AppError("auth.organization_required", "Organization is required."),
+                    (int)HttpStatusCode.Forbidden);
+            }
+
+            var announcements = await _announcementRepository.ListByOrganizationIdAsync(organizationId, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(request.AudienceType))
             {

@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
@@ -15,7 +16,7 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Shifts.Queries.GetShiftById;
 
-public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
+public sealed record GetShiftByIdQuery(Guid Id, Guid? ScopedOrganizationId = null) : IQuery<Result<ShiftDto>>
 {
     public sealed class Handler : IRequestHandler<GetShiftByIdQuery, Result<ShiftDto>>
     {
@@ -32,6 +33,7 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
         private readonly IFormTemplateRepository _formTemplateRepository;
         private readonly IFormSubmissionRepository _formSubmissionRepository;
         private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IShiftRepository shiftRepository,
@@ -46,8 +48,10 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
             IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
             IFormTemplateRepository formTemplateRepository,
             IFormSubmissionRepository formSubmissionRepository,
-            ITeamMemberRepository teamMemberRepository)
+            ITeamMemberRepository teamMemberRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _shiftRepository = shiftRepository;
             _shiftBreakRepository = shiftBreakRepository;
             _teamRepository = teamRepository;
@@ -72,6 +76,10 @@ public sealed record GetShiftByIdQuery(Guid Id) : IQuery<Result<ShiftDto>>
                     new AppError("shifts.not_found", "Shift not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<ShiftDto>(
+                shift.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             var breaks = await _shiftBreakRepository.ListByShiftIdAsync(shift.Id, cancellationToken);
             var team = shift.TeamId.HasValue

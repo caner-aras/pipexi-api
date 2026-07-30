@@ -1,7 +1,10 @@
+using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Locations.Dtos;
+using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Locations.Queries.GetLocations;
@@ -12,20 +15,29 @@ public sealed record GetLocationsQuery(Guid? OrganizationId) : IQuery<Result<IRe
     {
         private readonly ILocationRepository _locationRepository;
         private readonly ILocationWorkingHourRepository _locationWorkingHourRepository;
+        private readonly ICurrentUserContext _currentUserContext;
 
         public Handler(
             ILocationRepository locationRepository,
-            ILocationWorkingHourRepository locationWorkingHourRepository)
+            ILocationWorkingHourRepository locationWorkingHourRepository,
+            ICurrentUserContext currentUserContext)
         {
             _locationRepository = locationRepository;
             _locationWorkingHourRepository = locationWorkingHourRepository;
+            _currentUserContext = currentUserContext;
         }
 
         public async Task<Result<IReadOnlyCollection<LocationDto>>> Handle(GetLocationsQuery request, CancellationToken cancellationToken)
         {
-            var items = request.OrganizationId.HasValue
-                ? await _locationRepository.ListByOrganizationIdAsync(request.OrganizationId.Value, cancellationToken)
-                : await _locationRepository.GetAllAsync(cancellationToken);
+            var organizationId = request.OrganizationId ?? _currentUserContext.OrganizationId;
+            if (organizationId == Guid.Empty)
+            {
+                return Result<IReadOnlyCollection<LocationDto>>.Failure(
+                    new AppError("auth.organization_required", "Organization is required."),
+                    (int)HttpStatusCode.Forbidden);
+            }
+
+            var items = await _locationRepository.ListByOrganizationIdAsync(organizationId, cancellationToken);
 
             var locationIds = items.Select(x => x.Id).ToList();
             var workingHours = await _locationWorkingHourRepository.ListByLocationIdsAsync(locationIds, cancellationToken);

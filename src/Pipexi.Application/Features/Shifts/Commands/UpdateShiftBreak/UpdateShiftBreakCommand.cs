@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Shifts.Dtos;
@@ -13,15 +14,18 @@ public sealed record UpdateShiftBreakCommand(
     DateTimeOffset? StartAt,
     DateTimeOffset? EndAt,
     bool? IsPaid,
-    string? Status) : ICommand<Result<ShiftBreakDto>>
+    string? Status, Guid? ScopedOrganizationId = null) : ICommand<Result<ShiftBreakDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateShiftBreakCommand, Result<ShiftBreakDto>>
     {
         private readonly IShiftRepository _shiftRepository;
         private readonly IShiftBreakRepository _shiftBreakRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IShiftRepository shiftRepository, IShiftBreakRepository shiftBreakRepository)
+        public Handler(IShiftRepository shiftRepository, IShiftBreakRepository shiftBreakRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _shiftRepository = shiftRepository;
             _shiftBreakRepository = shiftBreakRepository;
         }
@@ -44,6 +48,10 @@ public sealed record UpdateShiftBreakCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<ShiftBreakDto>(
+                shift.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var candidateStart = request.StartAt ?? shiftBreak.StartAt;
             var candidateEnd = request.EndAt ?? shiftBreak.EndAt;
 

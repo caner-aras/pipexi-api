@@ -1,12 +1,13 @@
 using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Authorization;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Permissions.Dtos;
 using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Permissions.Queries.GetPermissions;
 
-public sealed record GetPermissionsQuery() : IQuery<Result<IReadOnlyCollection<PermissionDto>>>
+public sealed record GetPermissionsQuery() : IQuery<Result<IReadOnlyCollection<PermissionDto>>>, IIgnoreOrganizationAuthorization
 {
     public sealed class Handler : IRequestHandler<GetPermissionsQuery, Result<IReadOnlyCollection<PermissionDto>>>
     {

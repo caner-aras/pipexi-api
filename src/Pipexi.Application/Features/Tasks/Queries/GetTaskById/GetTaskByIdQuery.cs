@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Tasks;
@@ -9,19 +10,22 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Tasks.Queries.GetTaskById;
 
-public sealed record GetTaskByIdQuery(Guid Id) : IQuery<Result<TaskDto>>
+public sealed record GetTaskByIdQuery(Guid Id, Guid? ScopedOrganizationId = null) : IQuery<Result<TaskDto>>
 {
     public sealed class Handler : IRequestHandler<GetTaskByIdQuery, Result<TaskDto>>
     {
         private readonly IWorkTaskRepository _workTaskRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
             ITaskCommentRepository taskCommentRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _workTaskRepository = workTaskRepository;
             _taskCommentRepository = taskCommentRepository;
             _userRepository = userRepository;
@@ -36,6 +40,10 @@ public sealed record GetTaskByIdQuery(Guid Id) : IQuery<Result<TaskDto>>
                     new AppError("tasks.not_found", "Task not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TaskDto>(
+                task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             var comments = await _taskCommentRepository.ListByWorkTaskIdAsync(task.Id, cancellationToken);
             TaskCommentMemberUserDto? reporter = null;

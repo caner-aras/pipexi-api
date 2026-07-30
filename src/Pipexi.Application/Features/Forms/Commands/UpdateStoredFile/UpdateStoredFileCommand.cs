@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
@@ -14,14 +15,17 @@ public sealed record UpdateStoredFileCommand(
     string? ContentType,
     string? StoragePath,
     long? SizeBytes,
-    string? Status) : ICommand<Result<StoredFileDto>>
+    string? Status, Guid? ScopedOrganizationId = null) : ICommand<Result<StoredFileDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateStoredFileCommand, Result<StoredFileDto>>
     {
         private readonly IStoredFileRepository _storedFileRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IStoredFileRepository storedFileRepository)
+        public Handler(IStoredFileRepository storedFileRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _storedFileRepository = storedFileRepository;
         }
 
@@ -35,6 +39,10 @@ public sealed record UpdateStoredFileCommand(
                     (int)HttpStatusCode.NotFound);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<StoredFileDto>(
+                file.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             file.UpdateDetails(
                 request.FileName,
                 request.ContentType,

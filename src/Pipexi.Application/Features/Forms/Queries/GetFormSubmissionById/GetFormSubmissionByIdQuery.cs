@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
@@ -9,7 +10,7 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Forms.Queries.GetFormSubmissionById;
 
-public sealed record GetFormSubmissionByIdQuery(Guid Id) : IQuery<Result<FormSubmissionDto>>
+public sealed record GetFormSubmissionByIdQuery(Guid Id, Guid? ScopedOrganizationId = null) : IQuery<Result<FormSubmissionDto>>
 {
     public sealed class Handler : IRequestHandler<GetFormSubmissionByIdQuery, Result<FormSubmissionDto>>
     {
@@ -19,6 +20,7 @@ public sealed record GetFormSubmissionByIdQuery(Guid Id) : IQuery<Result<FormSub
         private readonly IStoredFileRepository _storedFileRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IFormSubmissionRepository formSubmissionRepository,
@@ -26,8 +28,10 @@ public sealed record GetFormSubmissionByIdQuery(Guid Id) : IQuery<Result<FormSub
             IFormFieldRepository formFieldRepository,
             IStoredFileRepository storedFileRepository,
             IOrganizationMemberRepository organizationMemberRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _formSubmissionRepository = formSubmissionRepository;
             _formAnswerRepository = formAnswerRepository;
             _formFieldRepository = formFieldRepository;
@@ -46,6 +50,10 @@ public sealed record GetFormSubmissionByIdQuery(Guid Id) : IQuery<Result<FormSub
                     (int)HttpStatusCode.NotFound);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<FormSubmissionDto>(
+                submission.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var answers = await _formAnswerRepository.ListByFormSubmissionIdAsync(submission.Id, cancellationToken);
             var fields = await _formFieldRepository.ListByFormTemplateIdAsync(submission.FormTemplateId, cancellationToken);
             var files = await _storedFileRepository.ListByOrganizationIdAsync(submission.OrganizationId, cancellationToken);

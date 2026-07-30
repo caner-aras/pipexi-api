@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
@@ -21,7 +22,7 @@ public sealed record UpdateFormSubmissionCommand(
     Guid? ShiftId,
     DateTimeOffset? SubmittedAt,
     string? Status,
-    IReadOnlyCollection<UpdateFormSubmissionAnswerInput>? Answers) : ICommand<Result<FormSubmissionDto>>
+    IReadOnlyCollection<UpdateFormSubmissionAnswerInput>? Answers, Guid? ScopedOrganizationId = null) : ICommand<Result<FormSubmissionDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateFormSubmissionCommand, Result<FormSubmissionDto>>
     {
@@ -31,6 +32,7 @@ public sealed record UpdateFormSubmissionCommand(
         private readonly IFormAnswerRepository _formAnswerRepository;
         private readonly IFormFieldRepository _formFieldRepository;
         private readonly IStoredFileRepository _storedFileRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IFormSubmissionRepository formSubmissionRepository,
@@ -38,8 +40,10 @@ public sealed record UpdateFormSubmissionCommand(
             IShiftRepository shiftRepository,
             IFormAnswerRepository formAnswerRepository,
             IFormFieldRepository formFieldRepository,
-            IStoredFileRepository storedFileRepository)
+            IStoredFileRepository storedFileRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _formSubmissionRepository = formSubmissionRepository;
             _workTaskRepository = workTaskRepository;
             _shiftRepository = shiftRepository;
@@ -58,6 +62,10 @@ public sealed record UpdateFormSubmissionCommand(
                     (int)HttpStatusCode.NotFound);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<FormSubmissionDto>(
+                submission.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             if (request.TaskId.HasValue)
             {
                 var task = await _workTaskRepository.GetByIdAsync(request.TaskId.Value, cancellationToken);

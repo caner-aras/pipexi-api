@@ -117,9 +117,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetTeamMembersQuery(teamId), cancellationToken);
+        var result = await sender.Send(new GetTeamMembersQuery(teamId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -186,10 +184,8 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
-            new CreateTeamMemberCommand(teamId, request.OrganizationMemberId),
+            new CreateTeamMemberCommand(teamId, request.OrganizationMemberId, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -202,8 +198,6 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new CreateTeamMemberWithUserCommand(
                 teamId,
@@ -214,7 +208,8 @@ public static class TeamEndpoints
                 request.JobTitle,
                 request.Phone,
                 request.AvatarUrl,
-                request.AuthProviderId),
+                request.AuthProviderId,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -227,10 +222,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-
-        var result = await sender.Send(new GetTeamMemberByIdQuery(teamMemberId), cancellationToken);
+        var result = await sender.Send(new GetTeamMemberByIdQuery(teamMemberId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -242,10 +234,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-
-        var result = await sender.Send(new GetTeamMemberDetailsByIdQuery(teamMemberId, fromDate), cancellationToken);
+        var result = await sender.Send(new GetTeamMemberDetailsByIdQuery(teamMemberId, fromDate, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -256,10 +245,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-
-        var result = await sender.Send(new GetTeamMemberTasksByIdQuery(teamMemberId), cancellationToken);
+        var result = await sender.Send(new GetTeamMemberTasksByIdQuery(teamMemberId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -271,10 +257,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-
-        var result = await sender.Send(new UpdateTeamMemberCommand(teamMemberId, request.Status), cancellationToken);
+        var result = await sender.Send(new UpdateTeamMemberCommand(teamMemberId, request.Status, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -285,10 +268,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-
-        var result = await sender.Send(new DeleteTeamMemberCommand(teamMemberId), cancellationToken);
+        var result = await sender.Send(new DeleteTeamMemberCommand(teamMemberId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -299,9 +279,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetTeamDayOffsQuery(teamId, fromAt), cancellationToken);
+        var result = await sender.Send(new GetTeamDayOffsQuery(teamId, fromAt, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -313,11 +291,8 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-
         var result = await sender.Send(
-            new CreateTeamMemberDayOffCommand(teamMemberId, request.StartAt, request.EndAt, request.Reason),
+            new CreateTeamMemberDayOffCommand(teamMemberId, request.StartAt, request.EndAt, request.Reason, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -331,11 +306,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-        _ = teamMemberId;
-
-        var result = await sender.Send(new GetTeamMemberDayOffByIdQuery(dayOffId, teamMemberId), cancellationToken);
+        var result = await sender.Send(new GetTeamMemberDayOffByIdQuery(dayOffId, teamMemberId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -348,12 +319,8 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-        _ = teamMemberId;
-
         var result = await sender.Send(
-            new UpdateTeamMemberDayOffCommand(dayOffId, teamMemberId, request.StartAt, request.EndAt, request.Reason, request.Status),
+            new UpdateTeamMemberDayOffCommand(dayOffId, teamMemberId, request.StartAt, request.EndAt, request.Reason, request.Status, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -367,11 +334,7 @@ public static class TeamEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = teamId;
-        _ = teamMemberId;
-
-        var result = await sender.Send(new DeleteTeamMemberDayOffCommand(dayOffId, teamMemberId), cancellationToken);
+        var result = await sender.Send(new DeleteTeamMemberDayOffCommand(dayOffId, teamMemberId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 

@@ -1,9 +1,12 @@
+using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Organizations.Provisioning;
 using Pipexi.Application.Features.Tasks;
 using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Tasks.Queries.GetTasks;
@@ -20,44 +23,53 @@ public sealed record GetTasksQuery(
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICurrentUserContext _currentUserContext;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
             ITeamMemberRepository teamMemberRepository,
             IOrganizationMemberRepository organizationMemberRepository,
             IRoleRepository roleRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ICurrentUserContext currentUserContext)
         {
             _workTaskRepository = workTaskRepository;
             _teamMemberRepository = teamMemberRepository;
             _organizationMemberRepository = organizationMemberRepository;
             _roleRepository = roleRepository;
             _userRepository = userRepository;
+            _currentUserContext = currentUserContext;
         }
 
         public async Task<Result<IReadOnlyCollection<TaskDto>>> Handle(GetTasksQuery request, CancellationToken cancellationToken)
         {
+            var organizationId = request.OrganizationId ?? _currentUserContext.OrganizationId;
+
             IReadOnlyCollection<Pipexi.Domain.Entities.WorkTask> tasks;
             if (request.TeamId.HasValue)
             {
                 tasks = await _workTaskRepository.ListByAssignedTeamIdAsync(request.TeamId.Value, cancellationToken);
-                if (request.OrganizationId.HasValue)
+                if (organizationId != Guid.Empty)
                 {
-                    tasks = tasks.Where(x => x.OrganizationId == request.OrganizationId.Value).ToList();
+                    tasks = tasks.Where(x => x.OrganizationId == organizationId).ToList();
                 }
+            }
+            else if (organizationId != Guid.Empty)
+            {
+                tasks = await _workTaskRepository.ListByOrganizationIdAsync(organizationId, cancellationToken);
             }
             else
             {
-                tasks = request.OrganizationId.HasValue
-                    ? await _workTaskRepository.ListByOrganizationIdAsync(request.OrganizationId.Value, cancellationToken)
-                    : await _workTaskRepository.GetAllAsync(cancellationToken);
+                return Result<IReadOnlyCollection<TaskDto>>.Failure(
+                    new AppError("auth.organization_required", "Organization is required."),
+                    (int)HttpStatusCode.Forbidden);
             }
 
             if (request.UserId.HasValue &&
-                !await IsOrganizationOwnerAsync(request.OrganizationId, request.UserId.Value, cancellationToken))
+                !await IsOrganizationOwnerAsync(organizationId == Guid.Empty ? null : organizationId, request.UserId.Value, cancellationToken))
             {
-                var organizationMembers = request.OrganizationId.HasValue
-                    ? await ResolveOrganizationScopedMemberAsync(request.OrganizationId.Value, request.UserId.Value, cancellationToken)
+                var organizationMembers = organizationId != Guid.Empty
+                    ? await ResolveOrganizationScopedMemberAsync(organizationId, request.UserId.Value, cancellationToken)
                     : await _organizationMemberRepository.ListByUserIdAsync(request.UserId.Value, cancellationToken);
 
                 var teamMemberIds = new HashSet<Guid>();

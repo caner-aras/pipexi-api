@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Shared.Errors;
@@ -7,14 +8,17 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Shifts.Commands.DeleteShift;
 
-public sealed record DeleteShiftCommand(Guid Id) : ICommand<Result<object?>>
+public sealed record DeleteShiftCommand(Guid Id, Guid? ScopedOrganizationId = null) : ICommand<Result<object?>>
 {
     public sealed class Handler : IRequestHandler<DeleteShiftCommand, Result<object?>>
     {
         private readonly IShiftRepository _shiftRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IShiftRepository shiftRepository)
+        public Handler(IShiftRepository shiftRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _shiftRepository = shiftRepository;
         }
 
@@ -27,6 +31,10 @@ public sealed record DeleteShiftCommand(Guid Id) : ICommand<Result<object?>>
                     new AppError("shifts.not_found", "Shift not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<object?>(
+                shift.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             await _shiftRepository.DeleteAsync(shift, cancellationToken);
             return Result<object?>.Success(null, (int)HttpStatusCode.OK);

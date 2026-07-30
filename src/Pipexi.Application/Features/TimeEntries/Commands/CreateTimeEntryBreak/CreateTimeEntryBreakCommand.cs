@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.TimeEntries.Dtos;
@@ -13,7 +14,7 @@ public sealed record CreateTimeEntryBreakCommand(
     Guid TimeEntryId,
     DateTimeOffset StartAt,
     DateTimeOffset EndAt,
-    bool IsPaid) : ICommand<Result<TimeEntryBreakDto>>
+    bool IsPaid, Guid? ScopedOrganizationId = null) : ICommand<Result<TimeEntryBreakDto>>
 {
     public sealed class Handler : IRequestHandler<CreateTimeEntryBreakCommand, Result<TimeEntryBreakDto>>
     {
@@ -22,14 +23,17 @@ public sealed record CreateTimeEntryBreakCommand(
         private readonly IShiftRepository _shiftRepository;
         private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
         private readonly IFormSubmissionRepository _formSubmissionRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             ITimeEntryRepository timeEntryRepository,
             ITimeEntryBreakRepository timeEntryBreakRepository,
             IShiftRepository shiftRepository,
             IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
-            IFormSubmissionRepository formSubmissionRepository)
+            IFormSubmissionRepository formSubmissionRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _timeEntryRepository = timeEntryRepository;
             _timeEntryBreakRepository = timeEntryBreakRepository;
             _shiftRepository = shiftRepository;
@@ -53,6 +57,10 @@ public sealed record CreateTimeEntryBreakCommand(
                     new AppError("time_entry_breaks.invalid_time_entry", "Time entry not found."),
                     (int)HttpStatusCode.BadRequest);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TimeEntryBreakDto>(
+                timeEntry.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             if (request.StartAt < timeEntry.ClockInAt || (timeEntry.ClockOutAt.HasValue && request.EndAt > timeEntry.ClockOutAt.Value))
             {

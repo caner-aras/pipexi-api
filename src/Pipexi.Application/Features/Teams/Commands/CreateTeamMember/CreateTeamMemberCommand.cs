@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.OrganizationMembers;
@@ -12,7 +13,7 @@ namespace Pipexi.Application.Features.Teams.Commands.CreateTeamMember;
 
 public sealed record CreateTeamMemberCommand(
     Guid TeamId,
-    Guid OrganizationMemberId) : ICommand<Result<TeamMemberDto>>
+    Guid OrganizationMemberId, Guid? ScopedOrganizationId = null) : ICommand<Result<TeamMemberDto>>
 {
     public sealed class Handler : IRequestHandler<CreateTeamMemberCommand, Result<TeamMemberDto>>
     {
@@ -20,13 +21,16 @@ public sealed record CreateTeamMemberCommand(
         private readonly ITeamRepository _teamRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
             IOrganizationMemberRepository organizationMemberRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
             _organizationMemberRepository = organizationMemberRepository;
@@ -43,6 +47,10 @@ public sealed record CreateTeamMemberCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TeamMemberDto>(
+                team.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var organizationMember = await _organizationMemberRepository.GetByIdAsync(request.OrganizationMemberId, cancellationToken);
             if (organizationMember is null || organizationMember.OrganizationId != team.OrganizationId)
             {

@@ -1,7 +1,9 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Common.Behaviors;
+using Pipexi.Application.Identity;
 
 namespace Pipexi.Application.DependencyInjection;
 
@@ -9,6 +11,8 @@ public static class ServiceRegistration
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddScoped<IOrganizationAccessService, OrganizationAccessService>();
+
         services.AddMediatR(configuration =>
         {
             configuration.RegisterServicesFromAssembly(typeof(ServiceRegistration).Assembly);

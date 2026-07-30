@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
@@ -15,15 +16,18 @@ public sealed record CreateFormFieldCommand(
     string Label,
     bool IsRequired,
     int SortOrder,
-    string? OptionsJson) : ICommand<Result<FormFieldDto>>
+    string? OptionsJson, Guid? ScopedOrganizationId = null) : ICommand<Result<FormFieldDto>>
 {
     public sealed class Handler : IRequestHandler<CreateFormFieldCommand, Result<FormFieldDto>>
     {
         private readonly IFormTemplateRepository _formTemplateRepository;
         private readonly IFormFieldRepository _formFieldRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IFormTemplateRepository formTemplateRepository, IFormFieldRepository formFieldRepository)
+        public Handler(IFormTemplateRepository formTemplateRepository, IFormFieldRepository formFieldRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _formTemplateRepository = formTemplateRepository;
             _formFieldRepository = formFieldRepository;
         }
@@ -38,6 +42,10 @@ public sealed record CreateFormFieldCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<FormFieldDto>(
+                template.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var existingFields = await _formFieldRepository.ListByFormTemplateIdAsync(request.FormTemplateId, cancellationToken);
             if (existingFields.Any(x => x.SortOrder == request.SortOrder))
             {

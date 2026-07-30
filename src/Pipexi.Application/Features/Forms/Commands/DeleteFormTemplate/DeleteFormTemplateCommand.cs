@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Shared.Errors;
@@ -7,14 +8,17 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Forms.Commands.DeleteFormTemplate;
 
-public sealed record DeleteFormTemplateCommand(Guid Id) : ICommand<Result<object?>>
+public sealed record DeleteFormTemplateCommand(Guid Id, Guid? ScopedOrganizationId = null) : ICommand<Result<object?>>
 {
     public sealed class Handler : IRequestHandler<DeleteFormTemplateCommand, Result<object?>>
     {
         private readonly IFormTemplateRepository _formTemplateRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IFormTemplateRepository formTemplateRepository)
+        public Handler(IFormTemplateRepository formTemplateRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _formTemplateRepository = formTemplateRepository;
         }
 
@@ -28,6 +32,10 @@ public sealed record DeleteFormTemplateCommand(Guid Id) : ICommand<Result<object
                     (int)HttpStatusCode.NotFound);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<object?>(
+                template.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             await _formTemplateRepository.DeleteAsync(template, cancellationToken);
             return Result<object?>.Success(null, (int)HttpStatusCode.OK);
         }

@@ -99,9 +99,7 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetTimeEntryByIdQuery(timeEntryId), cancellationToken);
+        var result = await sender.Send(new GetTimeEntryByIdQuery(timeEntryId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -112,8 +110,6 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new UpdateTimeEntryCommand(
                 timeEntryId,
@@ -124,7 +120,8 @@ public static class ShiftEndpoints
                 request.ClockOutAt,
                 request.EmployeeNote,
                 request.ManagerNote,
-                request.Status),
+                request.Status,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -136,9 +133,7 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new DeleteTimeEntryCommand(timeEntryId), cancellationToken);
+        var result = await sender.Send(new DeleteTimeEntryCommand(timeEntryId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -148,9 +143,7 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetTimeEntryBreaksQuery(timeEntryId), cancellationToken);
+        var result = await sender.Send(new GetTimeEntryBreaksQuery(timeEntryId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -161,10 +154,8 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
-            new CreateTimeEntryBreakCommand(timeEntryId, request.StartAt, request.EndAt, request.IsPaid),
+            new CreateTimeEntryBreakCommand(timeEntryId, request.StartAt, request.EndAt, request.IsPaid, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -177,10 +168,7 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = timeEntryId;
-
-        var result = await sender.Send(new GetTimeEntryBreakByIdQuery(timeEntryBreakId), cancellationToken);
+        var result = await sender.Send(new GetTimeEntryBreakByIdQuery(timeEntryBreakId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -192,11 +180,8 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = timeEntryId;
-
         var result = await sender.Send(
-            new UpdateTimeEntryBreakCommand(timeEntryBreakId, request.StartAt, request.EndAt, request.IsPaid, request.Status),
+            new UpdateTimeEntryBreakCommand(timeEntryBreakId, request.StartAt, request.EndAt, request.IsPaid, request.Status, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -209,10 +194,7 @@ public static class ShiftEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = timeEntryId;
-
-        var result = await sender.Send(new DeleteTimeEntryBreakCommand(timeEntryBreakId), cancellationToken);
+        var result = await sender.Send(new DeleteTimeEntryBreakCommand(timeEntryBreakId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 

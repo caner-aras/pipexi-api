@@ -2,6 +2,7 @@ using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Authorization;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Organizations.Dtos;
 using Pipexi.Application.Features.Organizations.Provisioning;
@@ -15,7 +16,7 @@ public sealed record CreateOrganizationCommand(
     string Name,
     string Slug,
     string Timezone,
-    string? Currency = null) : ICommand<Result<OrganizationDto>>
+    string? Currency = null) : ICommand<Result<OrganizationDto>>, IIgnoreOrganizationAuthorization
 {
     public sealed class Handler : IRequestHandler<CreateOrganizationCommand, Result<OrganizationDto>>
     {

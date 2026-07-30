@@ -1,6 +1,7 @@
 using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Authorization;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Permissions.Dtos;
 using Pipexi.Shared.Errors;
@@ -8,7 +9,7 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Permissions.Queries.GetPermissionById;
 
-public sealed record GetPermissionByIdQuery(Guid Id) : IQuery<Result<PermissionDto>>
+public sealed record GetPermissionByIdQuery(Guid Id) : IQuery<Result<PermissionDto>>, IIgnoreOrganizationAuthorization
 {
     public sealed class Handler : IRequestHandler<GetPermissionByIdQuery, Result<PermissionDto>>
     {

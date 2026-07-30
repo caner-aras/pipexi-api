@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.TimeEntries.Dtos;
@@ -18,7 +19,7 @@ public sealed record UpdateTimeEntryCommand(
     DateTimeOffset? ClockOutAt,
     string? EmployeeNote,
     string? ManagerNote,
-    string? Status) : ICommand<Result<TimeEntryDto>>
+    string? Status, Guid? ScopedOrganizationId = null) : ICommand<Result<TimeEntryDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateTimeEntryCommand, Result<TimeEntryDto>>
     {
@@ -29,6 +30,7 @@ public sealed record UpdateTimeEntryCommand(
         private readonly ILocationRepository _locationRepository;
         private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
         private readonly IFormSubmissionRepository _formSubmissionRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             ITimeEntryRepository timeEntryRepository,
@@ -37,8 +39,10 @@ public sealed record UpdateTimeEntryCommand(
             IOrganizationMemberRepository organizationMemberRepository,
             ILocationRepository locationRepository,
             IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
-            IFormSubmissionRepository formSubmissionRepository)
+            IFormSubmissionRepository formSubmissionRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _timeEntryRepository = timeEntryRepository;
             _timeEntryBreakRepository = timeEntryBreakRepository;
             _shiftRepository = shiftRepository;
@@ -57,6 +61,10 @@ public sealed record UpdateTimeEntryCommand(
                     new AppError("time_entries.not_found", "Time entry not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TimeEntryDto>(
+                timeEntry.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             var candidateClockInAt = request.ClockInAt ?? timeEntry.ClockInAt;
             var candidateClockOutAt = request.ClockOutAt ?? timeEntry.ClockOutAt;

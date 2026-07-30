@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common;
 using Pipexi.Application.Common.Models;
@@ -20,7 +21,7 @@ public sealed record CreateTeamMemberWithUserCommand(
     string? JobTitle,
     string? Phone,
     string? AvatarUrl,
-    string? AuthProviderId = null) : ICommand<Result<TeamMemberDto>>
+    string? AuthProviderId = null, Guid? ScopedOrganizationId = null) : ICommand<Result<TeamMemberDto>>
 {
     public sealed class Handler : IRequestHandler<CreateTeamMemberWithUserCommand, Result<TeamMemberDto>>
     {
@@ -29,14 +30,17 @@ public sealed record CreateTeamMemberWithUserCommand(
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
             IOrganizationMemberRepository organizationMemberRepository,
             IRoleRepository roleRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
             _organizationMemberRepository = organizationMemberRepository;
@@ -54,6 +58,10 @@ public sealed record CreateTeamMemberWithUserCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TeamMemberDto>(
+                team.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var role = await _roleRepository.GetByIdAsync(request.RoleId, cancellationToken);
             if (role is null || role.OrganizationId != team.OrganizationId)
             {

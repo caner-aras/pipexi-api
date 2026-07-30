@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Tasks.Dtos;
@@ -18,7 +19,7 @@ public sealed record UpdateTaskCommand(
     Guid? AssignedToTeamId,
     DateTimeOffset? DueAt,
     string? Priority,
-    string? Status) : ICommand<Result<TaskDto>>
+    string? Status, Guid? ScopedOrganizationId = null) : ICommand<Result<TaskDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateTaskCommand, Result<TaskDto>>
     {
@@ -28,6 +29,7 @@ public sealed record UpdateTaskCommand(
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ITeamRepository _teamRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
@@ -35,8 +37,10 @@ public sealed record UpdateTaskCommand(
             ILocationRepository locationRepository,
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
-            ITaskCommentRepository taskCommentRepository)
+            ITaskCommentRepository taskCommentRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _workTaskRepository = workTaskRepository;
             _shiftRepository = shiftRepository;
             _locationRepository = locationRepository;
@@ -54,6 +58,10 @@ public sealed record UpdateTaskCommand(
                     new AppError("tasks.not_found", "Task not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TaskDto>(
+                task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             if (request.ShiftId.HasValue)
             {

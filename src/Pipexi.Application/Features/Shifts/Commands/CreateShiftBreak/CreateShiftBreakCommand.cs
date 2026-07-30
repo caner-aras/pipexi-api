@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Shifts.Dtos;
@@ -13,15 +14,18 @@ public sealed record CreateShiftBreakCommand(
     Guid ShiftId,
     DateTimeOffset StartAt,
     DateTimeOffset EndAt,
-    bool IsPaid) : ICommand<Result<ShiftBreakDto>>
+    bool IsPaid, Guid? ScopedOrganizationId = null) : ICommand<Result<ShiftBreakDto>>
 {
     public sealed class Handler : IRequestHandler<CreateShiftBreakCommand, Result<ShiftBreakDto>>
     {
         private readonly IShiftRepository _shiftRepository;
         private readonly IShiftBreakRepository _shiftBreakRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IShiftRepository shiftRepository, IShiftBreakRepository shiftBreakRepository)
+        public Handler(IShiftRepository shiftRepository, IShiftBreakRepository shiftBreakRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _shiftRepository = shiftRepository;
             _shiftBreakRepository = shiftBreakRepository;
         }
@@ -42,6 +46,10 @@ public sealed record CreateShiftBreakCommand(
                     new AppError("shift_breaks.invalid_shift", "Shift not found."),
                     (int)HttpStatusCode.BadRequest);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<ShiftBreakDto>(
+                shift.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             if (request.StartAt < shift.StartAt || request.EndAt > shift.EndAt)
             {

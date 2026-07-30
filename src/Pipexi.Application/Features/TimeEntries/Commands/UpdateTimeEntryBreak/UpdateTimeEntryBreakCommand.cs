@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.TimeEntries.Dtos;
@@ -14,7 +15,7 @@ public sealed record UpdateTimeEntryBreakCommand(
     DateTimeOffset? StartAt,
     DateTimeOffset? EndAt,
     bool? IsPaid,
-    string? Status) : ICommand<Result<TimeEntryBreakDto>>
+    string? Status, Guid? ScopedOrganizationId = null) : ICommand<Result<TimeEntryBreakDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateTimeEntryBreakCommand, Result<TimeEntryBreakDto>>
     {
@@ -23,14 +24,17 @@ public sealed record UpdateTimeEntryBreakCommand(
         private readonly IShiftRepository _shiftRepository;
         private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
         private readonly IFormSubmissionRepository _formSubmissionRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             ITimeEntryRepository timeEntryRepository,
             ITimeEntryBreakRepository timeEntryBreakRepository,
             IShiftRepository shiftRepository,
             IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
-            IFormSubmissionRepository formSubmissionRepository)
+            IFormSubmissionRepository formSubmissionRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _timeEntryRepository = timeEntryRepository;
             _timeEntryBreakRepository = timeEntryBreakRepository;
             _shiftRepository = shiftRepository;
@@ -56,6 +60,10 @@ public sealed record UpdateTimeEntryBreakCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TimeEntryBreakDto>(
+                timeEntry.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var candidateStart = request.StartAt ?? timeEntryBreak.StartAt;
             var candidateEnd = request.EndAt ?? timeEntryBreak.EndAt;
 

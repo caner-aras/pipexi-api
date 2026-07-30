@@ -1,9 +1,12 @@
+using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.OrganizationMembers;
 using Pipexi.Application.Features.OrganizationMembers.Dtos;
 using Pipexi.Application.Features.Teams.Dtos;
+using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Teams.Queries.GetTeams;
@@ -15,22 +18,31 @@ public sealed record GetTeamsQuery(Guid? OrganizationId) : IQuery<Result<IReadOn
         private readonly ITeamRepository _teamRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICurrentUserContext _currentUserContext;
 
         public Handler(
             ITeamRepository teamRepository,
             IOrganizationMemberRepository organizationMemberRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ICurrentUserContext currentUserContext)
         {
             _teamRepository = teamRepository;
             _organizationMemberRepository = organizationMemberRepository;
             _userRepository = userRepository;
+            _currentUserContext = currentUserContext;
         }
 
         public async Task<Result<IReadOnlyCollection<TeamDto>>> Handle(GetTeamsQuery request, CancellationToken cancellationToken)
         {
-            var items = request.OrganizationId.HasValue
-                ? await _teamRepository.ListByOrganizationIdAsync(request.OrganizationId.Value, cancellationToken)
-                : await _teamRepository.GetAllAsync(cancellationToken);
+            var organizationId = request.OrganizationId ?? _currentUserContext.OrganizationId;
+            if (organizationId == Guid.Empty)
+            {
+                return Result<IReadOnlyCollection<TeamDto>>.Failure(
+                    new AppError("auth.organization_required", "Organization is required."),
+                    (int)HttpStatusCode.Forbidden);
+            }
+
+            var items = await _teamRepository.ListByOrganizationIdAsync(organizationId, cancellationToken);
 
             var managerMemberIds = items
                 .Where(x => x.ManagerMemberId.HasValue)

@@ -5,13 +5,13 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 ## P0 — Güvenlik (önce bunlar)
 
 ### API
-- [ ] Org membership enforce et (login yetmez; “bu org’un üyesi mi?”)
-- [ ] By-id IDOR kapat (shift / task / team / member / report / delete)
-- [ ] Path’teki `organizationId` ignore etme (`_ = organizationId` temizle, doğrula)
-- [ ] Listelerde `organizationId` yoksa tüm kayıtları dönme
+- [x] Org membership enforce et (login yetmez; “bu org’un üyesi mi?”)
+- [x] By-id IDOR kapat (shift / task / team / member / report / delete)
+- [x] Path’teki `organizationId` ignore etme (`_ = organizationId` temizle, doğrula)
+- [x] Listelerde `organizationId` yoksa tüm kayıtları dönme
 - [x] JWT / `/me` üzerinden org + role bilgisini düzgün hydrate et
 - [ ] Permission/role check’lerini handler’larda kullan (tablolar var, runtime yok)
-- [ ] Supabase RLS: `using (true)` yerine gerçek org-scoped policy
+- [ ] Supabase RLS: `using (true)` yerine gerçek org-scoped policy (deferred)
 
 ## P1 — Oturum
 

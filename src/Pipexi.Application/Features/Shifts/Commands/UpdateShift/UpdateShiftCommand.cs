@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Locations;
@@ -23,7 +24,7 @@ public sealed record UpdateShiftCommand(
     DateTimeOffset? EndAt,
     string? Notes,
     string? Status,
-    IReadOnlyCollection<Guid>? RequiredFormTemplateIds) : ICommand<Result<ShiftDto>>
+    IReadOnlyCollection<Guid>? RequiredFormTemplateIds, Guid? ScopedOrganizationId = null) : ICommand<Result<ShiftDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateShiftCommand, Result<ShiftDto>>
     {
@@ -35,6 +36,7 @@ public sealed record UpdateShiftCommand(
         private readonly IFormTemplateRepository _formTemplateRepository;
         private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
         private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IShiftRepository shiftRepository,
@@ -44,8 +46,10 @@ public sealed record UpdateShiftCommand(
             ILocationRepository locationRepository,
             IFormTemplateRepository formTemplateRepository,
             IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
-            ITeamMemberRepository teamMemberRepository)
+            ITeamMemberRepository teamMemberRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _shiftRepository = shiftRepository;
             _teamRepository = teamRepository;
             _organizationMemberRepository = organizationMemberRepository;
@@ -65,6 +69,10 @@ public sealed record UpdateShiftCommand(
                     new AppError("shifts.not_found", "Shift not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<ShiftDto>(
+                shift.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             var candidateStart = request.StartAt ?? shift.StartAt;
             var candidateEnd = request.EndAt ?? shift.EndAt;

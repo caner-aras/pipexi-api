@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Forms.Dtos;
@@ -15,15 +16,21 @@ public sealed record UpdateFormFieldCommand(
     bool? IsRequired,
     int? SortOrder,
     string? OptionsJson,
-    string? Status) : ICommand<Result<FormFieldDto>>
+    string? Status, Guid? ScopedOrganizationId = null) : ICommand<Result<FormFieldDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateFormFieldCommand, Result<FormFieldDto>>
     {
         private readonly IFormFieldRepository _formFieldRepository;
+        private readonly IFormTemplateRepository _formTemplateRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IFormFieldRepository formFieldRepository)
+        public Handler(IFormFieldRepository formFieldRepository,
+            IFormTemplateRepository formTemplateRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _formFieldRepository = formFieldRepository;
+            _formTemplateRepository = formTemplateRepository;
         }
 
         public async Task<Result<FormFieldDto>> Handle(UpdateFormFieldCommand request, CancellationToken cancellationToken)
@@ -45,6 +52,18 @@ public sealed record UpdateFormFieldCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var template = await _formTemplateRepository.GetByIdAsync(field.FormTemplateId, cancellationToken);
+            if (template is null)
+            {
+                return Result<FormFieldDto>.Failure(
+                    new AppError("form_fields.invalid_template", "Form template not found."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<FormFieldDto>(
+                template.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             field.UpdateDetails(
                 request.Type,
                 request.Label,

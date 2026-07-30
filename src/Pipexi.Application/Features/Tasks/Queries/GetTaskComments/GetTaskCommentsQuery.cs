@@ -1,34 +1,55 @@
+using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Tasks.Dtos;
+using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Tasks.Queries.GetTaskComments;
 
-public sealed record GetTaskCommentsQuery(Guid WorkTaskId) : IQuery<Result<IReadOnlyCollection<TaskCommentDto>>>
+public sealed record GetTaskCommentsQuery(Guid WorkTaskId, Guid? ScopedOrganizationId = null) : IQuery<Result<IReadOnlyCollection<TaskCommentDto>>>
 {
     public sealed class Handler : IRequestHandler<GetTaskCommentsQuery, Result<IReadOnlyCollection<TaskCommentDto>>>
     {
+        private readonly IWorkTaskRepository _workTaskRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
+            IWorkTaskRepository workTaskRepository,
             ITaskCommentRepository taskCommentRepository,
             ITeamMemberRepository teamMemberRepository,
             IOrganizationMemberRepository organizationMemberRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _workTaskRepository = workTaskRepository;
             _taskCommentRepository = taskCommentRepository;
             _teamMemberRepository = teamMemberRepository;
             _organizationMemberRepository = organizationMemberRepository;
             _userRepository = userRepository;
+            _organizationAccess = organizationAccess;
         }
 
         public async Task<Result<IReadOnlyCollection<TaskCommentDto>>> Handle(GetTaskCommentsQuery request, CancellationToken cancellationToken)
         {
+            var task = await _workTaskRepository.GetByIdAsync(request.WorkTaskId, cancellationToken);
+            if (task is null)
+            {
+                return Result<IReadOnlyCollection<TaskCommentDto>>.Failure(
+                    new AppError("tasks.not_found", "Task not found."),
+                    (int)HttpStatusCode.NotFound);
+            }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<IReadOnlyCollection<TaskCommentDto>>(
+                task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
+
             var comments = await _taskCommentRepository.ListByWorkTaskIdAsync(request.WorkTaskId, cancellationToken);
             var memberMap = await BuildMemberMapAsync(comments, cancellationToken);
             var dtos = comments.Select(x => x.ToDto(memberMap.GetValueOrDefault(x.TeamMemberId))).ToList();

@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Shared.Errors;
@@ -7,14 +8,17 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Tasks.Commands.DeleteTask;
 
-public sealed record DeleteTaskCommand(Guid Id) : ICommand<Result<object?>>
+public sealed record DeleteTaskCommand(Guid Id, Guid? ScopedOrganizationId = null) : ICommand<Result<object?>>
 {
     public sealed class Handler : IRequestHandler<DeleteTaskCommand, Result<object?>>
     {
         private readonly IWorkTaskRepository _workTaskRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
-        public Handler(IWorkTaskRepository workTaskRepository)
+        public Handler(IWorkTaskRepository workTaskRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _workTaskRepository = workTaskRepository;
         }
 
@@ -27,6 +31,10 @@ public sealed record DeleteTaskCommand(Guid Id) : ICommand<Result<object?>>
                     new AppError("tasks.not_found", "Task not found."),
                     (int)HttpStatusCode.NotFound);
             }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<object?>(
+                task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
 
             await _workTaskRepository.DeleteAsync(task, cancellationToken);
             return Result<object?>.Success(null, (int)HttpStatusCode.OK);

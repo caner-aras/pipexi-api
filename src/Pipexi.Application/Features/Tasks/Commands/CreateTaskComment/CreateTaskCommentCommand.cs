@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Tasks.Dtos;
@@ -12,7 +13,7 @@ namespace Pipexi.Application.Features.Tasks.Commands.CreateTaskComment;
 public sealed record CreateTaskCommentCommand(
     Guid WorkTaskId,
     Guid UserId,
-    string Message) : ICommand<Result<TaskCommentDto>>
+    string Message, Guid? ScopedOrganizationId = null) : ICommand<Result<TaskCommentDto>>
 {
     public sealed class Handler : IRequestHandler<CreateTaskCommentCommand, Result<TaskCommentDto>>
     {
@@ -21,14 +22,17 @@ public sealed record CreateTaskCommentCommand(
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ITeamRepository _teamRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
             IOrganizationMemberRepository organizationMemberRepository,
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
-            ITaskCommentRepository taskCommentRepository)
+            ITaskCommentRepository taskCommentRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _workTaskRepository = workTaskRepository;
             _organizationMemberRepository = organizationMemberRepository;
             _teamMemberRepository = teamMemberRepository;
@@ -46,6 +50,10 @@ public sealed record CreateTaskCommentCommand(
                     (int)HttpStatusCode.BadRequest);
             }
 
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TaskCommentDto>(
+                task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var organizationMember = await _organizationMemberRepository.GetByOrganizationIdAndUserIdAsync(
                 task.OrganizationId,
                 request.UserId,

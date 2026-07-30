@@ -2,6 +2,7 @@ using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Common.Authorization;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Organizations.Dtos;
 using Pipexi.Shared.Errors;
@@ -9,7 +10,7 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Organizations.Queries.GetOrganizations;
 
-public sealed record GetOrganizationsQuery() : IQuery<Result<IReadOnlyCollection<OrganizationDto>>>
+public sealed record GetOrganizationsQuery() : IQuery<Result<IReadOnlyCollection<OrganizationDto>>>, IIgnoreOrganizationAuthorization
 {
     public sealed class Handler : IRequestHandler<GetOrganizationsQuery, Result<IReadOnlyCollection<OrganizationDto>>>
     {

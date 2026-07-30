@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Locations;
@@ -15,7 +16,7 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Teams.Queries.GetTeamMemberDetailsById;
 
-public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? FromDate = null) : IQuery<Result<TeamMemberDetailsDto>>
+public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? FromDate = null, Guid? ScopedOrganizationId = null) : IQuery<Result<TeamMemberDetailsDto>>
 {
     public sealed class Handler : IRequestHandler<GetTeamMemberDetailsByIdQuery, Result<TeamMemberDetailsDto>>
     {
@@ -30,6 +31,7 @@ public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? From
         private readonly ITimeEntryRepository _timeEntryRepository;
         private readonly ITimeEntryBreakRepository _timeEntryBreakRepository;
         private readonly IWorkTaskRepository _workTaskRepository;
+        private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
             ITeamMemberRepository teamMemberRepository,
@@ -42,8 +44,10 @@ public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? From
             ILocationRepository locationRepository,
             ITimeEntryRepository timeEntryRepository,
             ITimeEntryBreakRepository timeEntryBreakRepository,
-            IWorkTaskRepository workTaskRepository)
+            IWorkTaskRepository workTaskRepository,
+            IOrganizationAccessService organizationAccess)
         {
+            _organizationAccess = organizationAccess;
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
             _organizationRepository = organizationRepository;
@@ -68,6 +72,16 @@ public sealed record GetTeamMemberDetailsByIdQuery(Guid Id, DateTimeOffset? From
             }
 
             var team = await _teamRepository.GetByIdAsync(teamMember.TeamId, cancellationToken);
+            if (team is null)
+            {
+                return Result<TeamMemberDetailsDto>.Failure(
+                    new AppError("teams.not_found", "Team not found."),
+                    (int)HttpStatusCode.NotFound);
+            }
+
+            var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TeamMemberDetailsDto>(
+                team.OrganizationId, request.ScopedOrganizationId, cancellationToken);
+            if (accessDenied is not null) return accessDenied;
             var organizationMember = await _organizationMemberRepository.GetByIdAsync(
                 teamMember.OrganizationMemberId,
                 cancellationToken);

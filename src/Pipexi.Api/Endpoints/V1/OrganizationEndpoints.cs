@@ -400,9 +400,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetShiftByIdQuery(shiftId), cancellationToken);
+        var result = await sender.Send(new GetShiftByIdQuery(shiftId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -423,8 +421,6 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new UpdateShiftCommand(
                 shiftId,
@@ -436,7 +432,8 @@ public static class OrganizationEndpoints
                 request.EndAt,
                 request.Notes,
                 request.Status,
-                request.RequiredFormTemplateIds),
+                request.RequiredFormTemplateIds,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -448,9 +445,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new DeleteShiftCommand(shiftId), cancellationToken);
+        var result = await sender.Send(new DeleteShiftCommand(shiftId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -460,9 +455,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetShiftBreaksQuery(shiftId), cancellationToken);
+        var result = await sender.Send(new GetShiftBreaksQuery(shiftId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -473,10 +466,8 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
-            new CreateShiftBreakCommand(shiftId, request.StartAt, request.EndAt, request.IsPaid),
+            new CreateShiftBreakCommand(shiftId, request.StartAt, request.EndAt, request.IsPaid, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -489,10 +480,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = shiftId;
-
-        var result = await sender.Send(new GetShiftBreakByIdQuery(shiftBreakId), cancellationToken);
+        var result = await sender.Send(new GetShiftBreakByIdQuery(shiftBreakId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -504,11 +492,8 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = shiftId;
-
         var result = await sender.Send(
-            new UpdateShiftBreakCommand(shiftBreakId, request.StartAt, request.EndAt, request.IsPaid, request.Status),
+            new UpdateShiftBreakCommand(shiftBreakId, request.StartAt, request.EndAt, request.IsPaid, request.Status, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -521,10 +506,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = shiftId;
-
-        var result = await sender.Send(new DeleteShiftBreakCommand(shiftBreakId), cancellationToken);
+        var result = await sender.Send(new DeleteShiftBreakCommand(shiftBreakId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -568,9 +550,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetTaskByIdQuery(taskId), cancellationToken);
+        var result = await sender.Send(new GetTaskByIdQuery(taskId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -581,8 +561,6 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new UpdateTaskCommand(
                 taskId,
@@ -594,7 +572,8 @@ public static class OrganizationEndpoints
                 request.AssignedToTeamId,
                 request.DueAt,
                 request.Priority,
-                request.Status),
+                request.Status,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -606,9 +585,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new DeleteTaskCommand(taskId), cancellationToken);
+        var result = await sender.Send(new DeleteTaskCommand(taskId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -618,9 +595,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetTaskCommentsQuery(taskId), cancellationToken);
+        var result = await sender.Send(new GetTaskCommentsQuery(taskId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -631,10 +606,8 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
-            new CreateTaskCommentCommand(taskId, request.UserId, request.Message),
+            new CreateTaskCommentCommand(taskId, request.UserId, request.Message, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -647,10 +620,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = taskId;
-
-        var result = await sender.Send(new GetTaskCommentByIdQuery(taskCommentId), cancellationToken);
+        var result = await sender.Send(new GetTaskCommentByIdQuery(taskCommentId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -662,10 +632,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = taskId;
-
-        var result = await sender.Send(new UpdateTaskCommentCommand(taskCommentId, request.Message, request.Status), cancellationToken);
+        var result = await sender.Send(new UpdateTaskCommentCommand(taskCommentId, request.Message, request.Status, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -676,10 +643,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = taskId;
-
-        var result = await sender.Send(new DeleteTaskCommentCommand(taskCommentId), cancellationToken);
+        var result = await sender.Send(new DeleteTaskCommentCommand(taskCommentId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -711,9 +675,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetFormTemplateByIdQuery(formTemplateId), cancellationToken);
+        var result = await sender.Send(new GetFormTemplateByIdQuery(formTemplateId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -724,10 +686,8 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
-            new UpdateFormTemplateCommand(formTemplateId, request.Name, request.Description, request.Status),
+            new UpdateFormTemplateCommand(formTemplateId, request.Name, request.Description, request.Status, organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -739,9 +699,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new DeleteFormTemplateCommand(formTemplateId), cancellationToken);
+        var result = await sender.Send(new DeleteFormTemplateCommand(formTemplateId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -751,9 +709,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetFormFieldsQuery(formTemplateId), cancellationToken);
+        var result = await sender.Send(new GetFormFieldsQuery(formTemplateId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -764,8 +720,6 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new CreateFormFieldCommand(
                 formTemplateId,
@@ -773,7 +727,8 @@ public static class OrganizationEndpoints
                 request.Label,
                 request.IsRequired,
                 request.SortOrder,
-                request.OptionsJson),
+                request.OptionsJson,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -786,10 +741,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = formTemplateId;
-
-        var result = await sender.Send(new GetFormFieldByIdQuery(formFieldId), cancellationToken);
+        var result = await sender.Send(new GetFormFieldByIdQuery(formFieldId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -801,9 +753,6 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = formTemplateId;
-
         var result = await sender.Send(
             new UpdateFormFieldCommand(
                 formFieldId,
@@ -812,7 +761,8 @@ public static class OrganizationEndpoints
                 request.IsRequired,
                 request.SortOrder,
                 request.OptionsJson,
-                request.Status),
+                request.Status,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -825,10 +775,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = formTemplateId;
-
-        var result = await sender.Send(new DeleteFormFieldCommand(formFieldId), cancellationToken);
+        var result = await sender.Send(new DeleteFormFieldCommand(formFieldId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -871,9 +818,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetFormSubmissionByIdQuery(formSubmissionId), cancellationToken);
+        var result = await sender.Send(new GetFormSubmissionByIdQuery(formSubmissionId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -884,8 +829,6 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new UpdateFormSubmissionCommand(
                 formSubmissionId,
@@ -897,7 +840,8 @@ public static class OrganizationEndpoints
                     x.FormFieldId,
                     x.Value,
                     x.FileId,
-                    x.Status)).ToList()),
+                    x.Status)).ToList(),
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -909,9 +853,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new DeleteFormSubmissionCommand(formSubmissionId), cancellationToken);
+        var result = await sender.Send(new DeleteFormSubmissionCommand(formSubmissionId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -921,9 +863,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetFormAnswersQuery(formSubmissionId), cancellationToken);
+        var result = await sender.Send(new GetFormAnswersQuery(formSubmissionId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -934,10 +874,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = formSubmissionId;
-
-        var result = await sender.Send(new GetFormAnswerByIdQuery(formAnswerId), cancellationToken);
+        var result = await sender.Send(new GetFormAnswerByIdQuery(formAnswerId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -948,10 +885,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-        _ = formSubmissionId;
-
-        var result = await sender.Send(new DeleteFormAnswerCommand(formAnswerId), cancellationToken);
+        var result = await sender.Send(new DeleteFormAnswerCommand(formAnswerId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -988,9 +922,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new GetStoredFileByIdQuery(fileId), cancellationToken);
+        var result = await sender.Send(new GetStoredFileByIdQuery(fileId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
@@ -1001,8 +933,6 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
         var result = await sender.Send(
             new UpdateStoredFileCommand(
                 fileId,
@@ -1010,7 +940,8 @@ public static class OrganizationEndpoints
                 request.ContentType,
                 request.StoragePath,
                 request.SizeBytes,
-                request.Status),
+                request.Status,
+                organizationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -1022,9 +953,7 @@ public static class OrganizationEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        _ = organizationId;
-
-        var result = await sender.Send(new DeleteStoredFileCommand(fileId), cancellationToken);
+        var result = await sender.Send(new DeleteStoredFileCommand(fileId, organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
