@@ -35,6 +35,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<RequestContextMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
+app.UseMiddleware<CurrentUserMembershipMiddleware>();
 app.UseAuthorization();
 
 app.MapHealthEndpoints();

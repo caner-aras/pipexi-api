@@ -6,17 +6,21 @@ namespace Pipexi.Api.Identity;
 public sealed class HttpCurrentUserContext : ICurrentUserContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly CurrentUserMembershipState _membershipState;
 
-    public HttpCurrentUserContext(IHttpContextAccessor httpContextAccessor)
+    public HttpCurrentUserContext(
+        IHttpContextAccessor httpContextAccessor,
+        CurrentUserMembershipState membershipState)
     {
         _httpContextAccessor = httpContextAccessor;
+        _membershipState = membershipState;
     }
 
     public Guid UserId => ParseGuidClaim(ClaimTypes.NameIdentifier, "sub");
 
-    public Guid OrganizationId => ParseGuidClaim("organization_id", "org_id");
+    public Guid OrganizationId => _membershipState.OrganizationId;
 
-    public string Role => GetClaimValue(ClaimTypes.Role, "role") ?? string.Empty;
+    public string Role => _membershipState.Role;
 
     private Guid ParseGuidClaim(params string[] claimTypes)
     {

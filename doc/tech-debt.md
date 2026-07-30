@@ -9,7 +9,7 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 - [ ] By-id IDOR kapat (shift / task / team / member / report / delete)
 - [ ] Path’teki `organizationId` ignore etme (`_ = organizationId` temizle, doğrula)
 - [ ] Listelerde `organizationId` yoksa tüm kayıtları dönme
-- [ ] JWT / `/me` üzerinden org + role bilgisini düzgün hydrate et
+- [x] JWT / `/me` üzerinden org + role bilgisini düzgün hydrate et
 - [ ] Permission/role check’lerini handler’larda kullan (tablolar var, runtime yok)
 - [ ] Supabase RLS: `using (true)` yerine gerçek org-scoped policy
 
@@ -20,8 +20,8 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 - [x] Access token expiry ile cookie/session TTL’ini hizala (web)
 
 ### Web
-- [ ] Auth gate: sadece cookie varlığı değil, token validate
-- [ ] OAuth / sync path’lerini shared API client ile hizala
+- [x] Auth gate: sadece cookie varlığı değil, token validate
+- [x] OAuth / sync path’lerini shared API client ile hizala
 
 ### App
 - [x] Logout’ta workspace + org/location store temizle

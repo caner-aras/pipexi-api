@@ -261,6 +261,7 @@ public static class AuthEndpoints
     private static async Task<IResult> GetMeAsync(
         HttpContext httpContext,
         ICurrentUserContext currentUserContext,
+        CurrentUserMembershipState membershipState,
         IUserRepository userRepository,
         CancellationToken cancellationToken)
     {
@@ -289,8 +290,10 @@ public static class AuthEndpoints
 
         var response = Result<MeResponse>.Success(new MeResponse(
             currentUserContext.UserId,
-            currentUserContext.OrganizationId,
-            currentUserContext.Role,
+            membershipState.OrganizationId,
+            membershipState.OrganizationMemberId,
+            membershipState.RoleId,
+            membershipState.Role,
             email,
             user.FirstName,
             user.LastName,
@@ -382,6 +385,8 @@ public sealed record SyncProfileResponse(
 public sealed record MeResponse(
     Guid UserId,
     Guid OrganizationId,
+    Guid? OrganizationMemberId,
+    Guid? RoleId,
     string Role,
     string? Email,
     string FirstName,
