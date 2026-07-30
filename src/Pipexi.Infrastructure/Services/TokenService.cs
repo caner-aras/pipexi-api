@@ -158,10 +158,21 @@ public sealed class TokenService : ITokenService
             $"{authBaseUrl.TrimEnd('/')}/recover");
 
         message.Headers.Add("apikey", anonApiKey);
-        message.Content = JsonContent.Create(new
-        {
-            email = email.Trim().ToLowerInvariant()
-        });
+
+        var redirectBaseUrl = _configuration["Supabase:Auth:EmailRedirectBaseUrl"]
+            ?? _configuration["Web:PublicBaseUrl"];
+        var redirectTo = string.IsNullOrWhiteSpace(redirectBaseUrl)
+            ? null
+            : $"{redirectBaseUrl.TrimEnd('/')}/auth/callback";
+
+        message.Content = JsonContent.Create(
+            string.IsNullOrWhiteSpace(redirectTo)
+                ? (object)new { email = email.Trim().ToLowerInvariant() }
+                : new
+                {
+                    email = email.Trim().ToLowerInvariant(),
+                    redirect_to = redirectTo
+                });
 
         using var response = await client.SendAsync(message, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
