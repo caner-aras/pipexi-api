@@ -23,6 +23,7 @@ public static class AuthEndpoints
         group.MapPost("/token", HandleSupabaseTokenAsync);
         group.MapPost("/refresh", RefreshTokenAsync);
         group.MapPost("/register", RegisterAsync);
+        group.MapPost("/forgot-password", ForgotPasswordAsync);
         group.MapPost("/sync", SyncProfileAsync)
             .RequireAuthorization();
         group.MapGet("/me", GetMeAsync)
@@ -30,6 +31,42 @@ public static class AuthEndpoints
         //.ExcludeFromDescription();
 
         return app;
+    }
+
+    private static async Task<IResult> ForgotPasswordAsync(
+        ForgotPasswordRequest request,
+        ITokenService tokenService,
+        ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        var email = request.Email?.Trim() ?? string.Empty;
+        if (!IsValidEmail(email))
+        {
+            var invalidEmail = Result<object?>.Failure(
+                new AppError("auth.invalid_email", "A valid email address is required."),
+                StatusCodes.Status400BadRequest);
+
+            return Results.Json(invalidEmail, statusCode: invalidEmail.StatusCode);
+        }
+
+        var recoverResult = await tokenService.SendPasswordRecoveryEmailAsync(
+            email,
+            cancellationToken);
+
+        if (!recoverResult.IsSuccess)
+        {
+            loggerFactory
+                .CreateLogger("Pipexi.Api.Auth")
+                .LogWarning(
+                    "Password recovery email failed for {Email}: {ErrorCode} {ErrorMessage}",
+                    email,
+                    recoverResult.Error?.Code,
+                    recoverResult.Error?.Message);
+        }
+
+        // Always return a generic success to avoid account enumeration.
+        var success = Result<object?>.Success(null, StatusCodes.Status200OK);
+        return Results.Json(success, statusCode: success.StatusCode);
     }
 
     private static async Task<IResult> HandleSupabaseTokenAsync(
@@ -368,6 +405,7 @@ public static class AuthEndpoints
 public sealed record TokenRequest(string Email, string Password);
 public sealed record RefreshTokenRequest(string refresh_token);
 public sealed record RegisterRequest(string FirstName, string LastName, string Email, string Password);
+public sealed record ForgotPasswordRequest(string Email);
 public sealed record SyncProfileRequest(
     string? Email,
     string? FirstName,
