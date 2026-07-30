@@ -29,10 +29,10 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 
 ## P2 — API kalite
 
-- [ ] `ValidationException` → 400 (şu an 500)
+- [x] `ValidationException` → 400 (şu an 500)
 - [x] Report summary: bellek yükü + shift başına N+1 azalt
 - [x] Task list/detail hydration tutarlılığı (reporter / assignee / comments)
-- [ ] Eksik FluentValidation’lar (özellikle delete + day-off + positions)
+- [x] Eksik FluentValidation’lar (özellikle delete + day-off + positions)
 
 ## P3 — App
 
@@ -49,9 +49,9 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 
 ## P4 — Web
 
-- [ ] Task reporter tipi + UI (app parity)
-- [ ] Avatar helper + person-colors (app parity)
-- [ ] BFF ad-hoc fetch → typed service katmanı
+- [x] Task reporter tipi + UI (app parity)
+- [x] Avatar helper + person-colors (app parity)
+- [x] BFF ad-hoc fetch → typed service katmanı
 - [ ] Landing/auth hardcoded renkleri design token’lara bağla
 - [ ] Dashboard’da gereksiz org-wide task preload’u gözden geçir
 

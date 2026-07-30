@@ -26,18 +26,18 @@ public sealed class ExceptionHandlingMiddleware
         }
         catch (ForbiddenException exception)
         {
-            await WriteProblemAsync(
+            await WriteResultFailureAsync(
                 context,
                 HttpStatusCode.Forbidden,
-                "Forbidden",
+                "forbidden",
                 exception.Message);
         }
         catch (UnauthorizedException exception)
         {
-            await WriteProblemAsync(
+            await WriteResultFailureAsync(
                 context,
                 HttpStatusCode.Unauthorized,
-                "Unauthorized",
+                "unauthorized",
                 exception.Message);
         }
         catch (ValidationException exception)
@@ -46,40 +46,43 @@ public sealed class ExceptionHandlingMiddleware
                 "; ",
                 exception.Errors.Select(error => error.ErrorMessage));
 
-            await WriteProblemAsync(
+            await WriteResultFailureAsync(
                 context,
                 HttpStatusCode.BadRequest,
-                "Validation failed",
+                "validation.failed",
                 string.IsNullOrWhiteSpace(message) ? "Validation failed." : message);
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Unhandled exception for {Path}", context.Request.Path);
 
-            await WriteProblemAsync(
+            await WriteResultFailureAsync(
                 context,
                 HttpStatusCode.InternalServerError,
-                "Internal Server Error",
+                "internal_server_error",
                 "An unexpected error occurred.");
         }
     }
 
-    private static async Task WriteProblemAsync(
+    private static async Task WriteResultFailureAsync(
         HttpContext context,
         HttpStatusCode statusCode,
-        string title,
-        string detail)
+        string code,
+        string message)
     {
         context.Response.StatusCode = (int)statusCode;
-        context.Response.ContentType = "application/problem+json";
+        context.Response.ContentType = "application/json";
 
         var payload = JsonSerializer.Serialize(new
         {
-            type = "about:blank",
-            title,
-            status = (int)statusCode,
-            detail,
-            traceId = context.TraceIdentifier
+            isSuccess = false,
+            statusCode = (int)statusCode,
+            data = (object?)null,
+            error = new
+            {
+                code,
+                message
+            }
         });
 
         await context.Response.WriteAsync(payload);
