@@ -52,8 +52,8 @@ Personel tarafına geçmeden önce özellikle **güvenlik** ve **oturum** maddel
 - [x] Task reporter tipi + UI (app parity)
 - [x] Avatar helper + person-colors (app parity)
 - [x] BFF ad-hoc fetch → typed service katmanı
-- [ ] Landing/auth hardcoded renkleri design token’lara bağla
-- [ ] Dashboard’da gereksiz org-wide task preload’u gözden geçir
+- [x] Landing/auth hardcoded renkleri design token’lara bağla
+- [x] Dashboard’da gereksiz org-wide task preload’u gözden geçir
 
 ## Notlar
 

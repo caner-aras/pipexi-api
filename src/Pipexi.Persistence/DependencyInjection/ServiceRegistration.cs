@@ -53,6 +53,8 @@ public static class ServiceRegistration
         services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<IMemberPositionHistoryRepository, MemberPositionHistoryRepository>();
+        services.AddScoped<IOrganizationMemberProfileRepository, OrganizationMemberProfileRepository>();
+        services.AddScoped<IOrganizationMemberPaymentRepository, OrganizationMemberPaymentRepository>();
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
         return services;

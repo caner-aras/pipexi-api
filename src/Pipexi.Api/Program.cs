@@ -59,6 +59,8 @@ app.MapRolePermissionEndpoints();
 app.MapReportEndpoints();
 app.MapPositionEndpoints();
 app.MapMemberPositionEndpoints();
+app.MapOrganizationMemberProfileEndpoints();
+app.MapOrganizationMemberPaymentEndpoints();
 
 
 app.Run();

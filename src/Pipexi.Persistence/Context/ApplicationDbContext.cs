@@ -35,6 +35,8 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<Position> Positions => Set<Position>();
     public DbSet<MemberPositionHistory> MemberPositionHistories => Set<MemberPositionHistory>();
+    public DbSet<OrganizationMemberProfile> OrganizationMemberProfiles => Set<OrganizationMemberProfile>();
+    public DbSet<OrganizationMemberPayment> OrganizationMemberPayments => Set<OrganizationMemberPayment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
