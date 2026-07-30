@@ -128,5 +128,4 @@ public static class OrganizationMemberEndpoints
 
         return Results.Json(result, statusCode: result.StatusCode);
     }
-
 }

@@ -31,6 +31,7 @@ using Pipexi.Application.Features.Locations.Commands.SetLocationWorkingHours;
 using Pipexi.Application.Features.Locations.Queries.GetLocations;
 using Pipexi.Application.Features.Locations.Queries.GetLocationWorkingHours;
 using Pipexi.Application.Features.OrganizationMembers.Commands.CreateOrganizationMember;
+using Pipexi.Application.Features.OrganizationMembers.Commands.ResetOrganizationMemberPassword;
 using Pipexi.Application.Features.OrganizationMembers.Queries.GetOrganizationMembers;
 using Pipexi.Application.Features.Positions.Commands.CreatePosition;
 using Pipexi.Application.Features.Positions.Queries.GetPositions;
@@ -86,6 +87,7 @@ public static class OrganizationEndpoints
 
         group.MapGet("/{organizationId:guid}/members", ListMembersAsync);
         group.MapPost("/{organizationId:guid}/members", CreateMemberAsync);
+        group.MapPost("/{organizationId:guid}/members/{memberId:guid}/reset-password", ResetMemberPasswordAsync);
 
         group.MapGet("/{organizationId:guid}/roles", ListRolesAsync);
         group.MapPost("/{organizationId:guid}/roles", CreateRoleAsync);
@@ -229,6 +231,19 @@ public static class OrganizationEndpoints
             request.JobTitle);
 
         var result = await sender.Send(command, cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ResetMemberPasswordAsync(
+        Guid organizationId,
+        Guid memberId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new ResetOrganizationMemberPasswordCommand(memberId, organizationId),
+            cancellationToken);
+
         return Results.Json(result, statusCode: result.StatusCode);
     }
 

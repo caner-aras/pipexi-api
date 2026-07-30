@@ -129,6 +129,55 @@ public sealed class TokenService : ITokenService
         return Pipexi.Shared.Results.Result<RegisterResponse>.Success(result, (int)response.StatusCode);
     }
 
+    public async Task<Pipexi.Shared.Results.Result<object?>> SendPasswordRecoveryEmailAsync(
+        string email,
+        CancellationToken cancellationToken)
+    {
+        var authBaseUrl = _configuration["Supabase:Auth:Authority"];
+        var anonApiKey = _configuration["Supabase:Auth:AnonApiKey"];
+
+        if (string.IsNullOrWhiteSpace(authBaseUrl) || string.IsNullOrWhiteSpace(anonApiKey))
+        {
+            return Pipexi.Shared.Results.Result<object?>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "SupabaseAuthConfigurationMissing",
+                    "Supabase auth configuration is missing."));
+        }
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return Pipexi.Shared.Results.Result<object?>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "AuthRecoverInvalidEmail",
+                    "Email is required."));
+        }
+
+        var client = _httpClientFactory.CreateClient();
+        using var message = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{authBaseUrl.TrimEnd('/')}/recover");
+
+        message.Headers.Add("apikey", anonApiKey);
+        message.Content = JsonContent.Create(new
+        {
+            email = email.Trim().ToLowerInvariant()
+        });
+
+        using var response = await client.SendAsync(message, cancellationToken);
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return Pipexi.Shared.Results.Result<object?>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "AuthRecoverFailed",
+                    responseBody),
+                (int)response.StatusCode);
+        }
+
+        return Pipexi.Shared.Results.Result<object?>.Success(null, (int)response.StatusCode);
+    }
+
     private async Task<Pipexi.Shared.Results.Result<TokenResponse>> ExchangeTokenAsync(
         string grantType,
         object body,

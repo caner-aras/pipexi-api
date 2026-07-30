@@ -15,6 +15,10 @@ public interface ITokenService
         string email,
         string password,
         CancellationToken cancellationToken);
+
+    Task<Pipexi.Shared.Results.Result<object?>> SendPasswordRecoveryEmailAsync(
+        string email,
+        CancellationToken cancellationToken);
 }
 
 public sealed record TokenResponse(
