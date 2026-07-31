@@ -131,7 +131,7 @@ for delete
 to authenticated
 using (false);
 
--- Realtime: ensure conversation_messages is in the publication (idempotent).
+-- Realtime: ensure chat tables are in the publication (idempotent).
 do $$
 begin
     if not exists (
@@ -142,6 +142,16 @@ begin
           and tablename = 'conversation_messages'
     ) then
         alter publication supabase_realtime add table public.conversation_messages;
+    end if;
+
+    if not exists (
+        select 1
+        from pg_publication_tables
+        where pubname = 'supabase_realtime'
+          and schemaname = 'public'
+          and tablename = 'conversation_members'
+    ) then
+        alter publication supabase_realtime add table public.conversation_members;
     end if;
 exception
     when undefined_object then

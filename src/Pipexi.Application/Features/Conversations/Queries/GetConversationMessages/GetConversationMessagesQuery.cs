@@ -5,6 +5,7 @@ using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Conversations;
 using Pipexi.Application.Features.Conversations.Dtos;
+using Pipexi.Domain.Entities;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
@@ -87,14 +88,29 @@ public sealed record GetConversationMessagesQuery(
                 await conversationMemberRepository.UpdateAsync(membership, cancellationToken);
             }
 
-            // Return chronological order for UI (oldest first within page).
+            DateTimeOffset? peerLastReadAt = null;
+            if (conversation.Type == Conversation.TypeDirect)
+            {
+                var members = await conversationMemberRepository.ListByConversationIdAsync(
+                    conversation.Id,
+                    cancellationToken);
+                var peerMembership = members.FirstOrDefault(x => x.OrganizationMemberId != currentMember.Id);
+                peerLastReadAt = peerMembership?.LastReadAt;
+            }
+
             var dtos = items
                 .OrderBy(x => x.CreatedAt)
                 .Select(x => x.ToDto())
                 .ToList();
 
             return Result<PagedConversationMessagesDto>.Success(
-                new PagedConversationMessagesDto(dtos, pageNumber, pageSize, totalCount),
+                new PagedConversationMessagesDto(
+                    dtos,
+                    pageNumber,
+                    pageSize,
+                    totalCount,
+                    conversation.Type,
+                    peerLastReadAt),
                 (int)HttpStatusCode.OK);
         }
     }
@@ -104,4 +120,6 @@ public sealed record PagedConversationMessagesDto(
     IReadOnlyCollection<ConversationMessageDto> Items,
     int PageNumber,
     int PageSize,
-    int TotalCount);
+    int TotalCount,
+    string ConversationType,
+    DateTimeOffset? PeerLastReadAt);
