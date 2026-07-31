@@ -4,6 +4,7 @@ using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Conversations.Dtos;
+using Pipexi.Domain.Entities;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
@@ -87,29 +88,57 @@ public sealed record GetConversationsQuery(Guid? OrganizationId = null)
                     continue;
                 }
 
-                var peerMembership = conversationMembers.FirstOrDefault(x => x.OrganizationMemberId != currentMember.Id);
-                if (peerMembership is null)
+                var myMembership = conversationMembers.FirstOrDefault(
+                    x => x.OrganizationMemberId == currentMember.Id);
+                if (myMembership is null)
                 {
                     continue;
                 }
 
-                peerMembersById.TryGetValue(peerMembership.OrganizationMemberId, out var peerMember);
-                UserInfo? peerUser = null;
-                if (peerMember is not null && peerUsersById.TryGetValue(peerMember.UserId, out var user))
-                {
-                    peerUser = new UserInfo(user.FirstName, user.LastName, user.Email, user.AvatarUrl);
-                }
+                Guid? peerOrganizationMemberId = null;
+                string displayName;
+                string? peerAvatarUrl = null;
 
-                var displayName = peerUser is null
-                    ? "Member"
-                    : $"{peerUser.FirstName} {peerUser.LastName}".Trim();
-                if (string.IsNullOrWhiteSpace(displayName))
+                if (conversation.Type == Conversation.TypeGroup)
                 {
-                    displayName = peerUser?.Email ?? "Member";
+                    displayName = string.IsNullOrWhiteSpace(conversation.Title)
+                        ? "Group"
+                        : conversation.Title.Trim();
+                }
+                else
+                {
+                    var peerMembership = conversationMembers.FirstOrDefault(
+                        x => x.OrganizationMemberId != currentMember.Id);
+                    if (peerMembership is null)
+                    {
+                        continue;
+                    }
+
+                    peerOrganizationMemberId = peerMembership.OrganizationMemberId;
+                    peerMembersById.TryGetValue(peerMembership.OrganizationMemberId, out var peerMember);
+                    displayName = "Member";
+
+                    if (peerMember is not null && peerUsersById.TryGetValue(peerMember.UserId, out var user))
+                    {
+                        displayName = $"{user.FirstName} {user.LastName}".Trim();
+                        if (string.IsNullOrWhiteSpace(displayName))
+                        {
+                            displayName = user.Email;
+                        }
+
+                        peerAvatarUrl = user.AvatarUrl;
+                    }
                 }
 
                 var latest = await conversationMessageRepository.GetLatestByConversationIdAsync(
                     conversation.Id,
+                    cancellationToken);
+
+                var readAfter = myMembership.LastReadAt ?? myMembership.CreatedAt;
+                var unreadCount = await conversationMessageRepository.CountUnreadAsync(
+                    conversation.Id,
+                    currentMember.Id,
+                    readAfter,
                     cancellationToken);
 
                 dtos.Add(new ConversationDto(
@@ -117,18 +146,18 @@ public sealed record GetConversationsQuery(Guid? OrganizationId = null)
                     conversation.OrganizationId,
                     conversation.Type,
                     conversation.Title,
-                    peerMembership.OrganizationMemberId,
+                    peerOrganizationMemberId,
                     displayName,
-                    peerUser?.AvatarUrl,
+                    peerAvatarUrl,
                     latest?.Body,
                     latest?.CreatedAt,
+                    unreadCount,
+                    conversationMembers.Count,
                     conversation.CreatedAt,
                     conversation.UpdatedAt));
             }
 
             return Result<IReadOnlyCollection<ConversationDto>>.Success(dtos, (int)HttpStatusCode.OK);
         }
-
-        private sealed record UserInfo(string FirstName, string LastName, string Email, string? AvatarUrl);
     }
 }

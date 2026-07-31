@@ -76,6 +76,17 @@ public sealed record GetConversationMessagesQuery(
                 pageSize,
                 cancellationToken);
 
+            var membership = await conversationMemberRepository.GetByConversationAndMemberAsync(
+                conversation.Id,
+                currentMember.Id,
+                cancellationToken);
+
+            if (membership is not null)
+            {
+                membership.MarkRead(DateTimeOffset.UtcNow);
+                await conversationMemberRepository.UpdateAsync(membership, cancellationToken);
+            }
+
             // Return chronological order for UI (oldest first within page).
             var dtos = items
                 .OrderBy(x => x.CreatedAt)

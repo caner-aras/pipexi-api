@@ -1,8 +1,10 @@
 using MediatR;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversation;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversationMessage;
+using Pipexi.Application.Features.Conversations.Commands.MarkConversationRead;
 using Pipexi.Application.Features.Conversations.Queries.GetConversationMessages;
 using Pipexi.Application.Features.Conversations.Queries.GetConversations;
+using Pipexi.Application.Features.Conversations.Queries.GetConversationUnreadCount;
 using Pipexi.Contracts.V1.Conversations;
 
 namespace Pipexi.Api.Endpoints.V1;
@@ -16,9 +18,11 @@ public static class ConversationEndpoints
             .RequireAuthorization();
 
         group.MapGet("/", ListAsync);
+        group.MapGet("/unread-count", UnreadCountAsync);
         group.MapPost("/", CreateAsync);
         group.MapGet("/{id:guid}/messages", ListMessagesAsync);
         group.MapPost("/{id:guid}/messages", CreateMessageAsync);
+        group.MapPost("/{id:guid}/read", MarkReadAsync);
 
         return app;
     }
@@ -32,13 +36,26 @@ public static class ConversationEndpoints
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
+    private static async Task<IResult> UnreadCountAsync(
+        Guid? organizationId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetConversationUnreadCountQuery(organizationId), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
     private static async Task<IResult> CreateAsync(
         CreateConversationRequest request,
         ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new CreateConversationCommand(request.OrganizationMemberId),
+            new CreateConversationCommand(
+                request.Type,
+                request.OrganizationMemberId,
+                request.Title,
+                request.OrganizationMemberIds),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -68,6 +85,15 @@ public static class ConversationEndpoints
             new CreateConversationMessageCommand(id, request.Body),
             cancellationToken);
 
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> MarkReadAsync(
+        Guid id,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new MarkConversationReadCommand(id), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 }

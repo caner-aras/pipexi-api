@@ -35,4 +35,39 @@ public sealed class ConversationMessageRepository(ApplicationDbContext dbContext
             .OrderByDescending(x => x.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public Task<int> CountUnreadAsync(
+        Guid conversationId,
+        Guid readerOrganizationMemberId,
+        DateTimeOffset readAfter,
+        CancellationToken cancellationToken = default)
+    {
+        return DbSet.CountAsync(
+            x => x.ConversationId == conversationId
+                 && x.SenderOrganizationMemberId != readerOrganizationMemberId
+                 && x.CreatedAt > readAfter,
+            cancellationToken);
+    }
+
+    public async Task<int> CountUnreadForMembershipsAsync(
+        IReadOnlyCollection<(Guid ConversationId, Guid ReaderOrganizationMemberId, DateTimeOffset ReadAfter)> memberships,
+        CancellationToken cancellationToken = default)
+    {
+        if (memberships.Count == 0)
+        {
+            return 0;
+        }
+
+        var total = 0;
+        foreach (var membership in memberships)
+        {
+            total += await CountUnreadAsync(
+                membership.ConversationId,
+                membership.ReaderOrganizationMemberId,
+                membership.ReadAfter,
+                cancellationToken);
+        }
+
+        return total;
+    }
 }

@@ -13,4 +13,14 @@ public interface IConversationMessageRepository : IRepository<ConversationMessag
     Task<ConversationMessage?> GetLatestByConversationIdAsync(
         Guid conversationId,
         CancellationToken cancellationToken = default);
+
+    Task<int> CountUnreadAsync(
+        Guid conversationId,
+        Guid readerOrganizationMemberId,
+        DateTimeOffset readAfter,
+        CancellationToken cancellationToken = default);
+
+    Task<int> CountUnreadForMembershipsAsync(
+        IReadOnlyCollection<(Guid ConversationId, Guid ReaderOrganizationMemberId, DateTimeOffset ReadAfter)> memberships,
+        CancellationToken cancellationToken = default);
 }

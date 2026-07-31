@@ -10,7 +10,11 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Conversations.Commands.CreateConversation;
 
-public sealed record CreateConversationCommand(Guid PeerOrganizationMemberId)
+public sealed record CreateConversationCommand(
+    string? Type,
+    Guid? PeerOrganizationMemberId,
+    string? Title,
+    IReadOnlyCollection<Guid>? OrganizationMemberIds)
     : ICommand<Result<ConversationDto>>
 {
     public sealed class Handler(
@@ -45,17 +49,47 @@ public sealed record CreateConversationCommand(Guid PeerOrganizationMemberId)
                     (int)HttpStatusCode.Forbidden);
             }
 
-            if (request.PeerOrganizationMemberId == currentMember.Id)
+            var type = string.IsNullOrWhiteSpace(request.Type)
+                ? Conversation.TypeDirect
+                : request.Type.Trim().ToLowerInvariant();
+
+            return type switch
+            {
+                Conversation.TypeDirect => await CreateDirectAsync(
+                    request,
+                    currentMember,
+                    cancellationToken),
+                Conversation.TypeGroup => await CreateGroupAsync(
+                    request,
+                    currentMember,
+                    cancellationToken),
+                _ => Result<ConversationDto>.Failure(
+                    new AppError("conversations.invalid_type", "Conversation type must be direct or group."),
+                    (int)HttpStatusCode.BadRequest)
+            };
+        }
+
+        private async Task<Result<ConversationDto>> CreateDirectAsync(
+            CreateConversationCommand request,
+            OrganizationMember currentMember,
+            CancellationToken cancellationToken)
+        {
+            if (!request.PeerOrganizationMemberId.HasValue || request.PeerOrganizationMemberId.Value == Guid.Empty)
+            {
+                return Result<ConversationDto>.Failure(
+                    new AppError("conversations.peer_required", "Peer organization member is required for direct chat."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var peerId = request.PeerOrganizationMemberId.Value;
+            if (peerId == currentMember.Id)
             {
                 return Result<ConversationDto>.Failure(
                     new AppError("conversations.self_dm", "Cannot create a conversation with yourself."),
                     (int)HttpStatusCode.BadRequest);
             }
 
-            var peerMember = await organizationMemberRepository.GetByIdAsync(
-                request.PeerOrganizationMemberId,
-                cancellationToken);
-
+            var peerMember = await organizationMemberRepository.GetByIdAsync(peerId, cancellationToken);
             if (peerMember is null || peerMember.OrganizationId != currentUserContext.OrganizationId)
             {
                 return Result<ConversationDto>.Failure(
@@ -70,6 +104,7 @@ public sealed record CreateConversationCommand(Guid PeerOrganizationMemberId)
                 cancellationToken);
 
             Conversation conversation;
+            var created = false;
             if (existing is not null)
             {
                 conversation = existing;
@@ -88,31 +123,145 @@ public sealed record CreateConversationCommand(Guid PeerOrganizationMemberId)
                         ConversationMember.Create(conversation.Id, peerMember.Id)
                     ],
                     cancellationToken);
+                created = true;
             }
 
-            var peerUser = await userRepository.GetByIdAsync(peerMember.UserId, cancellationToken);
-            var peerDisplayName = peerUser is null
-                ? "Member"
-                : $"{peerUser.FirstName} {peerUser.LastName}".Trim();
+            var dto = await BuildDtoAsync(
+                conversation,
+                currentMember.Id,
+                cancellationToken);
+
+            return Result<ConversationDto>.Success(
+                dto,
+                created ? (int)HttpStatusCode.Created : (int)HttpStatusCode.OK);
+        }
+
+        private async Task<Result<ConversationDto>> CreateGroupAsync(
+            CreateConversationCommand request,
+            OrganizationMember currentMember,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(request.Title))
+            {
+                return Result<ConversationDto>.Failure(
+                    new AppError("conversations.title_required", "Group title is required."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var peerIds = (request.OrganizationMemberIds ?? Array.Empty<Guid>())
+                .Where(x => x != Guid.Empty && x != currentMember.Id)
+                .Distinct()
+                .ToList();
+
+            if (peerIds.Count < 2)
+            {
+                return Result<ConversationDto>.Failure(
+                    new AppError(
+                        "conversations.group_members_required",
+                        "Group chat requires at least two other members."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var peerMembers = await organizationMemberRepository.GetByIdsAsync(peerIds, cancellationToken);
+            if (peerMembers.Count != peerIds.Count
+                || peerMembers.Any(x => x.OrganizationId != currentUserContext.OrganizationId))
+            {
+                return Result<ConversationDto>.Failure(
+                    new AppError(
+                        "conversations.group_members_invalid",
+                        "One or more group members were not found in this organization."),
+                    (int)HttpStatusCode.BadRequest);
+            }
+
+            var conversation = Conversation.CreateGroup(
+                currentUserContext.OrganizationId,
+                request.Title);
+
+            await conversationRepository.AddAsync(conversation, cancellationToken);
+
+            var memberships = new List<ConversationMember>
+            {
+                ConversationMember.Create(conversation.Id, currentMember.Id)
+            };
+            memberships.AddRange(peerIds.Select(id => ConversationMember.Create(conversation.Id, id)));
+
+            await conversationMemberRepository.AddRangeAsync(memberships, cancellationToken);
+
+            var dto = await BuildDtoAsync(conversation, currentMember.Id, cancellationToken);
+            return Result<ConversationDto>.Success(dto, (int)HttpStatusCode.Created);
+        }
+
+        private async Task<ConversationDto> BuildDtoAsync(
+            Conversation conversation,
+            Guid currentOrganizationMemberId,
+            CancellationToken cancellationToken)
+        {
+            var members = await conversationMemberRepository.ListByConversationIdAsync(
+                conversation.Id,
+                cancellationToken);
 
             var latest = await conversationMessageRepository.GetLatestByConversationIdAsync(
                 conversation.Id,
                 cancellationToken);
 
-            return Result<ConversationDto>.Success(
-                new ConversationDto(
-                    conversation.Id,
-                    conversation.OrganizationId,
-                    conversation.Type,
-                    conversation.Title,
-                    peerMember.Id,
-                    string.IsNullOrWhiteSpace(peerDisplayName) ? (peerUser?.Email ?? "Member") : peerDisplayName,
-                    peerUser?.AvatarUrl,
-                    latest?.Body,
-                    latest?.CreatedAt,
-                    conversation.CreatedAt,
-                    conversation.UpdatedAt),
-                existing is null ? (int)HttpStatusCode.Created : (int)HttpStatusCode.OK);
+            Guid? peerOrganizationMemberId = null;
+            string displayName;
+            string? peerAvatarUrl = null;
+
+            if (conversation.Type == Conversation.TypeGroup)
+            {
+                displayName = conversation.Title?.Trim() ?? "Group";
+            }
+            else
+            {
+                var peerMembership = members.FirstOrDefault(x => x.OrganizationMemberId != currentOrganizationMemberId);
+                peerOrganizationMemberId = peerMembership?.OrganizationMemberId;
+                displayName = "Member";
+
+                if (peerMembership is not null)
+                {
+                    var peerMember = await organizationMemberRepository.GetByIdAsync(
+                        peerMembership.OrganizationMemberId,
+                        cancellationToken);
+                    if (peerMember is not null)
+                    {
+                        var peerUser = await userRepository.GetByIdAsync(peerMember.UserId, cancellationToken);
+                        if (peerUser is not null)
+                        {
+                            displayName = $"{peerUser.FirstName} {peerUser.LastName}".Trim();
+                            if (string.IsNullOrWhiteSpace(displayName))
+                            {
+                                displayName = peerUser.Email;
+                            }
+
+                            peerAvatarUrl = peerUser.AvatarUrl;
+                        }
+                    }
+                }
+            }
+
+            var myMembership = members.FirstOrDefault(x => x.OrganizationMemberId == currentOrganizationMemberId);
+            var readAfter = myMembership?.LastReadAt ?? myMembership?.CreatedAt ?? conversation.CreatedAt;
+            var unreadCount = await conversationMessageRepository.CountUnreadAsync(
+                conversation.Id,
+                currentOrganizationMemberId,
+                readAfter,
+                cancellationToken);
+
+            return new ConversationDto(
+                conversation.Id,
+                conversation.OrganizationId,
+                conversation.Type,
+                conversation.Title,
+                peerOrganizationMemberId,
+                displayName,
+                peerAvatarUrl,
+                latest?.Body,
+                latest?.CreatedAt,
+                unreadCount,
+                members.Count,
+                conversation.CreatedAt,
+                conversation.UpdatedAt);
         }
     }
 }

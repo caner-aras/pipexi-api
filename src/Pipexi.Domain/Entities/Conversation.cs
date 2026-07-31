@@ -3,6 +3,7 @@ namespace Pipexi.Domain.Entities;
 public sealed class Conversation : BaseEntity
 {
     public const string TypeDirect = "direct";
+    public const string TypeGroup = "group";
 
     private Conversation(
         Guid id,
@@ -52,6 +53,24 @@ public sealed class Conversation : BaseEntity
             TypeDirect,
             title: null,
             BuildDirectMemberPairKey(memberA, memberB),
+            "active",
+            DateTimeOffset.UtcNow);
+    }
+
+    public static Conversation CreateGroup(Guid organizationId, string title)
+    {
+        var normalizedTitle = title.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedTitle))
+        {
+            throw new ArgumentException("Group title is required.");
+        }
+
+        return new Conversation(
+            Guid.NewGuid(),
+            organizationId,
+            TypeGroup,
+            normalizedTitle,
+            directMemberPairKey: null,
             "active",
             DateTimeOffset.UtcNow);
     }

@@ -18,6 +18,16 @@ public sealed class ConversationMemberRepository(ApplicationDbContext dbContext)
             cancellationToken);
     }
 
+    public Task<ConversationMember?> GetByConversationAndMemberAsync(
+        Guid conversationId,
+        Guid organizationMemberId,
+        CancellationToken cancellationToken = default)
+    {
+        return DbSet.FirstOrDefaultAsync(
+            x => x.ConversationId == conversationId && x.OrganizationMemberId == organizationMemberId,
+            cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<ConversationMember>> ListByConversationIdAsync(
         Guid conversationId,
         CancellationToken cancellationToken = default)
@@ -38,6 +48,15 @@ public sealed class ConversationMemberRepository(ApplicationDbContext dbContext)
 
         return await DbSet
             .Where(x => conversationIds.Contains(x.ConversationId))
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<ConversationMember>> ListByOrganizationMemberIdAsync(
+        Guid organizationMemberId,
+        CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Where(x => x.OrganizationMemberId == organizationMemberId)
             .ToListAsync(cancellationToken);
     }
 }

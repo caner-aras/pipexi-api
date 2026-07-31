@@ -5,10 +5,12 @@ public sealed record ConversationDto(
     Guid OrganizationId,
     string Type,
     string? Title,
-    Guid PeerOrganizationMemberId,
+    Guid? PeerOrganizationMemberId,
     string PeerDisplayName,
     string? PeerAvatarUrl,
     string? LastMessageBody,
     DateTimeOffset? LastMessageAt,
+    int UnreadCount,
+    int MemberCount,
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt);
