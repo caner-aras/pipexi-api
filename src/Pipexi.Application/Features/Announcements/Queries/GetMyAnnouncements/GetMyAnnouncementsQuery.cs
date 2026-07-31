@@ -66,6 +66,7 @@ public sealed record GetMyAnnouncementsQuery(Guid? OrganizationId = null)
             }
 
             var now = DateTimeOffset.UtcNow;
+            var oldestAllowed = now.AddDays(-3);
             var announcements = await _announcementRepository.ListByOrganizationIdAsync(
                 organizationId,
                 cancellationToken);
@@ -91,6 +92,7 @@ public sealed record GetMyAnnouncementsQuery(Guid? OrganizationId = null)
             var visible = announcements
                 .Where(x => string.Equals(x.Status, "active", StringComparison.OrdinalIgnoreCase))
                 .Where(x => !x.PublishedAt.HasValue || x.PublishedAt.Value <= now)
+                .Where(x => (x.PublishedAt ?? x.CreatedAt) >= oldestAllowed)
                 .Where(x => IsVisibleToMember(
                     x.AudienceType,
                     x.AudienceId,

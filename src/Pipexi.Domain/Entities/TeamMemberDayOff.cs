@@ -29,15 +29,20 @@ public sealed class TeamMemberDayOff : BaseEntity
         Guid teamMemberId,
         DateTimeOffset startAt,
         DateTimeOffset endAt,
-        string? reason)
+        string? reason,
+        string status = "pending")
     {
+        var normalizedStatus = string.IsNullOrWhiteSpace(status)
+            ? "pending"
+            : status.Trim().ToLowerInvariant();
+
         return new TeamMemberDayOff(
             Guid.NewGuid(),
             teamMemberId,
             startAt,
             endAt,
             string.IsNullOrWhiteSpace(reason) ? null : reason.Trim(),
-            "active",
+            normalizedStatus,
             DateTimeOffset.UtcNow);
     }
 

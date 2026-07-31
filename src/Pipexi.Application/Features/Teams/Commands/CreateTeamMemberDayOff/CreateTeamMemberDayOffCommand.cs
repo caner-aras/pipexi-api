@@ -19,25 +19,43 @@ public sealed record CreateTeamMemberDayOffCommand(
 
 public sealed class Handler : IRequestHandler<CreateTeamMemberDayOffCommand, Result<TeamMemberDayOffDto>>
 {
+    private static readonly HashSet<string> MemberRequesterRoles = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "member",
+        "staff",
+        "employee",
+        "user",
+    };
+
     private readonly ITeamMemberRepository _teamMemberRepository;
     private readonly ITeamRepository _teamRepository;
     private readonly ITeamMemberDayOffRepository _teamMemberDayOffRepository;
     private readonly IOrganizationAccessService _organizationAccess;
+    private readonly ICurrentUserContext _currentUserContext;
 
     public Handler(
         ITeamMemberRepository teamMemberRepository,
         ITeamRepository teamRepository,
         ITeamMemberDayOffRepository teamMemberDayOffRepository,
-        IOrganizationAccessService organizationAccess)
+        IOrganizationAccessService organizationAccess,
+        ICurrentUserContext currentUserContext)
     {
         _teamMemberRepository = teamMemberRepository;
         _teamRepository = teamRepository;
         _teamMemberDayOffRepository = teamMemberDayOffRepository;
         _organizationAccess = organizationAccess;
+        _currentUserContext = currentUserContext;
     }
 
     public async Task<Result<TeamMemberDayOffDto>> Handle(CreateTeamMemberDayOffCommand request, CancellationToken cancellationToken)
     {
+        if (request.StartAt < DateTimeOffset.UtcNow.AddMinutes(-1))
+        {
+            return Result<TeamMemberDayOffDto>.Failure(
+                new AppError("team_member_day_offs.past_start", "Day off start cannot be in the past."),
+                (int)HttpStatusCode.BadRequest);
+        }
+
         if (request.StartAt >= request.EndAt)
         {
             return Result<TeamMemberDayOffDto>.Failure(
@@ -78,14 +96,27 @@ public sealed class Handler : IRequestHandler<CreateTeamMemberDayOffCommand, Res
                 (int)HttpStatusCode.Conflict);
         }
 
+        var status = IsMemberRequester(_currentUserContext.Role) ? "pending" : "active";
+
         var dayOff = TeamMemberDayOff.Create(
             request.TeamMemberId,
             request.StartAt,
             request.EndAt,
-            request.Reason);
+            request.Reason,
+            status);
 
         await _teamMemberDayOffRepository.AddAsync(dayOff, cancellationToken);
 
         return Result<TeamMemberDayOffDto>.Success(dayOff.ToDto(), (int)HttpStatusCode.Created);
+    }
+
+    private static bool IsMemberRequester(string? role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return false;
+        }
+
+        return MemberRequesterRoles.Contains(role.Trim());
     }
 }
