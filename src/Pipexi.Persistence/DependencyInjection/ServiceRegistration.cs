@@ -55,6 +55,9 @@ public static class ServiceRegistration
         services.AddScoped<IMemberPositionHistoryRepository, MemberPositionHistoryRepository>();
         services.AddScoped<IOrganizationMemberProfileRepository, OrganizationMemberProfileRepository>();
         services.AddScoped<IOrganizationMemberPaymentRepository, OrganizationMemberPaymentRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IConversationMemberRepository, ConversationMemberRepository>();
+        services.AddScoped<IConversationMessageRepository, ConversationMessageRepository>();
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
         return services;

@@ -61,6 +61,7 @@ app.MapPositionEndpoints();
 app.MapMemberPositionEndpoints();
 app.MapOrganizationMemberProfileEndpoints();
 app.MapOrganizationMemberPaymentEndpoints();
+app.MapConversationEndpoints();
 
 
 app.Run();

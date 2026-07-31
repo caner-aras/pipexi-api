@@ -37,6 +37,9 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<MemberPositionHistory> MemberPositionHistories => Set<MemberPositionHistory>();
     public DbSet<OrganizationMemberProfile> OrganizationMemberProfiles => Set<OrganizationMemberProfile>();
     public DbSet<OrganizationMemberPayment> OrganizationMemberPayments => Set<OrganizationMemberPayment>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<ConversationMember> ConversationMembers => Set<ConversationMember>();
+    public DbSet<ConversationMessage> ConversationMessages => Set<ConversationMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
