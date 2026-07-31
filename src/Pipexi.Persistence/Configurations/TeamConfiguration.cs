@@ -27,6 +27,9 @@ public sealed class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.Property(x => x.ManagerMemberId)
             .HasColumnName("manager_member_id");
 
+        builder.Property(x => x.LocationId)
+            .HasColumnName("location_id");
+
         builder.Property(x => x.Status)
             .HasColumnName("status")
             .HasMaxLength(30)
@@ -45,6 +48,8 @@ public sealed class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.HasIndex(x => new { x.OrganizationId, x.Name })
             .IsUnique();
 
+        builder.HasIndex(x => x.LocationId);
+
         builder.HasOne<Organization>()
             .WithMany()
             .HasForeignKey(x => x.OrganizationId)
@@ -53,6 +58,11 @@ public sealed class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.HasOne<OrganizationMember>()
             .WithMany()
             .HasForeignKey(x => x.ManagerMemberId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<Location>()
+            .WithMany()
+            .HasForeignKey(x => x.LocationId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

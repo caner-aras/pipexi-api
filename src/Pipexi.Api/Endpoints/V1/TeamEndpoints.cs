@@ -105,7 +105,7 @@ public static class TeamEndpoints
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new CreateTeamCommand(organizationId, request.Name, request.ManagerMemberId),
+            new CreateTeamCommand(organizationId, request.Name, request.ManagerMemberId, request.LocationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -353,7 +353,7 @@ public static class TeamEndpoints
     private static async Task<IResult> CreateTeamAsync(CreateTeamRequest request, ISender sender, CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new CreateTeamCommand(request.OrganizationId, request.Name, request.ManagerMemberId),
+            new CreateTeamCommand(request.OrganizationId, request.Name, request.ManagerMemberId, request.LocationId),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -366,7 +366,7 @@ public static class TeamEndpoints
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new UpdateTeamCommand(id, request.Name, request.ManagerMemberId, request.Status),
+            new UpdateTeamCommand(id, request.Name, request.ManagerMemberId, request.Status, request.LocationId, UpdateLocation: true),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
@@ -689,7 +689,7 @@ public static class TeamEndpoints
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
-    private sealed record CreateTeamInOrganizationRequest(string Name, Guid? ManagerMemberId);
+    private sealed record CreateTeamInOrganizationRequest(string Name, Guid? ManagerMemberId, Guid? LocationId = null);
     private sealed record CreateTeamMemberInTeamRequest(Guid OrganizationMemberId);
     private sealed record UpsertTeamMemberDayOffRequest(DateTimeOffset StartAt, DateTimeOffset EndAt, string? Reason);
     private sealed record UpdateTeamMemberDayOffRequest(DateTimeOffset? StartAt, DateTimeOffset? EndAt, string? Reason, string? Status);

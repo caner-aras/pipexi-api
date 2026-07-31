@@ -17,6 +17,7 @@ internal static class TeamMappings
             team.OrganizationId,
             team.Name,
             team.ManagerMemberId,
+            team.LocationId,
             team.Status,
             team.CreatedAt,
             team.UpdatedAt,

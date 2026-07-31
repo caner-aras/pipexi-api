@@ -13,24 +13,28 @@ namespace Pipexi.Application.Features.Teams.Commands.CreateTeam;
 public sealed record CreateTeamCommand(
     Guid OrganizationId,
     string Name,
-    Guid? ManagerMemberId) : ICommand<Result<TeamDto>>
+    Guid? ManagerMemberId,
+    Guid? LocationId = null) : ICommand<Result<TeamDto>>
 {
     public sealed class Handler : IRequestHandler<CreateTeamCommand, Result<TeamDto>>
     {
         private readonly ITeamRepository _teamRepository;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IUserRepository _userRepository;
 
         public Handler(
             ITeamRepository teamRepository,
             IOrganizationRepository organizationRepository,
             IOrganizationMemberRepository organizationMemberRepository,
+            ILocationRepository locationRepository,
             IUserRepository userRepository)
         {
             _teamRepository = teamRepository;
             _organizationRepository = organizationRepository;
             _organizationMemberRepository = organizationMemberRepository;
+            _locationRepository = locationRepository;
             _userRepository = userRepository;
         }
 
@@ -55,6 +59,17 @@ public sealed record CreateTeamCommand(
                 }
             }
 
+            if (request.LocationId.HasValue)
+            {
+                var location = await _locationRepository.GetByIdAsync(request.LocationId.Value, cancellationToken);
+                if (location is null || location.OrganizationId != request.OrganizationId)
+                {
+                    return Result<TeamDto>.Failure(
+                        new AppError("teams.invalid_location", "Location not found for organization."),
+                        (int)HttpStatusCode.BadRequest);
+                }
+            }
+
             var exists = await _teamRepository.NameExistsAsync(
                 request.OrganizationId,
                 request.Name,
@@ -67,7 +82,11 @@ public sealed record CreateTeamCommand(
                     (int)HttpStatusCode.Conflict);
             }
 
-            var team = Team.Create(request.OrganizationId, request.Name, request.ManagerMemberId);
+            var team = Team.Create(
+                request.OrganizationId,
+                request.Name,
+                request.ManagerMemberId,
+                request.LocationId);
             await _teamRepository.AddAsync(team, cancellationToken);
 
             Pipexi.Application.Features.OrganizationMembers.Dtos.OrganizationMemberDto? managerMemberDto = null;

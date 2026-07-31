@@ -11,5 +11,9 @@ public sealed class CreateTeamCommandValidator : AbstractValidator<CreateTeamCom
         RuleFor(x => x.ManagerMemberId)
             .NotEmpty()
             .When(x => x.ManagerMemberId.HasValue);
+
+        RuleFor(x => x.LocationId)
+            .NotEmpty()
+            .When(x => x.LocationId.HasValue);
     }
 }

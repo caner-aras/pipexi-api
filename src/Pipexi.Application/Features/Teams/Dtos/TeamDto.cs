@@ -7,6 +7,7 @@ public sealed record TeamDto(
     Guid OrganizationId,
     string Name,
     Guid? ManagerMemberId,
+    Guid? LocationId,
     string Status,
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt,

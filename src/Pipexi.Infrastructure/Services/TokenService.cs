@@ -77,7 +77,7 @@ public sealed class TokenService : ITokenService
             return Pipexi.Shared.Results.Result<RegisterResponse>.Failure(
                 new Pipexi.Shared.Errors.AppError(
                     "AuthRegisterFailed",
-                    responseBody),
+                    ParseSupabaseAuthErrorMessage(responseBody)),
                 (int)response.StatusCode);
         }
 
@@ -182,7 +182,7 @@ public sealed class TokenService : ITokenService
             return Pipexi.Shared.Results.Result<object?>.Failure(
                 new Pipexi.Shared.Errors.AppError(
                     "AuthRecoverFailed",
-                    responseBody),
+                    ParseSupabaseAuthErrorMessage(responseBody)),
                 (int)response.StatusCode);
         }
 
@@ -220,7 +220,7 @@ public sealed class TokenService : ITokenService
             return Pipexi.Shared.Results.Result<TokenResponse>.Failure(
                 new Pipexi.Shared.Errors.AppError(
                     grantType == "refresh_token" ? "AuthRefreshFailed" : "AuthFailed",
-                    responseBody),
+                    ParseSupabaseAuthErrorMessage(responseBody)),
                 (int)response.StatusCode);
         }
 
@@ -249,5 +249,71 @@ public sealed class TokenService : ITokenService
         }
 
         return DefaultAccessTokenExpiresInSeconds;
+    }
+
+    /// <summary>
+    /// Supabase auth errors are JSON like
+    /// {"code":400,"error_code":"invalid_credentials","msg":"Invalid login credentials"}.
+    /// Prefer a human-readable msg / error_description over the raw body.
+    /// </summary>
+    private static string ParseSupabaseAuthErrorMessage(string responseBody)
+    {
+        if (string.IsNullOrWhiteSpace(responseBody))
+        {
+            return "Authentication failed.";
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(responseBody);
+            var root = document.RootElement;
+
+            if (TryReadStringProperty(root, "msg", out var msg))
+            {
+                return msg;
+            }
+
+            if (TryReadStringProperty(root, "error_description", out var errorDescription))
+            {
+                return errorDescription;
+            }
+
+            if (TryReadStringProperty(root, "message", out var message))
+            {
+                return message;
+            }
+
+            if (TryReadStringProperty(root, "error", out var error) &&
+                !string.Equals(error, "invalid_grant", StringComparison.OrdinalIgnoreCase))
+            {
+                return error;
+            }
+        }
+        catch (JsonException)
+        {
+            // Fall through to trimmed raw body for non-JSON responses.
+        }
+
+        var trimmed = responseBody.Trim();
+        return trimmed.Length > 300 ? trimmed[..300] : trimmed;
+    }
+
+    private static bool TryReadStringProperty(JsonElement root, string propertyName, out string value)
+    {
+        value = string.Empty;
+        if (!root.TryGetProperty(propertyName, out var element) ||
+            element.ValueKind != JsonValueKind.String)
+        {
+            return false;
+        }
+
+        var text = element.GetString();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        value = text.Trim();
+        return true;
     }
 }

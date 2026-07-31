@@ -13,21 +13,26 @@ public sealed record UpdateTeamCommand(
     Guid Id,
     string? Name,
     Guid? ManagerMemberId,
-    string? Status) : ICommand<Result<TeamDto>>
+    string? Status,
+    Guid? LocationId = null,
+    bool UpdateLocation = false) : ICommand<Result<TeamDto>>
 {
     public sealed class Handler : IRequestHandler<UpdateTeamCommand, Result<TeamDto>>
     {
         private readonly ITeamRepository _teamRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IUserRepository _userRepository;
 
         public Handler(
             ITeamRepository teamRepository,
             IOrganizationMemberRepository organizationMemberRepository,
+            ILocationRepository locationRepository,
             IUserRepository userRepository)
         {
             _teamRepository = teamRepository;
             _organizationMemberRepository = organizationMemberRepository;
+            _locationRepository = locationRepository;
             _userRepository = userRepository;
         }
 
@@ -52,6 +57,17 @@ public sealed record UpdateTeamCommand(
                 }
             }
 
+            if (request.UpdateLocation && request.LocationId.HasValue)
+            {
+                var location = await _locationRepository.GetByIdAsync(request.LocationId.Value, cancellationToken);
+                if (location is null || location.OrganizationId != team.OrganizationId)
+                {
+                    return Result<TeamDto>.Failure(
+                        new AppError("teams.invalid_location", "Location not found for organization."),
+                        (int)HttpStatusCode.BadRequest);
+                }
+            }
+
             var candidateName = request.Name ?? team.Name;
             var exists = await _teamRepository.NameExistsAsync(
                 team.OrganizationId,
@@ -66,7 +82,12 @@ public sealed record UpdateTeamCommand(
                     (int)HttpStatusCode.Conflict);
             }
 
-            team.UpdateDetails(request.Name, request.ManagerMemberId, request.Status);
+            team.UpdateDetails(
+                request.Name,
+                request.ManagerMemberId,
+                request.Status,
+                request.LocationId,
+                request.UpdateLocation);
             await _teamRepository.UpdateAsync(team, cancellationToken);
 
             Pipexi.Application.Features.OrganizationMembers.Dtos.OrganizationMemberDto? managerMemberDto = null;

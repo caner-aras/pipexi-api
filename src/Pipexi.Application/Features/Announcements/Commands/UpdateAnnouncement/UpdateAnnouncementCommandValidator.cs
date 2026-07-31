@@ -18,7 +18,21 @@ public sealed class UpdateAnnouncementCommandValidator : AbstractValidator<Updat
 
         RuleFor(x => x.AudienceType)
             .MaximumLength(50)
+            .Must(type => type is null || AnnouncementAudience.AllowedTypes.Contains(type.Trim()))
+            .WithMessage("AudienceType must be all, location, role, member, or team.")
             .When(x => x.AudienceType is not null);
+
+        RuleFor(x => x.AudienceId)
+            .Null()
+            .When(x => x.AudienceType is not null && AnnouncementAudience.IsAll(x.AudienceType))
+            .WithMessage("AudienceId must be empty when AudienceType is all.");
+
+        RuleFor(x => x.AudienceId)
+            .NotEmpty()
+            .When(x =>
+                x.AudienceType is not null &&
+                AnnouncementAudience.RequiresAudienceId(x.AudienceType))
+            .WithMessage("AudienceId is required for the selected AudienceType.");
 
         RuleFor(x => x.Status)
             .MaximumLength(30)

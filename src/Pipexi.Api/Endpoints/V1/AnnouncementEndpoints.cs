@@ -4,6 +4,7 @@ using Pipexi.Application.Features.Announcements.Commands.DeleteAnnouncement;
 using Pipexi.Application.Features.Announcements.Commands.UpdateAnnouncement;
 using Pipexi.Application.Features.Announcements.Queries.GetAnnouncementById;
 using Pipexi.Application.Features.Announcements.Queries.GetAnnouncements;
+using Pipexi.Application.Features.Announcements.Queries.GetMyAnnouncements;
 using Pipexi.Contracts.V1.Announcements;
 
 namespace Pipexi.Api.Endpoints.V1;
@@ -17,6 +18,7 @@ public static class AnnouncementEndpoints
             .RequireAuthorization();
 
         group.MapGet("/", ListAsync);
+        group.MapGet("/me", ListMineAsync);
         group.MapGet("/{id:guid}", GetByIdAsync);
         group.MapPost("/", CreateAsync);
         group.MapPut("/{id:guid}", UpdateAsync);
@@ -33,6 +35,15 @@ public static class AnnouncementEndpoints
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(new GetAnnouncementsQuery(organizationId, audienceType, audienceId), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ListMineAsync(
+        Guid? organizationId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetMyAnnouncementsQuery(organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 

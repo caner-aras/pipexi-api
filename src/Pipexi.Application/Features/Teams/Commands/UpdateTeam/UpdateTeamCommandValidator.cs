@@ -17,6 +17,10 @@ public sealed class UpdateTeamCommandValidator : AbstractValidator<UpdateTeamCom
             .NotEmpty()
             .When(x => x.ManagerMemberId.HasValue);
 
+        RuleFor(x => x.LocationId)
+            .NotEmpty()
+            .When(x => x.UpdateLocation && x.LocationId.HasValue);
+
         RuleFor(x => x.Status)
             .NotEmpty()
             .MaximumLength(50)
