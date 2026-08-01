@@ -22,7 +22,8 @@ public sealed record ReportOverviewDto(
     int PendingLeaveRequests,
     int ApprovedLeaveRequests,
     int FormSubmissionsToday,
-    int MissingRequiredShiftForms);
+    int MissingRequiredShiftForms,
+    int PendingDayOffRequests);
 
 public sealed record ReportStatusCountDto(string Key, int Count);
 

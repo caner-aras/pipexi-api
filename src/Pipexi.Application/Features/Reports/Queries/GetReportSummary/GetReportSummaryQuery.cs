@@ -24,6 +24,8 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
     private readonly IFormSubmissionRepository _formSubmissionRepository;
     private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ITeamMemberRepository _teamMemberRepository;
+    private readonly ITeamMemberDayOffRepository _teamMemberDayOffRepository;
 
     public Handler(
         IOrganizationRepository organizationRepository,
@@ -35,7 +37,9 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         ILeaveRequestRepository leaveRequestRepository,
         IFormSubmissionRepository formSubmissionRepository,
         IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        ITeamMemberRepository teamMemberRepository,
+        ITeamMemberDayOffRepository teamMemberDayOffRepository)
     {
         _organizationRepository = organizationRepository;
         _organizationMemberRepository = organizationMemberRepository;
@@ -47,6 +51,8 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
         _formSubmissionRepository = formSubmissionRepository;
         _shiftRequiredFormTemplateRepository = shiftRequiredFormTemplateRepository;
         _userRepository = userRepository;
+        _teamMemberRepository = teamMemberRepository;
+        _teamMemberDayOffRepository = teamMemberDayOffRepository;
     }
 
     public async Task<Result<ReportSummaryDto>> Handle(GetReportSummaryQuery request, CancellationToken cancellationToken)
@@ -132,6 +138,18 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
 
         var missingRequiredShiftForms = await CountMissingRequiredShiftFormsAsync(shifts, cancellationToken);
 
+        // Pending day-off requests
+        var allTeamMembers = new List<Pipexi.Domain.Entities.TeamMember>();
+        foreach (var team in teams)
+        {
+            var tm = await _teamMemberRepository.ListByTeamIdAsync(team.Id, cancellationToken);
+            allTeamMembers.AddRange(tm);
+        }
+        var teamMemberIds = allTeamMembers.Select(x => x.Id).Distinct().ToList();
+        var pendingDayOffRequests = teamMemberIds.Count == 0
+            ? 0
+            : (await _teamMemberDayOffRepository.ListPendingByTeamMemberIdsAsync(teamMemberIds, cancellationToken)).Count;
+
         var activityEnd = trendStart.AddDays(totalActivityDays);
         var shiftsForActivity = shifts
             .Where(x => x.StartAt < activityEnd && x.EndAt > trendStart)
@@ -152,7 +170,8 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             PendingLeaveRequests: pendingLeaveRequests,
             ApprovedLeaveRequests: approvedLeaveRequests,
             FormSubmissionsToday: formSubmissions.Count(x => x.CreatedAt >= todayStart && x.CreatedAt < todayEnd),
-            MissingRequiredShiftForms: missingRequiredShiftForms);
+            MissingRequiredShiftForms: missingRequiredShiftForms,
+            PendingDayOffRequests: pendingDayOffRequests);
 
         var userNameById = users.ToDictionary(
             x => x.Id,
@@ -351,7 +370,8 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             new("overdue_tasks", "Overdue tasks", overview.OverdueTasksCount.ToString(), overview.OverdueTasksCount > 0 ? "danger" : "default"),
             new("active_shifts", "Active shifts now", overview.ActiveShiftsNow.ToString()),
             new("missing_forms", "Shifts missing forms", overview.MissingRequiredShiftForms.ToString(), overview.MissingRequiredShiftForms > 0 ? "danger" : "default"),
-            new("pending_leaves", "Pending leave requests", overview.PendingLeaveRequests.ToString(), overview.PendingLeaveRequests > 0 ? "warning" : "default")
+            new("pending_leaves", "Pending leave requests", overview.PendingLeaveRequests.ToString(), overview.PendingLeaveRequests > 0 ? "warning" : "default"),
+            new("pending_dayoffs", "Pending day-off requests", overview.PendingDayOffRequests.ToString(), overview.PendingDayOffRequests > 0 ? "warning" : "default")
         };
 
         return signals;

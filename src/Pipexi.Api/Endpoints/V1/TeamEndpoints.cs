@@ -1,5 +1,7 @@
 using MediatR;
 using Pipexi.Application.Features.Tasks.Queries.GetTasks;
+using Pipexi.Application.Features.Teams.Queries.GetActiveDayOffs;
+using Pipexi.Application.Features.Teams.Queries.GetPendingDayOffs;
 using Pipexi.Application.Features.Teams.Commands.CreateTeam;
 using Pipexi.Application.Features.Teams.Commands.CreateTeamMember;
 using Pipexi.Application.Features.Teams.Commands.CreateTeamMemberDayOff;
@@ -50,6 +52,8 @@ public static class TeamEndpoints
         organizationGroup.MapPost("/{teamId:guid}/members/onboard", CreateTeamMemberWithUserInOrganizationAsync);
         organizationGroup.MapPut("/{teamId:guid}/members/{teamMemberId:guid}", UpdateTeamMemberInOrganizationAsync);
         organizationGroup.MapDelete("/{teamId:guid}/members/{teamMemberId:guid}", DeleteTeamMemberInOrganizationAsync);
+        organizationGroup.MapGet("/day-offs/pending", ListPendingDayOffsInOrganizationAsync);
+        organizationGroup.MapGet("/day-offs/active", ListActiveDayOffsInOrganizationAsync);
         organizationGroup.MapGet("/{teamId:guid}/day-offs", ListTeamDayOffsInOrganizationAsync);
 
         var group = app.MapGroup("/api/v1/teams")
@@ -686,6 +690,24 @@ public static class TeamEndpoints
         _ = teamMemberId;
 
         var result = await sender.Send(new DeleteTeamMemberDayOffCommand(dayOffId, teamMemberId), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ListPendingDayOffsInOrganizationAsync(
+        Guid organizationId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetPendingDayOffsQuery(organizationId), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ListActiveDayOffsInOrganizationAsync(
+        Guid organizationId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetActiveDayOffsQuery(organizationId), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 

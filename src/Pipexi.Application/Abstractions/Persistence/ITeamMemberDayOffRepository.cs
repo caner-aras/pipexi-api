@@ -24,4 +24,13 @@ public interface ITeamMemberDayOffRepository : IRepository<TeamMemberDayOff>
         DateTimeOffset startAt,
         DateTimeOffset endAt,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<TeamMemberDayOff>> ListPendingByTeamMemberIdsAsync(
+        IReadOnlyCollection<Guid> teamMemberIds,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<TeamMemberDayOff>> ListActiveByTeamMemberIdsAsync(
+        IReadOnlyCollection<Guid> teamMemberIds,
+        DateTimeOffset now,
+        CancellationToken cancellationToken = default);
 }

@@ -71,4 +71,40 @@ public sealed class TeamMemberDayOffRepository : Repository<TeamMemberDayOff>, I
                  startAt < x.EndAt,
             cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<TeamMemberDayOff>> ListPendingByTeamMemberIdsAsync(
+        IReadOnlyCollection<Guid> teamMemberIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (teamMemberIds.Count == 0)
+        {
+            return [];
+        }
+
+        return await DbSet
+            .Where(x => teamMemberIds.Contains(x.TeamMemberId) && x.Status == "pending")
+            .OrderBy(x => x.StartAt)
+            .ThenBy(x => x.EndAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<TeamMemberDayOff>> ListActiveByTeamMemberIdsAsync(
+        IReadOnlyCollection<Guid> teamMemberIds,
+        DateTimeOffset now,
+        CancellationToken cancellationToken = default)
+    {
+        if (teamMemberIds.Count == 0)
+        {
+            return [];
+        }
+
+        return await DbSet
+            .Where(x => teamMemberIds.Contains(x.TeamMemberId)
+                        && x.Status == "active"
+                        && x.StartAt <= now
+                        && x.EndAt > now)
+            .OrderBy(x => x.StartAt)
+            .ThenBy(x => x.EndAt)
+            .ToListAsync(cancellationToken);
+    }
 }
