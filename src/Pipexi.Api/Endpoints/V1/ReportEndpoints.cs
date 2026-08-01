@@ -1,5 +1,6 @@
 using MediatR;
 using Pipexi.Application.Features.Reports.Queries.GetReportSummary;
+using Pipexi.Application.Features.Reports.Queries.GetShiftFormsStatus;
 
 namespace Pipexi.Api.Endpoints.V1;
 
@@ -12,6 +13,7 @@ public static class ReportEndpoints
             .RequireAuthorization();
 
         group.MapGet("/summary", GetSummaryAsync);
+        group.MapGet("/shift-forms", GetShiftFormsStatusAsync);
 
         return app;
     }
@@ -28,6 +30,23 @@ public static class ReportEndpoints
 
         var result = await sender.Send(
             new GetReportSummaryQuery(organizationId, queryTrendDays, queryFutureDays),
+            cancellationToken);
+
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> GetShiftFormsStatusAsync(
+        Guid organizationId,
+        int? trendDays,
+        int? futureDays,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        int queryTrendDays = trendDays ?? 30;
+        int queryFutureDays = futureDays ?? 7;
+
+        var result = await sender.Send(
+            new GetShiftFormsStatusQuery(organizationId, queryTrendDays, queryFutureDays),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
