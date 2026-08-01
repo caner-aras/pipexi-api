@@ -266,6 +266,10 @@ namespace Pipexi.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("ReactionsJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("reactions_json");
+
                     b.Property<Guid>("SenderOrganizationMemberId")
                         .HasColumnType("uuid")
                         .HasColumnName("sender_organization_member_id");

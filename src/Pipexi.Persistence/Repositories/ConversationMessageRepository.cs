@@ -14,7 +14,8 @@ public sealed class ConversationMessageRepository(ApplicationDbContext dbContext
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var query = DbSet.Where(x => x.ConversationId == conversationId);
+        // Include soft-deleted tombstones so clients can show "This message was deleted".
+        var query = DbSet.IgnoreQueryFilters().Where(x => x.ConversationId == conversationId);
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query

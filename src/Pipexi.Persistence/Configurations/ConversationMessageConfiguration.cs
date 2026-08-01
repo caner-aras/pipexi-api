@@ -28,6 +28,10 @@ public sealed class ConversationMessageConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(8000)
             .IsRequired();
 
+        builder.Property(x => x.ReactionsJson)
+            .HasColumnName("reactions_json")
+            .HasColumnType("jsonb");
+
         builder.Property(x => x.Status)
             .HasColumnName("status")
             .HasMaxLength(30)

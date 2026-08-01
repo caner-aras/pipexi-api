@@ -1,7 +1,9 @@
 using MediatR;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversation;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversationMessage;
+using Pipexi.Application.Features.Conversations.Commands.DeleteConversationMessage;
 using Pipexi.Application.Features.Conversations.Commands.MarkConversationRead;
+using Pipexi.Application.Features.Conversations.Commands.ToggleConversationMessageReaction;
 using Pipexi.Application.Features.Conversations.Queries.GetConversationMessages;
 using Pipexi.Application.Features.Conversations.Queries.GetConversations;
 using Pipexi.Application.Features.Conversations.Queries.GetConversationUnreadCount;
@@ -22,6 +24,8 @@ public static class ConversationEndpoints
         group.MapPost("/", CreateAsync);
         group.MapGet("/{id:guid}/messages", ListMessagesAsync);
         group.MapPost("/{id:guid}/messages", CreateMessageAsync);
+        group.MapDelete("/{id:guid}/messages/{messageId:guid}", DeleteMessageAsync);
+        group.MapPost("/{id:guid}/messages/{messageId:guid}/reactions", ToggleReactionAsync);
         group.MapPost("/{id:guid}/read", MarkReadAsync);
 
         return app;
@@ -83,6 +87,33 @@ public static class ConversationEndpoints
     {
         var result = await sender.Send(
             new CreateConversationMessageCommand(id, request.Body),
+            cancellationToken);
+
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> DeleteMessageAsync(
+        Guid id,
+        Guid messageId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new DeleteConversationMessageCommand(id, messageId),
+            cancellationToken);
+
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ToggleReactionAsync(
+        Guid id,
+        Guid messageId,
+        ToggleConversationMessageReactionRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new ToggleConversationMessageReactionCommand(id, messageId, request.Emoji),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);

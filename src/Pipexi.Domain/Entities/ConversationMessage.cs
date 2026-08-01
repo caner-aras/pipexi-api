@@ -1,7 +1,19 @@
+using System.Text.Json;
+
 namespace Pipexi.Domain.Entities;
 
 public sealed class ConversationMessage : BaseEntity
 {
+    private static readonly HashSet<string> AllowedEmojis = new(StringComparer.Ordinal)
+    {
+        "👍", "❤️", "😂", "😮", "😢", "🙏"
+    };
+
+    private static readonly JsonSerializerOptions ReactionJsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     private ConversationMessage(
         Guid id,
         Guid conversationId,
@@ -9,18 +21,23 @@ public sealed class ConversationMessage : BaseEntity
         string body,
         string status,
         DateTimeOffset createdAt,
-        DateTimeOffset? updatedAt = null)
+        DateTimeOffset? updatedAt = null,
+        string? reactionsJson = null)
         : base(id, status, createdAt)
     {
         ConversationId = conversationId;
         SenderOrganizationMemberId = senderOrganizationMemberId;
         Body = body;
         UpdatedAt = updatedAt;
+        ReactionsJson = reactionsJson;
     }
 
     public Guid ConversationId { get; private set; }
     public Guid SenderOrganizationMemberId { get; private set; }
     public string Body { get; private set; }
+    public string? ReactionsJson { get; private set; }
+
+    public bool IsDeleted => Status == "deleted";
 
     public static ConversationMessage Create(
         Guid conversationId,
@@ -35,4 +52,72 @@ public sealed class ConversationMessage : BaseEntity
             "active",
             DateTimeOffset.UtcNow);
     }
+
+    public void SoftDeleteContent()
+    {
+        Body = string.Empty;
+        ReactionsJson = null;
+        MarkDeleted();
+    }
+
+    public IReadOnlyList<ConversationMessageReaction> GetReactions()
+    {
+        if (string.IsNullOrWhiteSpace(ReactionsJson))
+        {
+            return Array.Empty<ConversationMessageReaction>();
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<ConversationMessageReaction>>(
+                       ReactionsJson,
+                       ReactionJsonOptions)
+                   ?? [];
+        }
+        catch (JsonException)
+        {
+            return Array.Empty<ConversationMessageReaction>();
+        }
+    }
+
+    public bool ToggleReaction(Guid organizationMemberId, string emoji)
+    {
+        if (IsDeleted)
+        {
+            return false;
+        }
+
+        var normalized = emoji.Trim();
+        if (!AllowedEmojis.Contains(normalized))
+        {
+            return false;
+        }
+
+        var reactions = GetReactions().ToList();
+        var existing = reactions.FirstOrDefault(x => x.OrganizationMemberId == organizationMemberId);
+
+        if (existing is not null && existing.Emoji == normalized)
+        {
+            reactions.Remove(existing);
+        }
+        else if (existing is not null)
+        {
+            reactions.Remove(existing);
+            reactions.Add(new ConversationMessageReaction(normalized, organizationMemberId));
+        }
+        else
+        {
+            reactions.Add(new ConversationMessageReaction(normalized, organizationMemberId));
+        }
+
+        ReactionsJson = reactions.Count == 0
+            ? null
+            : JsonSerializer.Serialize(reactions, ReactionJsonOptions);
+        Touch();
+        return true;
+    }
+
+    public static bool IsAllowedEmoji(string emoji) => AllowedEmojis.Contains(emoji.Trim());
 }
+
+public sealed record ConversationMessageReaction(string Emoji, Guid OrganizationMemberId);

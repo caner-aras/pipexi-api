@@ -90,12 +90,13 @@ public sealed record GetConversationMessagesQuery(
             }
 
             DateTimeOffset? peerLastReadAt = null;
+            var conversationMembers = await conversationMemberRepository.ListByConversationIdAsync(
+                conversation.Id,
+                cancellationToken);
+
             if (conversation.Type == Conversation.TypeDirect)
             {
-                var members = await conversationMemberRepository.ListByConversationIdAsync(
-                    conversation.Id,
-                    cancellationToken);
-                var peerMembership = members.FirstOrDefault(x => x.OrganizationMemberId != currentMember.Id);
+                var peerMembership = conversationMembers.FirstOrDefault(x => x.OrganizationMemberId != currentMember.Id);
                 peerLastReadAt = peerMembership?.LastReadAt;
             }
 
@@ -114,21 +115,35 @@ public sealed record GetConversationMessagesQuery(
                 ? Array.Empty<User>()
                 : await userRepository.ListByIdsAsync(senderUserIds, cancellationToken);
             var senderUsersById = senderUsers.ToDictionary(x => x.Id);
+            var currentUser = await userRepository.GetByIdAsync(currentUserContext.UserId, cancellationToken);
 
             var dtos = items
                 .OrderBy(x => x.CreatedAt)
                 .Select(message =>
                 {
-                    senderMembersById.TryGetValue(message.SenderOrganizationMemberId, out var senderMember);
+                    var isMine = message.SenderOrganizationMemberId == currentMember.Id;
                     User? senderUser = null;
-                    if (senderMember is not null)
+
+                    if (isMine)
+                    {
+                        senderUser = currentUser;
+                    }
+                    else if (senderMembersById.TryGetValue(message.SenderOrganizationMemberId, out var senderMember))
                     {
                         senderUsersById.TryGetValue(senderMember.UserId, out senderUser);
                     }
 
+                    var canDelete = isMine
+                        && !message.IsDeleted
+                        && ConversationMappings.IsMessageUnreadByPeers(
+                            message.CreatedAt,
+                            message.SenderOrganizationMemberId,
+                            conversationMembers);
+
                     return message.ToDto(
                         ConversationMappings.BuildMemberDisplayName(senderUser),
-                        message.SenderOrganizationMemberId == currentMember.Id);
+                        currentMember.Id,
+                        canDelete);
                 })
                 .ToList();
 
