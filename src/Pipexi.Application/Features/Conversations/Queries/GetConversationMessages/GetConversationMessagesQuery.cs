@@ -22,6 +22,7 @@ public sealed record GetConversationMessagesQuery(
         IConversationMemberRepository conversationMemberRepository,
         IConversationMessageRepository conversationMessageRepository,
         IOrganizationMemberRepository organizationMemberRepository,
+        IUserRepository userRepository,
         ICurrentUserContext currentUserContext)
         : IRequestHandler<GetConversationMessagesQuery, Result<PagedConversationMessagesDto>>
     {
@@ -98,9 +99,37 @@ public sealed record GetConversationMessagesQuery(
                 peerLastReadAt = peerMembership?.LastReadAt;
             }
 
+            var senderMemberIds = items
+                .Select(x => x.SenderOrganizationMemberId)
+                .Distinct()
+                .ToList();
+
+            var senderMembers = senderMemberIds.Count == 0
+                ? Array.Empty<OrganizationMember>()
+                : await organizationMemberRepository.GetByIdsAsync(senderMemberIds, cancellationToken);
+
+            var senderMembersById = senderMembers.ToDictionary(x => x.Id);
+            var senderUserIds = senderMembers.Select(x => x.UserId).Distinct().ToList();
+            var senderUsers = senderUserIds.Count == 0
+                ? Array.Empty<User>()
+                : await userRepository.ListByIdsAsync(senderUserIds, cancellationToken);
+            var senderUsersById = senderUsers.ToDictionary(x => x.Id);
+
             var dtos = items
                 .OrderBy(x => x.CreatedAt)
-                .Select(x => x.ToDto())
+                .Select(message =>
+                {
+                    senderMembersById.TryGetValue(message.SenderOrganizationMemberId, out var senderMember);
+                    User? senderUser = null;
+                    if (senderMember is not null)
+                    {
+                        senderUsersById.TryGetValue(senderMember.UserId, out senderUser);
+                    }
+
+                    return message.ToDto(
+                        ConversationMappings.BuildMemberDisplayName(senderUser),
+                        message.SenderOrganizationMemberId == currentMember.Id);
+                })
                 .ToList();
 
             return Result<PagedConversationMessagesDto>.Success(
@@ -110,7 +139,8 @@ public sealed record GetConversationMessagesQuery(
                     pageSize,
                     totalCount,
                     conversation.Type,
-                    peerLastReadAt),
+                    peerLastReadAt,
+                    currentMember.Id),
                 (int)HttpStatusCode.OK);
         }
     }
@@ -122,4 +152,5 @@ public sealed record PagedConversationMessagesDto(
     int PageSize,
     int TotalCount,
     string ConversationType,
-    DateTimeOffset? PeerLastReadAt);
+    DateTimeOffset? PeerLastReadAt,
+    Guid CurrentOrganizationMemberId);

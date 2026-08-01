@@ -19,6 +19,7 @@ public sealed record CreateConversationMessageCommand(Guid ConversationId, strin
         IConversationMemberRepository conversationMemberRepository,
         IConversationMessageRepository conversationMessageRepository,
         IOrganizationMemberRepository organizationMemberRepository,
+        IUserRepository userRepository,
         ICurrentUserContext currentUserContext)
         : IRequestHandler<CreateConversationMessageCommand, Result<ConversationMessageDto>>
     {
@@ -75,8 +76,11 @@ public sealed record CreateConversationMessageCommand(Guid ConversationId, strin
             conversation.MarkActivity();
             await conversationRepository.UpdateAsync(conversation, cancellationToken);
 
+            var senderUser = await userRepository.GetByIdAsync(currentUserContext.UserId, cancellationToken);
+            var senderDisplayName = ConversationMappings.BuildMemberDisplayName(senderUser);
+
             return Result<ConversationMessageDto>.Success(
-                message.ToDto(),
+                message.ToDto(senderDisplayName, isMine: true),
                 (int)HttpStatusCode.Created);
         }
     }
