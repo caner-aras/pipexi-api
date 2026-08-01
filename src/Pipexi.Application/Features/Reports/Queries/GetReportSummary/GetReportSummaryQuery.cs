@@ -371,7 +371,7 @@ public sealed class Handler : IRequestHandler<GetReportSummaryQuery, Result<Repo
             new("active_shifts", "Active shifts now", overview.ActiveShiftsNow.ToString()),
             new("missing_forms", "Shifts missing forms", overview.MissingRequiredShiftForms.ToString(), overview.MissingRequiredShiftForms > 0 ? "danger" : "default"),
             new("pending_leaves", "Pending leave requests", overview.PendingLeaveRequests.ToString(), overview.PendingLeaveRequests > 0 ? "warning" : "default"),
-            new("pending_dayoffs", "Pending day-off requests", overview.PendingDayOffRequests.ToString(), overview.PendingDayOffRequests > 0 ? "warning" : "default")
+            new("pending_dayoffs", "Day-off requests", overview.PendingDayOffRequests.ToString(), overview.PendingDayOffRequests > 0 ? "warning" : "default")
         };
 
         return signals;
