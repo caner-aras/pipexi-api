@@ -3,9 +3,11 @@ using Pipexi.Domain.Entities;
 
 namespace Pipexi.Application.Features.Shifts;
 
+internal sealed record ShiftTeamMemberItem(Guid TeamMemberId, Guid TeamId);
+
 internal sealed record ShiftTeamMemberMaps(
     IReadOnlyDictionary<(Guid TeamId, Guid OrganizationMemberId), Guid> ByPair,
-    IReadOnlyDictionary<Guid, Guid> ByOrganizationMemberId);
+    IReadOnlyDictionary<Guid, ShiftTeamMemberItem> ByOrganizationMemberId);
 
 internal static class ShiftTeamMemberLookup
 {
@@ -24,7 +26,7 @@ internal static class ShiftTeamMemberLookup
         {
             return new ShiftTeamMemberMaps(
                 new Dictionary<(Guid, Guid), Guid>(),
-                new Dictionary<Guid, Guid>());
+                new Dictionary<Guid, ShiftTeamMemberItem>());
         }
 
         var teamMembers = await teamMemberRepository.ListByOrganizationMemberIdsAsync(
@@ -39,9 +41,43 @@ internal static class ShiftTeamMemberLookup
         // Prefer the earliest membership (same behavior as the old web lookup).
         var byOrganizationMemberId = teamMembers
             .GroupBy(x => x.OrganizationMemberId)
-            .ToDictionary(g => g.Key, g => g.OrderBy(x => x.CreatedAt).First().Id);
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var first = g.OrderBy(x => x.CreatedAt).First();
+                    return new ShiftTeamMemberItem(first.Id, first.TeamId);
+                });
 
         return new ShiftTeamMemberMaps(byPair, byOrganizationMemberId);
+    }
+
+    public static (Guid? TeamMemberId, Guid? ResolvedTeamId) ResolveInfo(
+        Guid? teamId,
+        Guid? organizationMemberId,
+        ShiftTeamMemberMaps maps)
+    {
+        if (!organizationMemberId.HasValue)
+        {
+            return (null, teamId);
+        }
+
+        if (teamId.HasValue)
+        {
+            if (maps.ByPair.TryGetValue((teamId.Value, organizationMemberId.Value), out var scopedId))
+            {
+                return (scopedId, teamId);
+            }
+
+            return (null, teamId);
+        }
+
+        if (maps.ByOrganizationMemberId.TryGetValue(organizationMemberId.Value, out var fallback))
+        {
+            return (fallback.TeamMemberId, fallback.TeamId);
+        }
+
+        return (null, null);
     }
 
     public static Guid? Resolve(
@@ -49,23 +85,6 @@ internal static class ShiftTeamMemberLookup
         Guid? organizationMemberId,
         ShiftTeamMemberMaps maps)
     {
-        if (!organizationMemberId.HasValue)
-        {
-            return null;
-        }
-
-        if (teamId.HasValue &&
-            maps.ByPair.TryGetValue((teamId.Value, organizationMemberId.Value), out var scopedId))
-        {
-            return scopedId;
-        }
-
-        if (!teamId.HasValue &&
-            maps.ByOrganizationMemberId.TryGetValue(organizationMemberId.Value, out var fallbackId))
-        {
-            return fallbackId;
-        }
-
-        return null;
+        return ResolveInfo(teamId, organizationMemberId, maps).TeamMemberId;
     }
 }

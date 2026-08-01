@@ -148,10 +148,15 @@ public sealed record GetShiftByIdQuery(Guid Id, Guid? ScopedOrganizationId = nul
                 _teamMemberRepository,
                 new[] { shift },
                 cancellationToken);
-            var teamMemberId = ShiftTeamMemberLookup.Resolve(
+            var resolved = ShiftTeamMemberLookup.ResolveInfo(
                 shift.TeamId,
                 shift.OrganizationMemberId,
                 teamMemberLookup);
+
+            if (team is null && resolved.ResolvedTeamId.HasValue)
+            {
+                team = await _teamRepository.GetByIdAsync(resolved.ResolvedTeamId.Value, cancellationToken);
+            }
 
             return Result<ShiftDto>.Success(
                 shift.ToDto(
@@ -161,7 +166,7 @@ public sealed record GetShiftByIdQuery(Guid Id, Guid? ScopedOrganizationId = nul
                     breaks.Select(x => x.ToDto()).ToList(),
                     timeEntryDtos,
                     shiftFormTemplates,
-                    teamMemberId));
+                    resolved.TeamMemberId));
         }
     }
 }

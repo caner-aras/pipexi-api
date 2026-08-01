@@ -159,12 +159,19 @@ public sealed class Handler : IRequestHandler<GetOrganizationShiftsQuery, Result
             cancellationToken);
 
         var shiftDtos = shifts
-            .Select(x => x.ToOrganizationShiftDto(
-                x.TeamId.HasValue ? teamMap.GetValueOrDefault(x.TeamId.Value) : null,
-                x.OrganizationMemberId.HasValue ? organizationMemberMap.GetValueOrDefault(x.OrganizationMemberId.Value) : null,
-                breakMap.GetValueOrDefault(x.Id) ?? Array.Empty<ShiftBreakDto>(),
-                timeEntriesByShiftId.GetValueOrDefault(x.Id) ?? Array.Empty<TimeEntryDto>(),
-                ShiftTeamMemberLookup.Resolve(x.TeamId, x.OrganizationMemberId, teamMemberLookup)))
+            .Select(x =>
+            {
+                var resolved = ShiftTeamMemberLookup.ResolveInfo(x.TeamId, x.OrganizationMemberId, teamMemberLookup);
+                var effectiveTeamId = resolved.ResolvedTeamId;
+                var teamDto = effectiveTeamId.HasValue ? teamMap.GetValueOrDefault(effectiveTeamId.Value) : null;
+
+                return x.ToOrganizationShiftDto(
+                    teamDto,
+                    x.OrganizationMemberId.HasValue ? organizationMemberMap.GetValueOrDefault(x.OrganizationMemberId.Value) : null,
+                    breakMap.GetValueOrDefault(x.Id) ?? Array.Empty<ShiftBreakDto>(),
+                    timeEntriesByShiftId.GetValueOrDefault(x.Id) ?? Array.Empty<TimeEntryDto>(),
+                    resolved.TeamMemberId);
+            })
             .ToList();
 
         return Result<OrganizationShiftsDto>.Success(new OrganizationShiftsDto(

@@ -182,18 +182,22 @@ public sealed record GetShiftsQuery(Guid? OrganizationId, Guid? OrganizationMemb
                 cancellationToken);
 
             var dtos = shifts
-                .Select(x => x.ToDto(
-                    x.TeamId.HasValue ? teamMap.GetValueOrDefault(x.TeamId.Value) : null,
-                    x.OrganizationMemberId.HasValue
-                        ? organizationMemberMap.GetValueOrDefault(x.OrganizationMemberId.Value)
-                        : null,
-                    locationMap.GetValueOrDefault(x.LocationId),
-                    breakMap.GetValueOrDefault(x.Id) ?? Array.Empty<ShiftBreakDto>(),
-                    timeEntriesByShiftId.GetValueOrDefault(x.Id) ?? Array.Empty<TimeEntryDto>(),
-                    teamMemberId: ShiftTeamMemberLookup.Resolve(
-                        x.TeamId,
-                        x.OrganizationMemberId,
-                        teamMemberLookup)))
+                .Select(x =>
+                {
+                    var resolved = ShiftTeamMemberLookup.ResolveInfo(x.TeamId, x.OrganizationMemberId, teamMemberLookup);
+                    var effectiveTeamId = resolved.ResolvedTeamId;
+                    var teamDto = effectiveTeamId.HasValue ? teamMap.GetValueOrDefault(effectiveTeamId.Value) : null;
+
+                    return x.ToDto(
+                        teamDto,
+                        x.OrganizationMemberId.HasValue
+                            ? organizationMemberMap.GetValueOrDefault(x.OrganizationMemberId.Value)
+                            : null,
+                        locationMap.GetValueOrDefault(x.LocationId),
+                        breakMap.GetValueOrDefault(x.Id) ?? Array.Empty<ShiftBreakDto>(),
+                        timeEntriesByShiftId.GetValueOrDefault(x.Id) ?? Array.Empty<TimeEntryDto>(),
+                        teamMemberId: resolved.TeamMemberId);
+                })
                 .ToList();
 
             return Result<IReadOnlyCollection<ShiftDto>>.Success(dtos);
