@@ -57,11 +57,14 @@ public static class ReportEndpoints
         Guid organizationId,
         DateTime fromDate,
         DateTime toDate,
+        [Microsoft.AspNetCore.Mvc.FromQuery] Guid[]? memberId,
+        [Microsoft.AspNetCore.Mvc.FromQuery] bool? includeSummary,
         ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new Pipexi.Application.Features.Reports.Queries.GetShiftReportPdf.GetShiftReportPdfQuery(organizationId, fromDate, toDate),
+            new Pipexi.Application.Features.Reports.Queries.GetShiftReportPdf.GetShiftReportPdfQuery(
+                organizationId, fromDate, toDate, memberId, includeSummary ?? false),
             cancellationToken);
 
         if (result.IsSuccess)

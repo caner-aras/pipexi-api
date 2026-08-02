@@ -9,10 +9,16 @@ using Pipexi.Shared.Results;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using TimeZoneConverter;
 
 namespace Pipexi.Application.Features.Reports.Queries.GetShiftReportPdf;
 
-public sealed record GetShiftReportPdfQuery(Guid OrganizationId, DateTime FromDate, DateTime ToDate)
+public sealed record GetShiftReportPdfQuery(
+    Guid OrganizationId, 
+    DateTime FromDate, 
+    DateTime ToDate, 
+    Guid[]? MemberIds = null, 
+    bool IncludeSummary = false)
     : IQuery<Result<byte[]>>;
 
 public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byte[]>>
@@ -58,12 +64,35 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
                 (int)HttpStatusCode.NotFound);
         }
 
+        TimeZoneInfo tzi = TZConvert.GetTimeZoneInfo(organization.Timezone);
+
         var allShifts = await _shiftRepository.ListByOrganizationIdAsync(request.OrganizationId, cancellationToken);
         
         var filteredShifts = allShifts
             .Where(s => s.StartAt.Date >= request.FromDate.Date && s.StartAt.Date <= request.ToDate.Date)
+            .ToList();
+
+        if (request.MemberIds != null && request.MemberIds.Length > 0)
+        {
+            filteredShifts = filteredShifts.Where(s => s.OrganizationMemberId.HasValue && request.MemberIds.Contains(s.OrganizationMemberId.Value)).ToList();
+        }
+
+        // Fetch time entries and breaks
+        var shiftIds = filteredShifts.Select(s => s.Id).ToList();
+        var timeEntries = shiftIds.Count > 0 
+            ? await _timeEntryRepository.ListByShiftIdsAsync(shiftIds, cancellationToken)
+            : new List<TimeEntry>();
+            
+        // Filter out shifts that don't have any time entries
+        filteredShifts = filteredShifts
+            .Where(s => timeEntries.Any(te => te.ShiftId == s.Id))
             .OrderBy(s => s.StartAt)
             .ToList();
+
+        var timeEntryIds = timeEntries.Select(te => te.Id).ToList();
+        var breaks = timeEntryIds.Count > 0
+            ? await _timeEntryBreakRepository.ListByTimeEntryIdsAsync(timeEntryIds, cancellationToken)
+            : new List<TimeEntryBreak>();
 
         // Load member names & wages
         var members = await _organizationMemberRepository.ListByOrganizationIdAsync(request.OrganizationId, cancellationToken);
@@ -86,17 +115,6 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
             memberWages[memberId] = activeHistory?.HourlyRate ?? 0m;
         }
 
-        // Fetch time entries and breaks
-        var shiftIds = filteredShifts.Select(s => s.Id).ToList();
-        var timeEntries = shiftIds.Count > 0 
-            ? await _timeEntryRepository.ListByShiftIdsAsync(shiftIds, cancellationToken)
-            : new List<TimeEntry>();
-            
-        var timeEntryIds = timeEntries.Select(te => te.Id).ToList();
-        var breaks = timeEntryIds.Count > 0
-            ? await _timeEntryBreakRepository.ListByTimeEntryIdsAsync(timeEntryIds, cancellationToken)
-            : new List<TimeEntryBreak>();
-
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -107,25 +125,51 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
                 page.DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Arial));
 
                 page.Header().Element(header => ComposeHeader(header, organization.Name, request.FromDate, request.ToDate));
-                page.Content().Element(content => ComposeContent(content, filteredShifts, memberNames, timeEntries, breaks, memberWages, organization.Currency));
+                page.Content().Element(content => ComposeContent(content, filteredShifts, memberNames, timeEntries, breaks, memberWages, organization.Currency, tzi));
                 page.Footer().Element(ComposeFooter);
             });
+
+            if (request.IncludeSummary && filteredShifts.Any())
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, QuestPDF.Infrastructure.Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Arial));
+
+                    page.Header().Element(header => ComposeHeader(header, organization.Name, request.FromDate, request.ToDate, "Summary"));
+                    page.Content().Element(content => ComposeSummary(content, filteredShifts, memberNames, timeEntries, breaks, memberWages, organization.Currency, tzi));
+                    page.Footer().Element(ComposeFooter);
+                });
+            }
         });
 
         var pdfBytes = document.GeneratePdf();
         return Result<byte[]>.Success(pdfBytes);
     }
 
-    private void ComposeHeader(IContainer container, string orgName, DateTime fromDate, DateTime toDate)
+    private void ComposeHeader(IContainer container, string orgName, DateTime fromDate, DateTime toDate, string suffix = "Shift Report")
     {
         container.Row(row =>
         {
             row.RelativeItem().Column(column =>
             {
-                column.Item().Text($"{orgName} Shift Report").FontSize(20).SemiBold().FontColor(Colors.Blue.Darken2);
+                column.Item().Text($"{orgName} {suffix}").FontSize(20).SemiBold().FontColor(Colors.Blue.Darken2);
                 column.Item().Text($"Period: {fromDate:dd MMM yyyy} to {toDate:dd MMM yyyy}").FontSize(14).FontColor(Colors.Grey.Darken2);
             });
         });
+    }
+
+    private string GetCurrencySymbol(string currency)
+    {
+        return currency switch {
+            "USD" => "$",
+            "EUR" => "€",
+            "GBP" => "£",
+            "TRY" => "₺",
+            _ => currency + " "
+        };
     }
 
     private void ComposeContent(
@@ -135,13 +179,16 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
         IReadOnlyCollection<TimeEntry> timeEntries, 
         IReadOnlyCollection<TimeEntryBreak> breaks, 
         Dictionary<Guid, decimal> memberWages, 
-        string currency)
+        string currency,
+        TimeZoneInfo tzi)
     {
         if (shifts.Count == 0)
         {
             container.PaddingVertical(1, QuestPDF.Infrastructure.Unit.Centimetre).Text("No shifts found in this period.").FontSize(14).Italic();
             return;
         }
+
+        var currencySymbol = GetCurrencySymbol(currency);
 
         container.PaddingVertical(1, QuestPDF.Infrastructure.Unit.Centimetre).Column(col =>
         {
@@ -184,10 +231,13 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
                         }
                     });
 
+                    var shiftStartTz = TimeZoneInfo.ConvertTimeFromUtc(shift.StartAt.UtcDateTime, tzi);
+                    var shiftEndTz = TimeZoneInfo.ConvertTimeFromUtc(shift.EndAt.UtcDateTime, tzi);
+
                     // Shift Main Row
                     table.Cell().Element(ShiftMainStyle).Text(employeeName).SemiBold();
-                    table.Cell().Element(ShiftMainStyle).Text(shift.StartAt.ToUniversalTime().ToString("dd MMM yyyy"));
-                    table.Cell().Element(ShiftMainStyle).AlignRight().Text($"{shift.StartAt.ToUniversalTime():HH:mm} - {shift.EndAt.ToUniversalTime():HH:mm}");
+                    table.Cell().Element(ShiftMainStyle).Text(shiftStartTz.ToString("dd MMM yyyy"));
+                    table.Cell().Element(ShiftMainStyle).AlignRight().Text($"{shiftStartTz:HH:mm} - {shiftEndTz:HH:mm}");
                     table.Cell().Element(ShiftMainStyle).AlignRight().Text(scheduledDuration.ToString("0.00"));
 
                     static IContainer ShiftMainStyle(IContainer container)
@@ -219,19 +269,25 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
                         
                         totalActualDuration += actualEntryDuration;
 
+                        var clockInTz = TimeZoneInfo.ConvertTimeFromUtc(entry.ClockInAt.UtcDateTime, tzi);
+                        var clockOutTz = TimeZoneInfo.ConvertTimeFromUtc(clockOutTime.UtcDateTime, tzi);
+
                         // Entry row
                         table.Cell().Element(EntryStyle).Text("Entry");
                         table.Cell().Element(EntryStyle).Text("");
-                        table.Cell().Element(EntryStyle).AlignRight().Text(entry.ClockInAt.ToUniversalTime().ToString("HH:mm"));
-                        table.Cell().Element(EntryStyle).AlignRight().Text(entry.ClockOutAt.HasValue ? entry.ClockOutAt.Value.ToUniversalTime().ToString("HH:mm") : clockOutTime.ToUniversalTime().ToString("HH:mm"));
+                        table.Cell().Element(EntryStyle).AlignRight().Text(clockInTz.ToString("HH:mm"));
+                        table.Cell().Element(EntryStyle).AlignRight().Text(clockOutTz.ToString("HH:mm"));
 
                         // Breaks
                         foreach (var b in entryBreaks)
                         {
+                            var breakStartTz = TimeZoneInfo.ConvertTimeFromUtc(b.StartAt.UtcDateTime, tzi);
+                            var breakEndTz = TimeZoneInfo.ConvertTimeFromUtc(b.EndAt.UtcDateTime, tzi);
+
                             table.Cell().Element(EntryStyle).Text($"Break {(b.IsPaid ? "(Paid)" : "(Unpaid)")}");
                             table.Cell().Element(EntryStyle).Text("");
-                            table.Cell().Element(EntryStyle).AlignRight().Text(b.StartAt.ToUniversalTime().ToString("HH:mm"));
-                            table.Cell().Element(EntryStyle).AlignRight().Text(b.EndAt.ToUniversalTime().ToString("HH:mm"));
+                            table.Cell().Element(EntryStyle).AlignRight().Text(breakStartTz.ToString("HH:mm"));
+                            table.Cell().Element(EntryStyle).AlignRight().Text(breakEndTz.ToString("HH:mm"));
                         }
                     }
 
@@ -243,26 +299,18 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
                     // Footer Calculations
                     var overtime = Math.Max(0, totalActualDuration - scheduledDuration);
                     var totalWage = (decimal)totalActualDuration * hourlyRate;
-                    
-                    var currencySymbol = currency switch {
-                        "USD" => "$",
-                        "EUR" => "€",
-                        "GBP" => "£",
-                        "TRY" => "₺",
-                        _ => currency + " "
-                    };
 
                     table.Cell().Element(FooterStyle).Text("Total").SemiBold();
                     table.Cell().Element(FooterStyle).Text("");
                     table.Cell().Element(FooterStyle).Text("");
                     table.Cell().Element(FooterStyle).AlignRight().Text(totalActualDuration.ToString("0.00")).SemiBold();
 
-                    table.Cell().Element(FooterStyle).Text("Over").SemiBold();
+                    table.Cell().Element(FooterStyle).Text("Overtime").SemiBold();
                     table.Cell().Element(FooterStyle).Text("");
                     table.Cell().Element(FooterStyle).Text("");
                     table.Cell().Element(FooterStyle).AlignRight().Text(overtime.ToString("0.00"));
 
-                    table.Cell().Element(FooterStyle).Text("Wage").SemiBold();
+                    table.Cell().Element(FooterStyle).Text("Earnings").SemiBold();
                     table.Cell().Element(FooterStyle).Text("");
                     table.Cell().Element(FooterStyle).Text("");
                     table.Cell().Element(FooterStyle).AlignRight().Text($"{currencySymbol}{totalWage:N2}");
@@ -272,6 +320,103 @@ public sealed class Handler : IRequestHandler<GetShiftReportPdfQuery, Result<byt
                         return container.BorderBottom(1).BorderColor(Colors.Grey.Lighten4).Padding(5);
                     }
                 });
+            }
+        });
+    }
+
+    private void ComposeSummary(
+        IContainer container, 
+        List<Shift> shifts, 
+        Dictionary<Guid, string> memberNames, 
+        IReadOnlyCollection<TimeEntry> timeEntries, 
+        IReadOnlyCollection<TimeEntryBreak> breaks, 
+        Dictionary<Guid, decimal> memberWages, 
+        string currency,
+        TimeZoneInfo tzi)
+    {
+        var currencySymbol = GetCurrencySymbol(currency);
+        
+        // Group by day using the organization's timezone
+        var groupedShifts = shifts.GroupBy(s => TimeZoneInfo.ConvertTimeFromUtc(s.StartAt.UtcDateTime, tzi).Date).OrderBy(g => g.Key).ToList();
+
+        container.PaddingVertical(1, QuestPDF.Infrastructure.Unit.Centimetre).Table(table =>
+        {
+            table.ColumnsDefinition(columns =>
+            {
+                columns.RelativeColumn(3); // Date
+                columns.RelativeColumn(2); // Sched Hrs
+                columns.RelativeColumn(2); // Actual Hrs
+                columns.RelativeColumn(2); // Earnings
+            });
+
+            table.Header(header =>
+            {
+                header.Cell().Element(HeaderStyle).Text("Date");
+                header.Cell().Element(HeaderStyle).AlignRight().Text("Sched Hrs");
+                header.Cell().Element(HeaderStyle).AlignRight().Text("Actual Hrs");
+                header.Cell().Element(HeaderStyle).AlignRight().Text("Earnings");
+
+                static IContainer HeaderStyle(IContainer container)
+                {
+                    return container.Background(Colors.Grey.Darken3).Padding(5).DefaultTextStyle(x => x.FontColor(Colors.White).SemiBold());
+                }
+            });
+
+            double grandTotalSched = 0;
+            double grandTotalActual = 0;
+            decimal grandTotalEarnings = 0;
+
+            foreach (var group in groupedShifts)
+            {
+                double dailySched = 0;
+                double dailyActual = 0;
+                decimal dailyEarnings = 0;
+
+                foreach (var shift in group)
+                {
+                    var hourlyRate = shift.OrganizationMemberId.HasValue && memberWages.TryGetValue(shift.OrganizationMemberId.Value, out var wage) ? wage : 0m;
+                    var scheduledDuration = (shift.EndAt - shift.StartAt).TotalHours;
+                    
+                    var shiftEntries = timeEntries.Where(te => te.ShiftId == shift.Id).ToList();
+                    double actualDuration = 0;
+                    
+                    foreach (var entry in shiftEntries)
+                    {
+                        var entryBreaks = breaks.Where(b => b.TimeEntryId == entry.Id).ToList();
+                        var clockOutTime = entry.ClockOutAt ?? shift.EndAt;
+                        var entryDuration = (clockOutTime - entry.ClockInAt).TotalHours;
+                        var unpaidBreaksDuration = entryBreaks.Where(b => !b.IsPaid).Sum(b => (b.EndAt - b.StartAt).TotalHours);
+                        actualDuration += Math.Max(0, entryDuration - unpaidBreaksDuration);
+                    }
+
+                    dailySched += scheduledDuration;
+                    dailyActual += actualDuration;
+                    dailyEarnings += (decimal)actualDuration * hourlyRate;
+                }
+
+                grandTotalSched += dailySched;
+                grandTotalActual += dailyActual;
+                grandTotalEarnings += dailyEarnings;
+
+                table.Cell().Element(CellStyle).Text(group.Key.ToString("dd MMM yyyy")).SemiBold();
+                table.Cell().Element(CellStyle).AlignRight().Text(dailySched.ToString("0.00"));
+                table.Cell().Element(CellStyle).AlignRight().Text(dailyActual.ToString("0.00"));
+                table.Cell().Element(CellStyle).AlignRight().Text($"{currencySymbol}{dailyEarnings:N2}");
+            }
+            
+            // Grand Total
+            table.Cell().Element(GrandTotalStyle).Text("Grand Total").SemiBold();
+            table.Cell().Element(GrandTotalStyle).AlignRight().Text(grandTotalSched.ToString("0.00")).SemiBold();
+            table.Cell().Element(GrandTotalStyle).AlignRight().Text(grandTotalActual.ToString("0.00")).SemiBold();
+            table.Cell().Element(GrandTotalStyle).AlignRight().Text($"{currencySymbol}{grandTotalEarnings:N2}").SemiBold();
+
+            static IContainer CellStyle(IContainer container)
+            {
+                return container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(8).PaddingHorizontal(5);
+            }
+            static IContainer GrandTotalStyle(IContainer container)
+            {
+                return container.Background(Colors.Grey.Lighten4).BorderTop(1).BorderColor(Colors.Black).PaddingVertical(10).PaddingHorizontal(5);
             }
         });
     }
