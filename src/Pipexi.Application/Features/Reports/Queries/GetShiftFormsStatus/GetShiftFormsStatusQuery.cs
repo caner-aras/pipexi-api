@@ -5,6 +5,7 @@ using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Reports.Dtos;
 using Pipexi.Shared.Results;
 using Pipexi.Domain.Entities;
+using Pipexi.Application.Features.Shifts;
 
 namespace Pipexi.Application.Features.Reports.Queries.GetShiftFormsStatus;
 
@@ -19,6 +20,7 @@ public sealed class Handler : IRequestHandler<GetShiftFormsStatusQuery, Result<I
     private readonly IUserRepository _userRepository;
     private readonly IShiftRequiredFormTemplateRepository _shiftRequiredFormTemplateRepository;
     private readonly IFormSubmissionRepository _formSubmissionRepository;
+    private readonly ITeamMemberRepository _teamMemberRepository;
 
     public Handler(
         IShiftRepository shiftRepository,
@@ -26,7 +28,8 @@ public sealed class Handler : IRequestHandler<GetShiftFormsStatusQuery, Result<I
         ITeamRepository teamRepository,
         IUserRepository userRepository,
         IShiftRequiredFormTemplateRepository shiftRequiredFormTemplateRepository,
-        IFormSubmissionRepository formSubmissionRepository)
+        IFormSubmissionRepository formSubmissionRepository,
+        ITeamMemberRepository teamMemberRepository)
     {
         _shiftRepository = shiftRepository;
         _organizationMemberRepository = organizationMemberRepository;
@@ -34,6 +37,7 @@ public sealed class Handler : IRequestHandler<GetShiftFormsStatusQuery, Result<I
         _userRepository = userRepository;
         _shiftRequiredFormTemplateRepository = shiftRequiredFormTemplateRepository;
         _formSubmissionRepository = formSubmissionRepository;
+        _teamMemberRepository = teamMemberRepository;
     }
 
     public async Task<Result<IReadOnlyCollection<ShiftFormsStatusDto>>> Handle(GetShiftFormsStatusQuery request, CancellationToken cancellationToken)
@@ -82,6 +86,11 @@ public sealed class Handler : IRequestHandler<GetShiftFormsStatusQuery, Result<I
             x => x.Id,
             x => AvatarUrls.Resolve(x.Id, x.AvatarUrl));
 
+        var teamMemberLookup = await ShiftTeamMemberLookup.CreateAsync(
+            _teamMemberRepository,
+            relevantShifts,
+            cancellationToken);
+
         foreach (var shift in relevantShifts)
         {
             if (!requiredByShift.TryGetValue(shift.Id, out var requiredTemplateIds) || requiredTemplateIds.Count == 0)
@@ -96,6 +105,16 @@ public sealed class Handler : IRequestHandler<GetShiftFormsStatusQuery, Result<I
 
             var member = members.FirstOrDefault(x => x.Id == shift.OrganizationMemberId);
             var team = teams.FirstOrDefault(x => x.Id == shift.TeamId);
+            
+            var resolved = ShiftTeamMemberLookup.ResolveInfo(
+                shift.TeamId,
+                shift.OrganizationMemberId,
+                teamMemberLookup);
+
+            if (team is null && resolved.ResolvedTeamId.HasValue)
+            {
+                team = teams.FirstOrDefault(x => x.Id == resolved.ResolvedTeamId.Value);
+            }
             
             var memberName = member != null && userNameById.TryGetValue(member.UserId, out var name) ? name : "Unknown";
             var avatarUrl = member != null && userAvatarById.TryGetValue(member.UserId, out var avatar) ? avatar : null;
