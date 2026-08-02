@@ -5,6 +5,7 @@ using Pipexi.Application.Common;
 using Pipexi.Domain.Entities;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
+using Pipexi.Application.Common.Models;
 using TimeZoneConverter;
 
 namespace Pipexi.Application.Features.Reports.Queries.GetShiftReportData;
