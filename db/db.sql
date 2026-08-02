@@ -14,6 +14,7 @@ CREATE TABLE public.organizations (
   status character varying NOT NULL DEFAULT 'active'::character varying,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone,
+  currency character varying NOT NULL DEFAULT 'USD'::character varying,
   CONSTRAINT organizations_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.permissions (
@@ -92,9 +93,11 @@ CREATE TABLE public.teams (
   status character varying NOT NULL DEFAULT 'active'::character varying,
   created_at timestamp with time zone NOT NULL,
   updated_at timestamp with time zone,
+  location_id uuid,
   CONSTRAINT teams_pkey PRIMARY KEY (id),
   CONSTRAINT FK_teams_organization_members_manager_member_id FOREIGN KEY (manager_member_id) REFERENCES public.organization_members(id),
-  CONSTRAINT FK_teams_organizations_organization_id FOREIGN KEY (organization_id) REFERENCES public.organizations(id)
+  CONSTRAINT FK_teams_organizations_organization_id FOREIGN KEY (organization_id) REFERENCES public.organizations(id),
+  CONSTRAINT FK_teams_locations_location_id FOREIGN KEY (location_id) REFERENCES public.locations(id)
 );
 CREATE TABLE public.team_members (
   id uuid NOT NULL,
@@ -370,4 +373,104 @@ CREATE TABLE public.team_member_day_offs (
   updated_at timestamp with time zone,
   CONSTRAINT team_member_day_offs_pkey PRIMARY KEY (id),
   CONSTRAINT FK_team_member_day_offs_team_members_team_member_id FOREIGN KEY (team_member_id) REFERENCES public.team_members(id)
+);
+CREATE TABLE public.positions (
+  id uuid NOT NULL,
+  organization_id uuid NOT NULL,
+  title character varying NOT NULL,
+  description character varying,
+  default_hourly_rate numeric NOT NULL,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  CONSTRAINT positions_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_positions_organizations_organization_id FOREIGN KEY (organization_id) REFERENCES public.organizations(id)
+);
+CREATE TABLE public.member_position_histories (
+  id uuid NOT NULL,
+  organization_member_id uuid NOT NULL,
+  position_id uuid NOT NULL,
+  hourly_rate numeric NOT NULL,
+  start_date timestamp with time zone NOT NULL,
+  end_date timestamp with time zone,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  CONSTRAINT member_position_histories_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_member_position_histories_organization_members_organization~ FOREIGN KEY (organization_member_id) REFERENCES public.organization_members(id),
+  CONSTRAINT FK_member_position_histories_positions_position_id FOREIGN KEY (position_id) REFERENCES public.positions(id)
+);
+CREATE TABLE public.organization_member_payments (
+  id uuid NOT NULL,
+  organization_member_id uuid NOT NULL,
+  amount numeric NOT NULL,
+  currency character varying NOT NULL,
+  paid_at timestamp with time zone NOT NULL,
+  method character varying NOT NULL,
+  reference character varying,
+  notes character varying,
+  period_start date,
+  period_end date,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  CONSTRAINT organization_member_payments_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_organization_member_payments_organization_members_organizat~ FOREIGN KEY (organization_member_id) REFERENCES public.organization_members(id)
+);
+CREATE TABLE public.organization_member_profiles (
+  id uuid NOT NULL,
+  organization_member_id uuid NOT NULL,
+  date_of_birth date,
+  gender character varying,
+  address_line1 character varying,
+  address_line2 character varying,
+  city character varying,
+  state character varying,
+  postal_code character varying,
+  country character varying,
+  emergency_contact_name character varying,
+  emergency_contact_phone character varying,
+  national_id character varying,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  CONSTRAINT organization_member_profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_organization_member_profiles_organization_members_organizat~ FOREIGN KEY (organization_member_id) REFERENCES public.organization_members(id)
+);
+CREATE TABLE public.conversations (
+  id uuid NOT NULL,
+  organization_id uuid NOT NULL,
+  type character varying NOT NULL,
+  title character varying,
+  direct_member_pair_key character varying,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  CONSTRAINT conversations_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_conversations_organizations_organization_id FOREIGN KEY (organization_id) REFERENCES public.organizations(id)
+);
+CREATE TABLE public.conversation_members (
+  id uuid NOT NULL,
+  conversation_id uuid NOT NULL,
+  organization_member_id uuid NOT NULL,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  last_read_at timestamp with time zone,
+  CONSTRAINT conversation_members_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_conversation_members_conversations_conversation_id FOREIGN KEY (conversation_id) REFERENCES public.conversations(id),
+  CONSTRAINT FK_conversation_members_organization_members_organization_memb~ FOREIGN KEY (organization_member_id) REFERENCES public.organization_members(id)
+);
+CREATE TABLE public.conversation_messages (
+  id uuid NOT NULL,
+  conversation_id uuid NOT NULL,
+  sender_organization_member_id uuid NOT NULL,
+  body character varying NOT NULL,
+  status character varying NOT NULL DEFAULT 'active'::character varying,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone,
+  reactions_json jsonb,
+  CONSTRAINT conversation_messages_pkey PRIMARY KEY (id),
+  CONSTRAINT FK_conversation_messages_conversations_conversation_id FOREIGN KEY (conversation_id) REFERENCES public.conversations(id),
+  CONSTRAINT FK_conversation_messages_organization_members_sender_organizat~ FOREIGN KEY (sender_organization_member_id) REFERENCES public.organization_members(id)
 );
