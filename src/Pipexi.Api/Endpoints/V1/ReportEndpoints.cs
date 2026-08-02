@@ -14,6 +14,7 @@ public static class ReportEndpoints
 
         group.MapGet("/summary", GetSummaryAsync);
         group.MapGet("/shift-forms", GetShiftFormsStatusAsync);
+        group.MapGet("/shift-report", GetShiftReportDataAsync);
         group.MapGet("/shift-report/pdf", GetShiftReportPdfAsync);
 
         return app;
@@ -71,6 +72,23 @@ public static class ReportEndpoints
         {
             return Results.File(result.Data, "application/pdf", "ShiftReport.pdf");
         }
+
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> GetShiftReportDataAsync(
+        Guid organizationId,
+        DateTime fromDate,
+        DateTime toDate,
+        [Microsoft.AspNetCore.Mvc.FromQuery] Guid[]? memberId,
+        [Microsoft.AspNetCore.Mvc.FromQuery] bool? includeSummary,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new Pipexi.Application.Features.Reports.Queries.GetShiftReportData.GetShiftReportDataQuery(
+                organizationId, fromDate, toDate, memberId, includeSummary ?? false),
+            cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);
     }
