@@ -28,6 +28,8 @@ public static class AuthEndpoints
             .RequireAuthorization();
         group.MapGet("/me", GetMeAsync)
             .RequireAuthorization();
+        group.MapPost("/fcm-token", SaveFcmTokenAsync)
+            .RequireAuthorization();
         //.ExcludeFromDescription();
 
         return app;
@@ -340,6 +342,31 @@ public static class AuthEndpoints
         return Results.Json(response, statusCode: response.StatusCode);
     }
 
+    private static async Task<IResult> SaveFcmTokenAsync(
+        ICurrentUserContext currentUserContext,
+        ISender sender,
+        SaveFcmTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (currentUserContext.UserId == Guid.Empty)
+        {
+            var unauthorized = Result<object>.Failure(
+                new AppError("auth.unauthorized", "Unauthorized."),
+                StatusCodes.Status401Unauthorized);
+
+            return Results.Json(unauthorized, statusCode: unauthorized.StatusCode);
+        }
+
+        var result = await sender.Send(
+            new Pipexi.Application.Features.UserDevices.Commands.AddUserDevice.AddUserDeviceCommand(
+                currentUserContext.UserId,
+                request.FcmToken,
+                request.DeviceType),
+            cancellationToken);
+
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
     private static bool IsValidEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email) || email.Length > 200)
@@ -431,3 +458,4 @@ public sealed record MeResponse(
     string LastName,
     string? Phone,
     string? AvatarUrl);
+public sealed record SaveFcmTokenRequest(string FcmToken, string? DeviceType);

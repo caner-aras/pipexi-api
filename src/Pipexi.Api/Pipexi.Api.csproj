@@ -25,4 +25,11 @@
     <ProjectReference Include="..\Pipexi.Infrastructure\Pipexi.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\..\keys\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>keys\%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

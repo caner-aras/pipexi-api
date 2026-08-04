@@ -50,5 +50,10 @@ _ReSharper*/
 # Node (if used for tooling)
 node_modules/
 
+# Keys & Secrets
+keys/
+*.json
+!appsettings*.json
+
 # Generated folders in this repo
 Library/

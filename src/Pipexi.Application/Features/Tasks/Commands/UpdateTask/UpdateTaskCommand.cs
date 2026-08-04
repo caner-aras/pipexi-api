@@ -30,6 +30,7 @@ public sealed record UpdateTaskCommand(
         private readonly ITeamRepository _teamRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
         private readonly IOrganizationAccessService _organizationAccess;
+        private readonly ICurrentUserContext _currentUserContext;
 
         public Handler(
             IWorkTaskRepository workTaskRepository,
@@ -38,9 +39,11 @@ public sealed record UpdateTaskCommand(
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
             ITaskCommentRepository taskCommentRepository,
-            IOrganizationAccessService organizationAccess)
+            IOrganizationAccessService organizationAccess,
+            ICurrentUserContext currentUserContext)
         {
             _organizationAccess = organizationAccess;
+            _currentUserContext = currentUserContext;
             _workTaskRepository = workTaskRepository;
             _shiftRepository = shiftRepository;
             _locationRepository = locationRepository;
@@ -124,7 +127,8 @@ public sealed record UpdateTaskCommand(
                 request.AssignedToTeamId,
                 request.DueAt,
                 request.Priority,
-                request.Status);
+                request.Status,
+                _currentUserContext.UserId);
 
             await _workTaskRepository.UpdateAsync(task, cancellationToken);
 

@@ -58,7 +58,7 @@ public sealed class WorkTask : BaseEntity
         DateTimeOffset? dueAt,
         string priority)
     {
-        return new WorkTask(
+        var task = new WorkTask(
             Guid.NewGuid(),
             organizationId,
             reporterUserId,
@@ -72,6 +72,16 @@ public sealed class WorkTask : BaseEntity
             string.IsNullOrWhiteSpace(priority) ? "medium" : priority.Trim().ToLowerInvariant(),
             "open",
             DateTimeOffset.UtcNow);
+
+        if (assignedToTeamMemberId.HasValue && reporterUserId.HasValue)
+        {
+            task.AddDomainEvent(new Pipexi.Domain.Events.Tasks.TaskAssignedEvent(
+                task.Id,
+                assignedToTeamMemberId.Value,
+                reporterUserId.Value));
+        }
+
+        return task;
     }
 
     public void UpdateDetails(
@@ -83,8 +93,10 @@ public sealed class WorkTask : BaseEntity
         Guid? assignedToTeamId,
         DateTimeOffset? dueAt,
         string? priority,
-        string? status)
+        string? status,
+        Guid? updaterUserId = null)
     {
+        var oldAssignedToTeamMemberId = AssignedToTeamMemberId;
         if (shiftId.HasValue)
         {
             ShiftId = shiftId.Value;
@@ -141,6 +153,16 @@ public sealed class WorkTask : BaseEntity
             status is not null)
         {
             Touch();
+        }
+
+        if (AssignedToTeamMemberId.HasValue && 
+            AssignedToTeamMemberId != oldAssignedToTeamMemberId &&
+            updaterUserId.HasValue)
+        {
+            AddDomainEvent(new Pipexi.Domain.Events.Tasks.TaskAssignedEvent(
+                Id,
+                AssignedToTeamMemberId.Value,
+                updaterUserId.Value));
         }
     }
 }

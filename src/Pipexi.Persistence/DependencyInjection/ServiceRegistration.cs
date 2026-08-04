@@ -20,8 +20,13 @@ public static class ServiceRegistration
             throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
         }
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(connectionString));
+        services.AddScoped<Pipexi.Persistence.Interceptors.DomainEventDispatcherInterceptor>();
+
+        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        {
+            var interceptor = sp.GetRequiredService<Pipexi.Persistence.Interceptors.DomainEventDispatcherInterceptor>();
+            options.UseNpgsql(connectionString).AddInterceptors(interceptor);
+        });
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
@@ -48,6 +53,7 @@ public static class ServiceRegistration
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IOrganizationMemberRepository, OrganizationMemberRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserDeviceRepository, UserDeviceRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();

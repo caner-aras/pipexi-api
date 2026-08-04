@@ -9,7 +9,7 @@ public static class ServiceRegistration
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        _ = configuration;
+        services.AddSingleton<Pipexi.Application.Abstractions.Notifications.IPushNotificationService, Pipexi.Infrastructure.Notifications.FirebasePushNotificationService>();
         return services;
     }
 }

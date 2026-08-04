@@ -1,0 +1,56 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Pipexi.Domain.Entities;
+
+namespace Pipexi.Persistence.Interceptors;
+
+public sealed class DomainEventDispatcherInterceptor : SaveChangesInterceptor
+{
+    private readonly IPublisher _publisher;
+
+    public DomainEventDispatcherInterceptor(IPublisher publisher)
+    {
+        _publisher = publisher;
+    }
+
+    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    {
+        DispatchDomainEvents(eventData.Context).GetAwaiter().GetResult();
+        return base.SavingChanges(eventData, result);
+    }
+
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
+        DbContextEventData eventData,
+        InterceptionResult<int> result,
+        CancellationToken cancellationToken = default)
+    {
+        await DispatchDomainEvents(eventData.Context);
+        return await base.SavingChangesAsync(eventData, result, cancellationToken);
+    }
+
+    private async Task DispatchDomainEvents(DbContext? context)
+    {
+        if (context is null)
+        {
+            return;
+        }
+
+        var entities = context.ChangeTracker
+            .Entries<BaseEntity>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .Select(e => e.Entity)
+            .ToList();
+
+        var domainEvents = entities
+            .SelectMany(e => e.DomainEvents)
+            .ToList();
+
+        entities.ForEach(e => e.ClearDomainEvents());
+
+        foreach (var domainEvent in domainEvents)
+        {
+            await _publisher.Publish(domainEvent);
+        }
+    }
+}
