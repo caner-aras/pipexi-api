@@ -52,13 +52,26 @@ public sealed class FirebasePushNotificationService : IPushNotificationService
         
         try
         {
-            if (!string.IsNullOrWhiteSpace(credentialsPath) && File.Exists(credentialsPath))
+            if (!string.IsNullOrWhiteSpace(credentialsPath))
             {
-                FirebaseApp.Create(new AppOptions
+                if (!Path.IsPathRooted(credentialsPath))
                 {
-                    Credential = GoogleCredential.FromFile(credentialsPath)
-                });
-                _logger.LogInformation("FirebaseApp initialized using credentials file at {Path}", credentialsPath);
+                    credentialsPath = Path.Combine(AppContext.BaseDirectory, credentialsPath);
+                }
+
+                if (File.Exists(credentialsPath))
+                {
+                    FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = GoogleCredential.FromFile(credentialsPath)
+                    });
+                    _logger.LogInformation("FirebaseApp initialized using credentials file at {Path}", credentialsPath);
+                }
+                else
+                {
+                    _logger.LogWarning("Firebase credentials file not found at {Path}. Falling back to Default Credentials.", credentialsPath);
+                    FirebaseApp.Create(new AppOptions { Credential = GoogleCredential.GetApplicationDefault(), ProjectId = "pipexi-5feca" });
+                }
             }
             else
             {

@@ -13,7 +13,6 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
     private readonly IUserRepository _userRepository;
     private readonly IUserDeviceRepository _userDeviceRepository;
     private readonly IPushNotificationService _pushNotificationService;
-    private readonly IWorkTaskRepository _workTaskRepository;
     private readonly ILogger<TaskAssignedEventHandler> _logger;
 
     public TaskAssignedEventHandler(
@@ -22,7 +21,6 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
         IUserRepository userRepository,
         IUserDeviceRepository userDeviceRepository,
         IPushNotificationService pushNotificationService,
-        IWorkTaskRepository workTaskRepository,
         ILogger<TaskAssignedEventHandler> logger)
     {
         _teamMemberRepository = teamMemberRepository;
@@ -30,21 +28,16 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
         _userRepository = userRepository;
         _userDeviceRepository = userDeviceRepository;
         _pushNotificationService = pushNotificationService;
-        _workTaskRepository = workTaskRepository;
         _logger = logger;
     }
 
     public async Task Handle(TaskAssignedEvent notification, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling TaskAssignedEvent for TaskId: {TaskId}, AssignerUserId: {AssignerUserId}, AssignedToTeamMemberId: {AssignedToTeamMemberId}",
+            notification.TaskId, notification.AssignerUserId, notification.AssignedToTeamMemberId);
+
         try
         {
-            var task = await _workTaskRepository.GetByIdAsync(notification.TaskId, cancellationToken);
-            if (task is null)
-            {
-                _logger.LogWarning("Task {TaskId} not found for TaskAssignedEvent", notification.TaskId);
-                return;
-            }
-
             var assignedTeamMember = await _teamMemberRepository.GetByIdAsync(notification.AssignedToTeamMemberId, cancellationToken);
             if (assignedTeamMember is null)
             {
@@ -64,24 +57,26 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
             // We no longer skip if assigner == assignee, so you can test it by assigning to yourself.
 
             var assignerUser = await _userRepository.GetByIdAsync(notification.AssignerUserId, cancellationToken);
-            var assignerName = assignerUser != null 
-                ? $"{assignerUser.FirstName} {assignerUser.LastName}".Trim() 
+            var assignerName = assignerUser != null
+                ? $"{assignerUser.FirstName} {assignerUser.LastName}".Trim()
                 : "Someone";
 
             // Send notification to assignee
             var assigneeDevices = await _userDeviceRepository.GetByUserIdAsync(assignedUserId, cancellationToken);
             var assigneeTokens = assigneeDevices.Select(x => x.FcmToken).ToList();
 
+            _logger.LogInformation("Found {Count} active devices for assignee UserId: {UserId}", assigneeTokens.Count, assignedUserId);
+
             if (assigneeTokens.Count > 0)
             {
                 var title = "New Task Assigned";
-                var body = $"{assignerName} assigned you a new task: {task.Title}";
-                
+                var body = $"{assignerName} assigned you a new task: {notification.TaskTitle}";
+
                 var data = new Dictionary<string, string>
                 {
                     { "type", "task_assigned" },
-                    { "taskId", task.Id.ToString() },
-                    { "organizationId", task.OrganizationId.ToString() }
+                    { "taskId", notification.TaskId.ToString() },
+                    { "organizationId", notification.OrganizationId.ToString() }
                 };
 
                 await _pushNotificationService.SendPushNotificationAsync(
@@ -96,22 +91,24 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
             var assignerDevices = await _userDeviceRepository.GetByUserIdAsync(notification.AssignerUserId, cancellationToken);
             var assignerTokens = assignerDevices.Select(x => x.FcmToken).ToList();
 
+            _logger.LogInformation("Found {Count} active devices for assigner UserId: {UserId}", assignerTokens.Count, notification.AssignerUserId);
+
             if (assignerTokens.Count > 0)
             {
                 // We need assignee's name for the message
                 var assigneeUser = await _userRepository.GetByIdAsync(assignedUserId, cancellationToken);
-                var assigneeName = assigneeUser != null 
-                    ? $"{assigneeUser.FirstName} {assigneeUser.LastName}".Trim() 
+                var assigneeName = assigneeUser != null
+                    ? $"{assigneeUser.FirstName} {assigneeUser.LastName}".Trim()
                     : "Someone";
 
                 var title = "Task Created";
-                var body = $"You successfully assigned task '{task.Title}' to {assigneeName}.";
-                
+                var body = $"You successfully assigned task '{notification.TaskTitle}' to {assigneeName}.";
+
                 var data = new Dictionary<string, string>
                 {
                     { "type", "task_created" },
-                    { "taskId", task.Id.ToString() },
-                    { "organizationId", task.OrganizationId.ToString() }
+                    { "taskId", notification.TaskId.ToString() },
+                    { "organizationId", notification.OrganizationId.ToString() }
                 };
 
                 await _pushNotificationService.SendPushNotificationAsync(

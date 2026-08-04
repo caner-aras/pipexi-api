@@ -1,5 +1,6 @@
 using System.Net;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
@@ -31,6 +32,7 @@ public sealed record CreateTaskCommand(
         private readonly ITeamRepository _teamRepository;
         private readonly IWorkTaskRepository _workTaskRepository;
         private readonly ICurrentUserContext _currentUserContext;
+        private readonly ILogger<Handler> _logger;
 
         public Handler(
             IOrganizationRepository organizationRepository,
@@ -40,7 +42,8 @@ public sealed record CreateTaskCommand(
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
             IWorkTaskRepository workTaskRepository,
-            ICurrentUserContext currentUserContext)
+            ICurrentUserContext currentUserContext,
+            ILogger<Handler> logger)
         {
             _organizationRepository = organizationRepository;
             _shiftRepository = shiftRepository;
@@ -50,6 +53,7 @@ public sealed record CreateTaskCommand(
             _teamRepository = teamRepository;
             _workTaskRepository = workTaskRepository;
             _currentUserContext = currentUserContext;
+            _logger = logger;
         }
 
         public async Task<Result<TaskDto>> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
@@ -145,6 +149,9 @@ public sealed record CreateTaskCommand(
                         (int)HttpStatusCode.BadRequest);
                 }
             }
+
+            _logger.LogInformation("Creating Task '{Title}'. AssignedToTeamMemberId: {Assigned}, Request.AssignedToTeamMemberId: {ReqAssigned}", 
+                request.Title, assignedToTeamMemberId, request.AssignedToTeamMemberId);
 
             var task = WorkTask.Create(
                 request.OrganizationId,

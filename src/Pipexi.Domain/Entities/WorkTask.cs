@@ -78,7 +78,9 @@ public sealed class WorkTask : BaseEntity
             task.AddDomainEvent(new Pipexi.Domain.Events.Tasks.TaskAssignedEvent(
                 task.Id,
                 assignedToTeamMemberId.Value,
-                reporterUserId.Value));
+                reporterUserId.Value,
+                task.Title,
+                task.OrganizationId));
         }
 
         return task;
@@ -155,14 +157,16 @@ public sealed class WorkTask : BaseEntity
             Touch();
         }
 
-        if (AssignedToTeamMemberId.HasValue && 
+        if (AssignedToTeamMemberId.HasValue &&
             AssignedToTeamMemberId != oldAssignedToTeamMemberId &&
             updaterUserId.HasValue)
         {
             AddDomainEvent(new Pipexi.Domain.Events.Tasks.TaskAssignedEvent(
                 Id,
                 AssignedToTeamMemberId.Value,
-                updaterUserId.Value));
+                updaterUserId.Value,
+                Title,
+                OrganizationId));
         }
     }
 }
