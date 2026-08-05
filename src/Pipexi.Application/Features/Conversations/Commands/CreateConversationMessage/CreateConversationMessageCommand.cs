@@ -71,13 +71,20 @@ public sealed record CreateConversationMessageCommand(Guid ConversationId, strin
                 currentMember.Id,
                 request.Body);
 
+            var senderUser = await userRepository.GetByIdAsync(currentUserContext.UserId, cancellationToken);
+            var senderDisplayName = ConversationMappings.BuildMemberDisplayName(senderUser);
+
+            message.AddDomainEvent(new Pipexi.Domain.Events.Conversations.ConversationMessageCreatedEvent(
+                conversation.Id,
+                message.Id,
+                currentMember.Id,
+                senderDisplayName,
+                message.Body));
+
             await conversationMessageRepository.AddAsync(message, cancellationToken);
 
             conversation.MarkActivity();
             await conversationRepository.UpdateAsync(conversation, cancellationToken);
-
-            var senderUser = await userRepository.GetByIdAsync(currentUserContext.UserId, cancellationToken);
-            var senderDisplayName = ConversationMappings.BuildMemberDisplayName(senderUser);
 
             return Result<ConversationMessageDto>.Success(
                 message.ToDto(senderDisplayName, currentMember.Id, canDelete: true),
