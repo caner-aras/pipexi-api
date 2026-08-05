@@ -83,7 +83,7 @@ public sealed record CreateTeamMemberWithUserCommand(
                     return Result<TeamMemberDto>.Failure(inviteResult.Error!, inviteResult.StatusCode);
                 }
 
-                if (!Guid.TryParse(inviteResult.Value!.user_id, out var parsedUserId))
+                if (!Guid.TryParse(inviteResult.Data!.user_id, out var parsedUserId))
                 {
                     return Result<TeamMemberDto>.Failure(
                         new AppError("invite_failed", "Invalid user ID returned from invite service."),
