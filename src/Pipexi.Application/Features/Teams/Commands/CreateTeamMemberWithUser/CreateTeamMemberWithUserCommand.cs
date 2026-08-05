@@ -92,7 +92,7 @@ public sealed record CreateTeamMemberWithUserCommand(
 
                 user = User.Create(
                     parsedUserId,
-                    "supabase",
+                    parsedUserId.ToString(),
                     request.Email,
                     request.FirstName,
                     request.LastName,
