@@ -77,7 +77,7 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
             var dbNotification = Notification.Create(
                 notification.OrganizationId,
                 assignedTeamMember.OrganizationMemberId,
-                "task_assigned",
+                $"task:{notification.TaskId}",
                 title,
                 body,
                 isRead: false,

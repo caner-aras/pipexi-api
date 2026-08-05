@@ -22,6 +22,7 @@ public sealed record CreateTaskCommentCommand(
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ITeamRepository _teamRepository;
         private readonly ITaskCommentRepository _taskCommentRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IOrganizationAccessService _organizationAccess;
 
         public Handler(
@@ -30,6 +31,7 @@ public sealed record CreateTaskCommentCommand(
             ITeamMemberRepository teamMemberRepository,
             ITeamRepository teamRepository,
             ITaskCommentRepository taskCommentRepository,
+            IUserRepository userRepository,
             IOrganizationAccessService organizationAccess)
         {
             _organizationAccess = organizationAccess;
@@ -38,6 +40,7 @@ public sealed record CreateTaskCommentCommand(
             _teamMemberRepository = teamMemberRepository;
             _teamRepository = teamRepository;
             _taskCommentRepository = taskCommentRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<TaskCommentDto>> Handle(CreateTaskCommentCommand request, CancellationToken cancellationToken)
@@ -49,7 +52,6 @@ public sealed record CreateTaskCommentCommand(
                     new AppError("task_comments.invalid_task", "Task not found."),
                     (int)HttpStatusCode.BadRequest);
             }
-
 
             var accessDenied = await _organizationAccess.ValidateResourceAccessAsync<TaskCommentDto>(
                 task.OrganizationId, request.ScopedOrganizationId, cancellationToken);
@@ -83,6 +85,19 @@ public sealed record CreateTaskCommentCommand(
             }
 
             var comment = TaskComment.Create(request.WorkTaskId, teamMember.Id, request.Message);
+
+            var commenterUser = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
+            var commenterName = commenterUser != null
+                ? $"{commenterUser.FirstName} {commenterUser.LastName}".Trim()
+                : "Someone";
+
+            comment.AddDomainEvent(new Pipexi.Domain.Events.Tasks.TaskCommentAddedEvent(
+                task.Id,
+                comment.Id,
+                request.UserId,
+                commenterName,
+                comment.Message));
+
             await _taskCommentRepository.AddAsync(comment, cancellationToken);
 
             return Result<TaskCommentDto>.Success(comment.ToDto(), (int)HttpStatusCode.Created);
