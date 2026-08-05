@@ -49,9 +49,19 @@ public sealed class FirebasePushNotificationService : IPushNotificationService
         }
 
         var credentialsPath = configuration["Firebase:CredentialsPath"];
+        var credentialsJson = configuration["Firebase:CredentialsJson"];
         
         try
         {
+            if (!string.IsNullOrWhiteSpace(credentialsJson))
+            {
+                FirebaseApp.Create(new AppOptions
+                {
+                    Credential = GoogleCredential.FromJson(credentialsJson)
+                });
+                _logger.LogInformation("FirebaseApp initialized using CredentialsJson from environment variables.");
+                return;
+            }
             if (!string.IsNullOrWhiteSpace(credentialsPath))
             {
                 if (!Path.IsPathRooted(credentialsPath))
