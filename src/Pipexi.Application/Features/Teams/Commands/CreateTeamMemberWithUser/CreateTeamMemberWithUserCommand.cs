@@ -2,6 +2,7 @@ using System.Net;
 using MediatR;
 using Pipexi.Application.Abstractions.Identity;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Application.Abstractions.Auth;
 using Pipexi.Application.Common;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.OrganizationMembers;
@@ -31,6 +32,7 @@ public sealed record CreateTeamMemberWithUserCommand(
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
         private readonly IOrganizationAccessService _organizationAccess;
+        private readonly ITokenService _tokenService;
 
         public Handler(
             ITeamMemberRepository teamMemberRepository,
@@ -38,7 +40,8 @@ public sealed record CreateTeamMemberWithUserCommand(
             IOrganizationMemberRepository organizationMemberRepository,
             IRoleRepository roleRepository,
             IUserRepository userRepository,
-            IOrganizationAccessService organizationAccess)
+            IOrganizationAccessService organizationAccess,
+            ITokenService tokenService)
         {
             _organizationAccess = organizationAccess;
             _teamMemberRepository = teamMemberRepository;
@@ -46,6 +49,7 @@ public sealed record CreateTeamMemberWithUserCommand(
             _organizationMemberRepository = organizationMemberRepository;
             _roleRepository = roleRepository;
             _userRepository = userRepository;
+            _tokenService = tokenService;
         }
 
         public async Task<Result<TeamMemberDto>> Handle(CreateTeamMemberWithUserCommand request, CancellationToken cancellationToken)
@@ -73,19 +77,27 @@ public sealed record CreateTeamMemberWithUserCommand(
             var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
             if (user is null)
             {
-                var authProviderId = string.IsNullOrWhiteSpace(request.AuthProviderId)
-                    ? $"local:{Guid.NewGuid():N}"
-                    : request.AuthProviderId;
+                var inviteResult = await _tokenService.InviteUserAsync(request.Email, cancellationToken);
+                if (!inviteResult.IsSuccess)
+                {
+                    return Result<TeamMemberDto>.Failure(inviteResult.Error!, inviteResult.StatusCode);
+                }
 
-                var userId = Guid.NewGuid();
+                if (!Guid.TryParse(inviteResult.Value!.user_id, out var parsedUserId))
+                {
+                    return Result<TeamMemberDto>.Failure(
+                        new AppError("invite_failed", "Invalid user ID returned from invite service."),
+                        500);
+                }
+
                 user = User.Create(
-                    userId,
-                    authProviderId,
+                    parsedUserId,
+                    "supabase",
                     request.Email,
                     request.FirstName,
                     request.LastName,
                     request.Phone,
-                    AvatarUrls.Resolve(userId, request.AvatarUrl));
+                    AvatarUrls.Resolve(parsedUserId, request.AvatarUrl));
 
                 await _userRepository.AddAsync(user, cancellationToken);
             }

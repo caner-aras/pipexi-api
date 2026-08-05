@@ -19,6 +19,10 @@ public interface ITokenService
     Task<Pipexi.Shared.Results.Result<object?>> SendPasswordRecoveryEmailAsync(
         string email,
         CancellationToken cancellationToken);
+
+    Task<Pipexi.Shared.Results.Result<InviteResponse>> InviteUserAsync(
+        string email,
+        CancellationToken cancellationToken);
 }
 
 public sealed record TokenResponse(
@@ -34,3 +38,8 @@ public sealed record RegisterResponse(
     string? access_token,
     string? refresh_token,
     int? expires_in);
+
+public sealed record InviteResponse(
+    int StatusCode,
+    string user_id,
+    string email);

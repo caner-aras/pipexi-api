@@ -189,6 +189,74 @@ public sealed class TokenService : ITokenService
         return Pipexi.Shared.Results.Result<object?>.Success(null, (int)response.StatusCode);
     }
 
+    public async Task<Pipexi.Shared.Results.Result<InviteResponse>> InviteUserAsync(
+        string email,
+        CancellationToken cancellationToken)
+    {
+        var authBaseUrl = _configuration["Supabase:Auth:Authority"];
+        var serviceRoleKey = _configuration["Supabase:Auth:ServiceRoleKey"];
+
+        if (string.IsNullOrWhiteSpace(authBaseUrl) || string.IsNullOrWhiteSpace(serviceRoleKey))
+        {
+            return Pipexi.Shared.Results.Result<InviteResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "SupabaseAuthConfigurationMissing",
+                    "Supabase auth configuration (ServiceRoleKey) is missing."));
+        }
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return Pipexi.Shared.Results.Result<InviteResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "AuthInviteInvalidEmail",
+                    "Email is required."));
+        }
+
+        var client = _httpClientFactory.CreateClient();
+        using var message = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{authBaseUrl.TrimEnd('/')}/invite");
+
+        message.Headers.Add("apikey", serviceRoleKey);
+        message.Headers.Add("Authorization", $"Bearer {serviceRoleKey}");
+
+        message.Content = JsonContent.Create(new { email = email.Trim().ToLowerInvariant() });
+
+        using var response = await client.SendAsync(message, cancellationToken);
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return Pipexi.Shared.Results.Result<InviteResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "AuthInviteFailed",
+                    ParseSupabaseAuthErrorMessage(responseBody)),
+                (int)response.StatusCode);
+        }
+
+        using var document = JsonDocument.Parse(responseBody);
+        var userId = document.RootElement.TryGetProperty("id", out var userIdElement)
+            ? userIdElement.GetString()
+            : null;
+
+        var userEmail = document.RootElement.TryGetProperty("email", out var userEmailElement)
+            ? userEmailElement.GetString()
+            : null;
+
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(userEmail))
+        {
+            return Pipexi.Shared.Results.Result<InviteResponse>.Failure(
+                new Pipexi.Shared.Errors.AppError(
+                    "AuthInviteFailed",
+                    "Supabase invite response is missing user id or email."),
+                (int)response.StatusCode);
+        }
+
+        return Pipexi.Shared.Results.Result<InviteResponse>.Success(
+            new InviteResponse((int)response.StatusCode, userId, userEmail),
+            (int)response.StatusCode);
+    }
+
     private async Task<Pipexi.Shared.Results.Result<TokenResponse>> ExchangeTokenAsync(
         string grantType,
         object body,
