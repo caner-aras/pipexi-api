@@ -5,4 +5,5 @@ public sealed record TaskAssignedEvent(
     Guid AssignedToTeamMemberId,
     Guid AssignerUserId,
     string TaskTitle,
-    Guid OrganizationId) : IDomainEvent;
+    Guid OrganizationId,
+    string Priority = "medium") : IDomainEvent;

@@ -80,7 +80,8 @@ public sealed class WorkTask : BaseEntity
                 assignedToTeamMemberId.Value,
                 reporterUserId.Value,
                 task.Title,
-                task.OrganizationId));
+                task.OrganizationId,
+                task.Priority));
         }
 
         return task;

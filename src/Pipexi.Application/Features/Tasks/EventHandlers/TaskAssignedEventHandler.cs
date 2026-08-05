@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Pipexi.Application.Abstractions.Notifications;
 using Pipexi.Application.Abstractions.Persistence;
+using Pipexi.Domain.Entities;
 using Pipexi.Domain.Events.Tasks;
 
 namespace Pipexi.Application.Features.Tasks.EventHandlers;
@@ -12,6 +13,7 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
     private readonly IOrganizationMemberRepository _organizationMemberRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUserDeviceRepository _userDeviceRepository;
+    private readonly INotificationRepository _notificationRepository;
     private readonly IPushNotificationService _pushNotificationService;
     private readonly ILogger<TaskAssignedEventHandler> _logger;
 
@@ -20,6 +22,7 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
         IOrganizationMemberRepository organizationMemberRepository,
         IUserRepository userRepository,
         IUserDeviceRepository userDeviceRepository,
+        INotificationRepository notificationRepository,
         IPushNotificationService pushNotificationService,
         ILogger<TaskAssignedEventHandler> logger)
     {
@@ -27,6 +30,7 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
         _organizationMemberRepository = organizationMemberRepository;
         _userRepository = userRepository;
         _userDeviceRepository = userDeviceRepository;
+        _notificationRepository = notificationRepository;
         _pushNotificationService = pushNotificationService;
         _logger = logger;
     }
@@ -54,14 +58,34 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
 
             var assignedUserId = orgMember.UserId;
 
-            // We no longer skip if assigner == assignee, so you can test it by assigning to yourself.
-
             var assignerUser = await _userRepository.GetByIdAsync(notification.AssignerUserId, cancellationToken);
             var assignerName = assignerUser != null
                 ? $"{assignerUser.FirstName} {assignerUser.LastName}".Trim()
                 : "Someone";
 
-            // Send notification to assignee
+            var priorityPrefix = (notification.Priority?.ToLowerInvariant()) switch
+            {
+                "urgent" => "🚨 [URGENT] ",
+                "high" => "⚠️ [HIGH] ",
+                _ => ""
+            };
+
+            var title = $"{priorityPrefix}New Task Assigned";
+            var body = $"{assignerName} assigned you a new task: {notification.TaskTitle}";
+
+            // 1. Save Notification entity to database
+            var dbNotification = Notification.Create(
+                notification.OrganizationId,
+                assignedTeamMember.OrganizationMemberId,
+                "task_assigned",
+                title,
+                body,
+                isRead: false,
+                scheduledTime: null);
+
+            await _notificationRepository.AddAsync(dbNotification, cancellationToken);
+
+            // 2. Send push notification to assignee devices
             var assigneeDevices = await _userDeviceRepository.GetByUserIdAsync(assignedUserId, cancellationToken);
             var assigneeTokens = assigneeDevices.Select(x => x.FcmToken).ToList();
 
@@ -69,9 +93,6 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
 
             if (assigneeTokens.Count > 0)
             {
-                var title = "New Task Assigned";
-                var body = $"{assignerName} assigned you a new task: {notification.TaskTitle}";
-
                 var data = new Dictionary<string, string>
                 {
                     { "type", "task_assigned" },
@@ -95,14 +116,13 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
 
             if (assignerTokens.Count > 0)
             {
-                // We need assignee's name for the message
                 var assigneeUser = await _userRepository.GetByIdAsync(assignedUserId, cancellationToken);
                 var assigneeName = assigneeUser != null
                     ? $"{assigneeUser.FirstName} {assigneeUser.LastName}".Trim()
                     : "Someone";
 
-                var title = "Task Created";
-                var body = $"You successfully assigned task '{notification.TaskTitle}' to {assigneeName}.";
+                var assignerTitle = $"{priorityPrefix}Task Created";
+                var assignerBody = $"You successfully assigned task '{notification.TaskTitle}' to {assigneeName}.";
 
                 var data = new Dictionary<string, string>
                 {
@@ -113,8 +133,8 @@ public sealed class TaskAssignedEventHandler : INotificationHandler<TaskAssigned
 
                 await _pushNotificationService.SendPushNotificationAsync(
                     assignerTokens,
-                    title,
-                    body,
+                    assignerTitle,
+                    assignerBody,
                     data,
                     cancellationToken);
             }
