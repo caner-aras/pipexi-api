@@ -15,8 +15,8 @@ using Pipexi.Shared.Results;
 
 namespace Pipexi.Application.Features.Shifts.Queries.GetOrganizationShifts;
 
-public sealed record GetOrganizationShiftsQuery(Guid OrganizationId, DateTimeOffset? FromDate = null)
-    : IQuery<Result<OrganizationShiftsDto>>;
+public sealed record GetOrganizationShiftsQuery(Guid OrganizationId, DateTimeOffset? FromDate = null, DateTimeOffset? ToDate = null)
+    : IRequest<Result<OrganizationShiftsDto>>;
 
 public sealed class Handler : IRequestHandler<GetOrganizationShiftsQuery, Result<OrganizationShiftsDto>>
 {
@@ -58,7 +58,7 @@ public sealed class Handler : IRequestHandler<GetOrganizationShiftsQuery, Result
     public async Task<Result<OrganizationShiftsDto>> Handle(GetOrganizationShiftsQuery request, CancellationToken cancellationToken)
     {
         var windowStart = request.FromDate ?? DateTimeOffset.UtcNow;
-        var windowEnd = windowStart.AddDays(7);
+        var windowEnd = request.ToDate ?? windowStart.AddDays(7);
 
         var shifts = await _shiftRepository.ListByOrganizationIdAsync(request.OrganizationId, cancellationToken);
         shifts = shifts

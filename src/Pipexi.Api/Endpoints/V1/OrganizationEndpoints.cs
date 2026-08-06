@@ -374,10 +374,11 @@ public static class OrganizationEndpoints
     private static async Task<IResult> ListShiftsAsync(
         Guid organizationId,
         DateTimeOffset? fromDate,
+        DateTimeOffset? toDate,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new GetOrganizationShiftsQuery(organizationId, fromDate), cancellationToken);
+        var result = await sender.Send(new GetOrganizationShiftsQuery(organizationId, fromDate, toDate), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 
