@@ -108,7 +108,8 @@ public sealed record DeleteConversationMessageCommand(Guid ConversationId, Guid 
                 message.ToDto(
                     ConversationMappings.BuildMemberDisplayName(senderUser),
                     currentMember.Id,
-                    canDelete: false),
+                    canDelete: false,
+                    canEdit: false),
                 (int)HttpStatusCode.OK);
         }
     }

@@ -139,11 +139,13 @@ public sealed record GetConversationMessagesQuery(
                             message.CreatedAt,
                             message.SenderOrganizationMemberId,
                             conversationMembers);
+                    var canEdit = isMine && !message.IsDeleted;
 
                     return message.ToDto(
                         ConversationMappings.BuildMemberDisplayName(senderUser),
                         currentMember.Id,
-                        canDelete);
+                        canDelete,
+                        canEdit);
                 })
                 .ToList();
 

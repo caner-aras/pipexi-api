@@ -266,6 +266,10 @@ namespace Pipexi.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTimeOffset?>("EditedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("edited_at");
+
                     b.Property<string>("ReactionsJson")
                         .HasColumnType("jsonb")
                         .HasColumnName("reactions_json");

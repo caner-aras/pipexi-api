@@ -22,7 +22,8 @@ public sealed class ConversationMessage : BaseEntity
         string status,
         DateTimeOffset createdAt,
         DateTimeOffset? updatedAt = null,
-        string? reactionsJson = null)
+        string? reactionsJson = null,
+        DateTimeOffset? editedAt = null)
         : base(id, status, createdAt)
     {
         ConversationId = conversationId;
@@ -30,14 +31,17 @@ public sealed class ConversationMessage : BaseEntity
         Body = body;
         UpdatedAt = updatedAt;
         ReactionsJson = reactionsJson;
+        EditedAt = editedAt;
     }
 
     public Guid ConversationId { get; private set; }
     public Guid SenderOrganizationMemberId { get; private set; }
     public string Body { get; private set; }
     public string? ReactionsJson { get; private set; }
+    public DateTimeOffset? EditedAt { get; private set; }
 
     public bool IsDeleted => Status == "deleted";
+    public bool IsEdited => EditedAt.HasValue;
 
     public static ConversationMessage Create(
         Guid conversationId,
@@ -57,7 +61,32 @@ public sealed class ConversationMessage : BaseEntity
     {
         Body = string.Empty;
         ReactionsJson = null;
+        EditedAt = null;
         MarkDeleted();
+    }
+
+    public bool EditBody(string body)
+    {
+        if (IsDeleted)
+        {
+            return false;
+        }
+
+        var trimmed = body.Trim();
+        if (string.IsNullOrWhiteSpace(trimmed) || trimmed.Length > 8000)
+        {
+            return false;
+        }
+
+        if (string.Equals(Body, trimmed, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        Body = trimmed;
+        EditedAt = DateTimeOffset.UtcNow;
+        Touch();
+        return true;
     }
 
     public IReadOnlyList<ConversationMessageReaction> GetReactions()

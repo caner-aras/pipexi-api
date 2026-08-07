@@ -5,16 +5,15 @@ using Pipexi.Application.Abstractions.Persistence;
 using Pipexi.Application.Common.Models;
 using Pipexi.Application.Features.Conversations;
 using Pipexi.Application.Features.Conversations.Dtos;
-using Pipexi.Domain.Entities;
 using Pipexi.Shared.Errors;
 using Pipexi.Shared.Results;
 
-namespace Pipexi.Application.Features.Conversations.Commands.ToggleConversationMessageReaction;
+namespace Pipexi.Application.Features.Conversations.Commands.EditConversationMessage;
 
-public sealed record ToggleConversationMessageReactionCommand(
+public sealed record EditConversationMessageCommand(
     Guid ConversationId,
     Guid MessageId,
-    string Emoji)
+    string Body)
     : ICommand<Result<ConversationMessageDto>>
 {
     public sealed class Handler(
@@ -24,10 +23,10 @@ public sealed record ToggleConversationMessageReactionCommand(
         IOrganizationMemberRepository organizationMemberRepository,
         IUserRepository userRepository,
         ICurrentUserContext currentUserContext)
-        : IRequestHandler<ToggleConversationMessageReactionCommand, Result<ConversationMessageDto>>
+        : IRequestHandler<EditConversationMessageCommand, Result<ConversationMessageDto>>
     {
         public async Task<Result<ConversationMessageDto>> Handle(
-            ToggleConversationMessageReactionCommand request,
+            EditConversationMessageCommand request,
             CancellationToken cancellationToken)
         {
             if (currentUserContext.UserId == Guid.Empty || currentUserContext.OrganizationId == Guid.Empty)
@@ -35,13 +34,6 @@ public sealed record ToggleConversationMessageReactionCommand(
                 return Result<ConversationMessageDto>.Failure(
                     new AppError("auth.unauthorized", "Authenticated organization membership is required."),
                     (int)HttpStatusCode.Unauthorized);
-            }
-
-            if (!ConversationMessage.IsAllowedEmoji(request.Emoji))
-            {
-                return Result<ConversationMessageDto>.Failure(
-                    new AppError("conversations.invalid_reaction", "Unsupported reaction emoji."),
-                    (int)HttpStatusCode.BadRequest);
             }
 
             var currentMember = await organizationMemberRepository.GetByOrganizationIdAndUserIdAsync(
@@ -84,57 +76,47 @@ public sealed record ToggleConversationMessageReactionCommand(
                     (int)HttpStatusCode.NotFound);
             }
 
+            if (message.SenderOrganizationMemberId != currentMember.Id)
+            {
+                return Result<ConversationMessageDto>.Failure(
+                    new AppError("conversations.message_forbidden", "You can only edit your own messages."),
+                    (int)HttpStatusCode.Forbidden);
+            }
+
             if (message.IsDeleted)
             {
                 return Result<ConversationMessageDto>.Failure(
-                    new AppError("conversations.message_deleted", "Cannot react to a deleted message."),
+                    new AppError("conversations.message_deleted", "Deleted messages cannot be edited."),
                     (int)HttpStatusCode.Conflict);
             }
 
-            if (!message.ToggleReaction(currentMember.Id, request.Emoji))
+            if (!message.EditBody(request.Body))
             {
                 return Result<ConversationMessageDto>.Failure(
-                    new AppError("conversations.invalid_reaction", "Could not update reaction."),
+                    new AppError("conversations.message_invalid_body", "Message body is invalid."),
                     (int)HttpStatusCode.BadRequest);
             }
 
             await conversationMessageRepository.UpdateAsync(message, cancellationToken);
 
+            conversation.MarkActivity();
+            await conversationRepository.UpdateAsync(conversation, cancellationToken);
+
             var members = await conversationMemberRepository.ListByConversationIdAsync(
                 conversation.Id,
                 cancellationToken);
-            var canDelete = message.SenderOrganizationMemberId == currentMember.Id
-                && ConversationMappings.IsMessageUnreadByPeers(
-                    message.CreatedAt,
-                    message.SenderOrganizationMemberId,
-                    members);
-
-            string senderDisplayName;
-            if (message.SenderOrganizationMemberId == currentMember.Id)
-            {
-                var currentUser = await userRepository.GetByIdAsync(currentUserContext.UserId, cancellationToken);
-                senderDisplayName = ConversationMappings.BuildMemberDisplayName(currentUser);
-            }
-            else
-            {
-                var senderMember = await organizationMemberRepository.GetByIdAsync(
-                    message.SenderOrganizationMemberId,
-                    cancellationToken);
-                User? senderUser = null;
-                if (senderMember is not null)
-                {
-                    senderUser = await userRepository.GetByIdAsync(senderMember.UserId, cancellationToken);
-                }
-
-                senderDisplayName = ConversationMappings.BuildMemberDisplayName(senderUser);
-            }
+            var canDelete = ConversationMappings.IsMessageUnreadByPeers(
+                message.CreatedAt,
+                message.SenderOrganizationMemberId,
+                members);
+            var senderUser = await userRepository.GetByIdAsync(currentUserContext.UserId, cancellationToken);
 
             return Result<ConversationMessageDto>.Success(
                 message.ToDto(
-                    senderDisplayName,
+                    ConversationMappings.BuildMemberDisplayName(senderUser),
                     currentMember.Id,
                     canDelete,
-                    canEdit: message.SenderOrganizationMemberId == currentMember.Id && !message.IsDeleted),
+                    canEdit: true),
                 (int)HttpStatusCode.OK);
         }
     }

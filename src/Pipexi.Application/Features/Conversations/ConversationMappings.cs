@@ -9,7 +9,8 @@ public static class ConversationMappings
         this ConversationMessage entity,
         string senderDisplayName,
         bool isMine,
-        bool canDelete = false)
+        bool canDelete = false,
+        bool canEdit = false)
     {
         var isDeleted = entity.IsDeleted;
         var reactions = entity.GetReactions()
@@ -30,17 +31,21 @@ public static class ConversationMappings
             isMine,
             isDeleted,
             canDelete && isMine && !isDeleted,
+            canEdit && isMine && !isDeleted,
+            entity.IsEdited && !isDeleted,
             isDeleted ? string.Empty : entity.Body,
             reactions,
             entity.CreatedAt,
-            entity.UpdatedAt);
+            entity.UpdatedAt,
+            isDeleted ? null : entity.EditedAt);
     }
 
     public static ConversationMessageDto ToDto(
         this ConversationMessage entity,
         string senderDisplayName,
         Guid currentOrganizationMemberId,
-        bool canDelete)
+        bool canDelete,
+        bool canEdit)
     {
         var isMine = entity.SenderOrganizationMemberId == currentOrganizationMemberId;
         var isDeleted = entity.IsDeleted;
@@ -62,10 +67,13 @@ public static class ConversationMappings
             isMine,
             isDeleted,
             canDelete && isMine && !isDeleted,
+            canEdit && isMine && !isDeleted,
+            entity.IsEdited && !isDeleted,
             isDeleted ? string.Empty : entity.Body,
             reactions,
             entity.CreatedAt,
-            entity.UpdatedAt);
+            entity.UpdatedAt,
+            isDeleted ? null : entity.EditedAt);
     }
 
     public static string BuildMemberDisplayName(User? user)

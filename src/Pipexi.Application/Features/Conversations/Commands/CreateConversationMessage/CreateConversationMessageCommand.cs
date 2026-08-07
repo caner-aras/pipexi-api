@@ -87,7 +87,7 @@ public sealed record CreateConversationMessageCommand(Guid ConversationId, strin
             await conversationRepository.UpdateAsync(conversation, cancellationToken);
 
             return Result<ConversationMessageDto>.Success(
-                message.ToDto(senderDisplayName, currentMember.Id, canDelete: true),
+                message.ToDto(senderDisplayName, currentMember.Id, canDelete: true, canEdit: true),
                 (int)HttpStatusCode.Created);
         }
     }

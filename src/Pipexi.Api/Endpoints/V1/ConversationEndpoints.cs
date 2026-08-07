@@ -2,6 +2,7 @@ using MediatR;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversation;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversationMessage;
 using Pipexi.Application.Features.Conversations.Commands.DeleteConversationMessage;
+using Pipexi.Application.Features.Conversations.Commands.EditConversationMessage;
 using Pipexi.Application.Features.Conversations.Commands.MarkConversationRead;
 using Pipexi.Application.Features.Conversations.Commands.ToggleConversationMessageReaction;
 using Pipexi.Application.Features.Conversations.Queries.GetConversationMessages;
@@ -24,6 +25,7 @@ public static class ConversationEndpoints
         group.MapPost("/", CreateAsync);
         group.MapGet("/{id:guid}/messages", ListMessagesAsync);
         group.MapPost("/{id:guid}/messages", CreateMessageAsync);
+        group.MapPut("/{id:guid}/messages/{messageId:guid}", EditMessageAsync);
         group.MapDelete("/{id:guid}/messages/{messageId:guid}", DeleteMessageAsync);
         group.MapPost("/{id:guid}/messages/{messageId:guid}/reactions", ToggleReactionAsync);
         group.MapPost("/{id:guid}/read", MarkReadAsync);
@@ -87,6 +89,20 @@ public static class ConversationEndpoints
     {
         var result = await sender.Send(
             new CreateConversationMessageCommand(id, request.Body),
+            cancellationToken);
+
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> EditMessageAsync(
+        Guid id,
+        Guid messageId,
+        EditConversationMessageRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new EditConversationMessageCommand(id, messageId, request.Body),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);

@@ -32,6 +32,10 @@ public sealed class ConversationMessageConfiguration : IEntityTypeConfiguration<
             .HasColumnName("reactions_json")
             .HasColumnType("jsonb");
 
+        builder.Property(x => x.EditedAt)
+            .HasColumnName("edited_at")
+            .HasColumnType("timestamp with time zone");
+
         builder.Property(x => x.Status)
             .HasColumnName("status")
             .HasMaxLength(30)

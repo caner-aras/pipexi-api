@@ -13,7 +13,10 @@ public sealed record ConversationMessageDto(
     bool IsMine,
     bool IsDeleted,
     bool CanDelete,
+    bool CanEdit,
+    bool IsEdited,
     string Body,
     IReadOnlyCollection<ConversationMessageReactionDto> Reactions,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? UpdatedAt);
+    DateTimeOffset? UpdatedAt,
+    DateTimeOffset? EditedAt);
