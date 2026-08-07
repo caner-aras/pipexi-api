@@ -9,18 +9,23 @@ public sealed class ConversationMember : BaseEntity
         string status,
         DateTimeOffset createdAt,
         DateTimeOffset? lastReadAt = null,
-        DateTimeOffset? updatedAt = null)
+        DateTimeOffset? updatedAt = null,
+        DateTimeOffset? clearedAt = null)
         : base(id, status, createdAt)
     {
         ConversationId = conversationId;
         OrganizationMemberId = organizationMemberId;
         LastReadAt = lastReadAt;
         UpdatedAt = updatedAt;
+        ClearedAt = clearedAt;
     }
 
     public Guid ConversationId { get; private set; }
     public Guid OrganizationMemberId { get; private set; }
     public DateTimeOffset? LastReadAt { get; private set; }
+    public DateTimeOffset? ClearedAt { get; private set; }
+
+    public bool IsActive => Status == "active";
 
     public static ConversationMember Create(Guid conversationId, Guid organizationMemberId)
     {
@@ -43,5 +48,29 @@ public sealed class ConversationMember : BaseEntity
 
         LastReadAt = at;
         Touch();
+    }
+
+    public void ClearChat()
+    {
+        ClearedAt = DateTimeOffset.UtcNow;
+        LastReadAt = ClearedAt;
+        Touch();
+    }
+
+    public void Leave()
+    {
+        MarkDeleted();
+    }
+
+    public void Reactivate()
+    {
+        if (IsActive)
+        {
+            return;
+        }
+
+        SetStatus("active");
+        ClearedAt = DateTimeOffset.UtcNow;
+        LastReadAt = ClearedAt;
     }
 }

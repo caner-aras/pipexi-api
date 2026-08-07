@@ -14,7 +14,9 @@ public sealed class ConversationMemberRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default)
     {
         return DbSet.AnyAsync(
-            x => x.ConversationId == conversationId && x.OrganizationMemberId == organizationMemberId,
+            x => x.ConversationId == conversationId
+                 && x.OrganizationMemberId == organizationMemberId
+                 && x.Status == "active",
             cancellationToken);
     }
 

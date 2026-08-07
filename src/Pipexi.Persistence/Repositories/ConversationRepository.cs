@@ -30,6 +30,7 @@ public sealed class ConversationRepository(ApplicationDbContext dbContext)
             join member in Context.ConversationMembers on conversation.Id equals member.ConversationId
             where conversation.OrganizationId == organizationId
                   && member.OrganizationMemberId == organizationMemberId
+                  && member.Status == "active"
             orderby conversation.UpdatedAt descending, conversation.CreatedAt descending
             select conversation
         ).ToListAsync(cancellationToken);

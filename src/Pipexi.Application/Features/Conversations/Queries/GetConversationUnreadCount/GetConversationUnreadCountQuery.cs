@@ -48,10 +48,17 @@ public sealed record GetConversationUnreadCountQuery(Guid? OrganizationId = null
                 cancellationToken);
 
             var unreadInputs = memberships
-                .Select(x => (
-                    x.ConversationId,
-                    currentMember.Id,
-                    x.LastReadAt ?? x.CreatedAt))
+                .Where(x => x.IsActive)
+                .Select(x =>
+                {
+                    var readAfter = x.LastReadAt ?? x.CreatedAt;
+                    if (x.ClearedAt.HasValue && x.ClearedAt.Value > readAfter)
+                    {
+                        readAfter = x.ClearedAt.Value;
+                    }
+
+                    return (x.ConversationId, currentMember.Id, readAfter);
+                })
                 .ToList();
 
             var unreadCount = await conversationMessageRepository.CountUnreadForMembershipsAsync(

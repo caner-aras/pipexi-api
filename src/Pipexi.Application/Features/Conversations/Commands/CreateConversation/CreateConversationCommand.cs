@@ -108,6 +108,21 @@ public sealed record CreateConversationCommand(
             if (existing is not null)
             {
                 conversation = existing;
+                var membership = await conversationMemberRepository.GetByConversationAndMemberAsync(
+                    conversation.Id,
+                    currentMember.Id,
+                    cancellationToken);
+                if (membership is null)
+                {
+                    await conversationMemberRepository.AddAsync(
+                        ConversationMember.Create(conversation.Id, currentMember.Id),
+                        cancellationToken);
+                }
+                else if (!membership.IsActive)
+                {
+                    membership.Reactivate();
+                    await conversationMemberRepository.UpdateAsync(membership, cancellationToken);
+                }
             }
             else
             {
@@ -199,9 +214,12 @@ public sealed record CreateConversationCommand(
             var members = await conversationMemberRepository.ListByConversationIdAsync(
                 conversation.Id,
                 cancellationToken);
+            var activeMembers = members.Where(x => x.IsActive).ToList();
 
+            var myMembership = activeMembers.FirstOrDefault(x => x.OrganizationMemberId == currentOrganizationMemberId);
             var latest = await conversationMessageRepository.GetLatestByConversationIdAsync(
                 conversation.Id,
+                myMembership?.ClearedAt,
                 cancellationToken);
 
             Guid? peerOrganizationMemberId = null;
@@ -214,7 +232,7 @@ public sealed record CreateConversationCommand(
             }
             else
             {
-                var peerMembership = members.FirstOrDefault(x => x.OrganizationMemberId != currentOrganizationMemberId);
+                var peerMembership = activeMembers.FirstOrDefault(x => x.OrganizationMemberId != currentOrganizationMemberId);
                 peerOrganizationMemberId = peerMembership?.OrganizationMemberId;
                 displayName = "Member";
 
@@ -240,7 +258,6 @@ public sealed record CreateConversationCommand(
                 }
             }
 
-            var myMembership = members.FirstOrDefault(x => x.OrganizationMemberId == currentOrganizationMemberId);
             var readAfter = myMembership?.LastReadAt ?? myMembership?.CreatedAt ?? conversation.CreatedAt;
             var unreadCount = await conversationMessageRepository.CountUnreadAsync(
                 conversation.Id,
@@ -256,10 +273,10 @@ public sealed record CreateConversationCommand(
                 peerOrganizationMemberId,
                 displayName,
                 peerAvatarUrl,
-                latest?.Body,
+                latest is null || latest.IsDeleted ? null : latest.Body,
                 latest?.CreatedAt,
                 unreadCount,
-                members.Count,
+                activeMembers.Count,
                 conversation.CreatedAt,
                 conversation.UpdatedAt);
         }

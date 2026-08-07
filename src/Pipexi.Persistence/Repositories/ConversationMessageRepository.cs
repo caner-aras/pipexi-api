@@ -12,10 +12,16 @@ public sealed class ConversationMessageRepository(ApplicationDbContext dbContext
         Guid conversationId,
         int pageNumber,
         int pageSize,
+        DateTimeOffset? clearedAfter = null,
         CancellationToken cancellationToken = default)
     {
         // Include soft-deleted tombstones so clients can show "This message was deleted".
         var query = DbSet.IgnoreQueryFilters().Where(x => x.ConversationId == conversationId);
+        if (clearedAfter.HasValue)
+        {
+            query = query.Where(x => x.CreatedAt > clearedAfter.Value);
+        }
+
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
@@ -29,10 +35,16 @@ public sealed class ConversationMessageRepository(ApplicationDbContext dbContext
 
     public async Task<ConversationMessage?> GetLatestByConversationIdAsync(
         Guid conversationId,
+        DateTimeOffset? clearedAfter = null,
         CancellationToken cancellationToken = default)
     {
-        return await DbSet
-            .Where(x => x.ConversationId == conversationId)
+        var query = DbSet.Where(x => x.ConversationId == conversationId);
+        if (clearedAfter.HasValue)
+        {
+            query = query.Where(x => x.CreatedAt > clearedAfter.Value);
+        }
+
+        return await query
             .OrderByDescending(x => x.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
     }

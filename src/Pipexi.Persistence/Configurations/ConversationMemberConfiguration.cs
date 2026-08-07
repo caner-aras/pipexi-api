@@ -27,6 +27,10 @@ public sealed class ConversationMemberConfiguration : IEntityTypeConfiguration<C
             .HasColumnName("last_read_at")
             .HasColumnType("timestamp with time zone");
 
+        builder.Property(x => x.ClearedAt)
+            .HasColumnName("cleared_at")
+            .HasColumnType("timestamp with time zone");
+
         builder.Property(x => x.Status)
             .HasColumnName("status")
             .HasMaxLength(30)

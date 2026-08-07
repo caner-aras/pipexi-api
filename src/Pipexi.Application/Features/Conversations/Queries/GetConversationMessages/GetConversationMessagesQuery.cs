@@ -57,12 +57,12 @@ public sealed record GetConversationMessagesQuery(
                     (int)HttpStatusCode.NotFound);
             }
 
-            var isMember = await conversationMemberRepository.IsMemberAsync(
+            var membership = await conversationMemberRepository.GetByConversationAndMemberAsync(
                 conversation.Id,
                 currentMember.Id,
                 cancellationToken);
 
-            if (!isMember)
+            if (membership is null || !membership.IsActive)
             {
                 return Result<PagedConversationMessagesDto>.Failure(
                     new AppError("conversations.forbidden", "You are not a member of this conversation."),
@@ -76,18 +76,11 @@ public sealed record GetConversationMessagesQuery(
                 conversation.Id,
                 pageNumber,
                 pageSize,
+                membership.ClearedAt,
                 cancellationToken);
 
-            var membership = await conversationMemberRepository.GetByConversationAndMemberAsync(
-                conversation.Id,
-                currentMember.Id,
-                cancellationToken);
-
-            if (membership is not null)
-            {
-                membership.MarkRead(DateTimeOffset.UtcNow);
-                await conversationMemberRepository.UpdateAsync(membership, cancellationToken);
-            }
+            membership.MarkRead(DateTimeOffset.UtcNow);
+            await conversationMemberRepository.UpdateAsync(membership, cancellationToken);
 
             DateTimeOffset? peerLastReadAt = null;
             var conversationMembers = await conversationMemberRepository.ListByConversationIdAsync(
@@ -96,7 +89,8 @@ public sealed record GetConversationMessagesQuery(
 
             if (conversation.Type == Conversation.TypeDirect)
             {
-                var peerMembership = conversationMembers.FirstOrDefault(x => x.OrganizationMemberId != currentMember.Id);
+                var peerMembership = conversationMembers.FirstOrDefault(
+                    x => x.OrganizationMemberId != currentMember.Id && x.IsActive);
                 peerLastReadAt = peerMembership?.LastReadAt;
             }
 
@@ -138,7 +132,7 @@ public sealed record GetConversationMessagesQuery(
                         && ConversationMappings.IsMessageUnreadByPeers(
                             message.CreatedAt,
                             message.SenderOrganizationMemberId,
-                            conversationMembers);
+                            conversationMembers.Where(x => x.IsActive).ToList());
                     var canEdit = isMine && !message.IsDeleted;
 
                     return message.ToDto(

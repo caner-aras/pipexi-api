@@ -8,10 +8,12 @@ public interface IConversationMessageRepository : IRepository<ConversationMessag
         Guid conversationId,
         int pageNumber,
         int pageSize,
+        DateTimeOffset? clearedAfter = null,
         CancellationToken cancellationToken = default);
 
     Task<ConversationMessage?> GetLatestByConversationIdAsync(
         Guid conversationId,
+        DateTimeOffset? clearedAfter = null,
         CancellationToken cancellationToken = default);
 
     Task<int> CountUnreadAsync(

@@ -1,6 +1,8 @@
 using MediatR;
+using Pipexi.Application.Features.Conversations.Commands.ClearConversation;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversation;
 using Pipexi.Application.Features.Conversations.Commands.CreateConversationMessage;
+using Pipexi.Application.Features.Conversations.Commands.DeleteConversation;
 using Pipexi.Application.Features.Conversations.Commands.DeleteConversationMessage;
 using Pipexi.Application.Features.Conversations.Commands.EditConversationMessage;
 using Pipexi.Application.Features.Conversations.Commands.MarkConversationRead;
@@ -29,6 +31,8 @@ public static class ConversationEndpoints
         group.MapDelete("/{id:guid}/messages/{messageId:guid}", DeleteMessageAsync);
         group.MapPost("/{id:guid}/messages/{messageId:guid}/reactions", ToggleReactionAsync);
         group.MapPost("/{id:guid}/read", MarkReadAsync);
+        group.MapPost("/{id:guid}/clear", ClearAsync);
+        group.MapDelete("/{id:guid}", DeleteAsync);
 
         return app;
     }
@@ -141,6 +145,24 @@ public static class ConversationEndpoints
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(new MarkConversationReadCommand(id), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> ClearAsync(
+        Guid id,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new ClearConversationCommand(id), cancellationToken);
+        return Results.Json(result, statusCode: result.StatusCode);
+    }
+
+    private static async Task<IResult> DeleteAsync(
+        Guid id,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new DeleteConversationCommand(id), cancellationToken);
         return Results.Json(result, statusCode: result.StatusCode);
     }
 }

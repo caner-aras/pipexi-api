@@ -132,9 +132,16 @@ public sealed record GetConversationsQuery(Guid? OrganizationId = null)
 
                 var latest = await conversationMessageRepository.GetLatestByConversationIdAsync(
                     conversation.Id,
+                    myMembership.ClearedAt,
                     cancellationToken);
 
                 var readAfter = myMembership.LastReadAt ?? myMembership.CreatedAt;
+                if (myMembership.ClearedAt.HasValue
+                    && myMembership.ClearedAt.Value > readAfter)
+                {
+                    readAfter = myMembership.ClearedAt.Value;
+                }
+
                 var unreadCount = await conversationMessageRepository.CountUnreadAsync(
                     conversation.Id,
                     currentMember.Id,
@@ -149,10 +156,10 @@ public sealed record GetConversationsQuery(Guid? OrganizationId = null)
                     peerOrganizationMemberId,
                     displayName,
                     peerAvatarUrl,
-                    latest?.Body,
+                    latest is null || latest.IsDeleted ? null : latest.Body,
                     latest?.CreatedAt,
                     unreadCount,
-                    conversationMembers.Count,
+                    conversationMembers.Count(x => x.IsActive),
                     conversation.CreatedAt,
                     conversation.UpdatedAt));
             }
