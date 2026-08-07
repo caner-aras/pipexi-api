@@ -6,5 +6,7 @@ public interface IOrganizationMemberPaymentRepository : IRepository<Organization
 {
     Task<IReadOnlyCollection<OrganizationMemberPayment>> ListByOrganizationMemberIdAsync(
         Guid organizationMemberId,
+        DateTimeOffset? fromPaidAt = null,
+        DateTimeOffset? toPaidAtExclusive = null,
         CancellationToken cancellationToken = default);
 }

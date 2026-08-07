@@ -11,7 +11,9 @@ namespace Pipexi.Application.Features.OrganizationMemberPayments.Queries.GetOrga
 
 public sealed record GetOrganizationMemberPaymentsQuery(
     Guid OrganizationMemberId,
-    Guid? ScopedOrganizationId = null) : IQuery<Result<IReadOnlyCollection<OrganizationMemberPaymentDto>>>
+    Guid? ScopedOrganizationId = null,
+    DateOnly? FromDate = null,
+    DateOnly? ToDate = null) : IQuery<Result<IReadOnlyCollection<OrganizationMemberPaymentDto>>>
 {
     public sealed class Handler
         : IRequestHandler<GetOrganizationMemberPaymentsQuery, Result<IReadOnlyCollection<OrganizationMemberPaymentDto>>>
@@ -55,13 +57,38 @@ public sealed record GetOrganizationMemberPaymentsQuery(
                 return accessDenied;
             }
 
+            var (fromDate, toDate) = ResolveDateRange(request.FromDate, request.ToDate);
+            var fromPaidAt = new DateTimeOffset(fromDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc));
+            var toPaidAtExclusive = new DateTimeOffset(
+                toDate.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc));
+
             var payments = await _paymentRepository.ListByOrganizationMemberIdAsync(
                 request.OrganizationMemberId,
+                fromPaidAt,
+                toPaidAtExclusive,
                 cancellationToken);
 
             return Result<IReadOnlyCollection<OrganizationMemberPaymentDto>>.Success(
                 payments.Select(x => x.ToDto()).ToList(),
                 (int)HttpStatusCode.OK);
+        }
+
+        private static (DateOnly FromDate, DateOnly ToDate) ResolveDateRange(
+            DateOnly? fromDate,
+            DateOnly? toDate)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Default: current calendar month through today.
+            var resolvedFrom = fromDate ?? new DateOnly(today.Year, today.Month, 1);
+            var resolvedTo = toDate ?? today;
+
+            if (resolvedFrom > resolvedTo)
+            {
+                return (resolvedTo, resolvedFrom);
+            }
+
+            return (resolvedFrom, resolvedTo);
         }
     }
 }

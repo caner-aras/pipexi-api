@@ -29,11 +29,17 @@ public static class OrganizationMemberPaymentEndpoints
     private static async Task<IResult> ListAsync(
         Guid organizationId,
         Guid organizationMemberId,
+        DateOnly? fromDate,
+        DateOnly? toDate,
         ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new GetOrganizationMemberPaymentsQuery(organizationMemberId, organizationId),
+            new GetOrganizationMemberPaymentsQuery(
+                organizationMemberId,
+                organizationId,
+                fromDate,
+                toDate),
             cancellationToken);
 
         return Results.Json(result, statusCode: result.StatusCode);

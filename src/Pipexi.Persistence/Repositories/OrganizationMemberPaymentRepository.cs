@@ -10,10 +10,23 @@ public sealed class OrganizationMemberPaymentRepository(ApplicationDbContext dbC
 {
     public async Task<IReadOnlyCollection<OrganizationMemberPayment>> ListByOrganizationMemberIdAsync(
         Guid organizationMemberId,
+        DateTimeOffset? fromPaidAt = null,
+        DateTimeOffset? toPaidAtExclusive = null,
         CancellationToken cancellationToken = default)
     {
-        return await DbSet
-            .Where(x => x.OrganizationMemberId == organizationMemberId)
+        var query = DbSet.Where(x => x.OrganizationMemberId == organizationMemberId);
+
+        if (fromPaidAt.HasValue)
+        {
+            query = query.Where(x => x.PaidAt >= fromPaidAt.Value);
+        }
+
+        if (toPaidAtExclusive.HasValue)
+        {
+            query = query.Where(x => x.PaidAt < toPaidAtExclusive.Value);
+        }
+
+        return await query
             .OrderByDescending(x => x.PaidAt)
             .ToListAsync(cancellationToken);
     }
