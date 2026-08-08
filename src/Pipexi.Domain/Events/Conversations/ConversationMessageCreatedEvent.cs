@@ -5,4 +5,5 @@ public sealed record ConversationMessageCreatedEvent(
     Guid MessageId,
     Guid SenderOrganizationMemberId,
     string SenderName,
-    string Body) : IDomainEvent;
+    string Body,
+    DateTimeOffset MessageCreatedAt) : IDomainEvent;

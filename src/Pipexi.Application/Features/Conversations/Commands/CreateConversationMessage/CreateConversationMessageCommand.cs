@@ -79,7 +79,8 @@ public sealed record CreateConversationMessageCommand(Guid ConversationId, strin
                 message.Id,
                 currentMember.Id,
                 senderDisplayName,
-                message.Body));
+                message.Body,
+                message.CreatedAt));
 
             await conversationMessageRepository.AddAsync(message, cancellationToken);
 

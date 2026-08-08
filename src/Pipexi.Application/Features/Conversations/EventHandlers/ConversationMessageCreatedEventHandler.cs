@@ -9,6 +9,12 @@ namespace Pipexi.Application.Features.Conversations.EventHandlers;
 
 public sealed class ConversationMessageCreatedEventHandler : INotificationHandler<ConversationMessageCreatedEvent>
 {
+    /// <summary>
+    /// Gives open chat clients time to mark the conversation read via realtime
+    /// (often 1–2s after send) before we decide whether to send a push.
+    /// </summary>
+    private static readonly TimeSpan ReadCatchUpDelay = TimeSpan.FromSeconds(3);
+
     private readonly IConversationRepository _conversationRepository;
     private readonly IConversationMemberRepository _conversationMemberRepository;
     private readonly IOrganizationMemberRepository _organizationMemberRepository;
@@ -37,39 +43,50 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
 
     public async Task Handle(ConversationMessageCreatedEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling ConversationMessageCreatedEvent for ConversationId: {ConversationId}, SenderMemberId: {SenderMemberId}",
-            notification.ConversationId, notification.SenderOrganizationMemberId);
+        _logger.LogInformation(
+            "Handling ConversationMessageCreatedEvent for ConversationId: {ConversationId}, SenderMemberId: {SenderMemberId}",
+            notification.ConversationId,
+            notification.SenderOrganizationMemberId);
 
         try
         {
             var conversation = await _conversationRepository.GetByIdAsync(notification.ConversationId, cancellationToken);
             if (conversation is null) return;
 
-            var members = await _conversationMemberRepository.ListByConversationIdAsync(notification.ConversationId, cancellationToken);
-            var recipientMembers = members.Where(m => m.OrganizationMemberId != notification.SenderOrganizationMemberId).ToList();
+            // Allow recipients with the chat open to mark read before we decide on push.
+            await Task.Delay(ReadCatchUpDelay, cancellationToken);
+
+            var members = await _conversationMemberRepository.ListByConversationIdAsync(
+                notification.ConversationId,
+                cancellationToken);
+            var recipientMembers = members
+                .Where(m => m.OrganizationMemberId != notification.SenderOrganizationMemberId)
+                .ToList();
 
             var notificationType = $"chat:{conversation.Id}";
-            var cooldownCutoff = DateTimeOffset.UtcNow.AddMinutes(-15);
+            var title = $"New message from {notification.SenderName}";
+            var body = notification.Body;
 
             foreach (var recipientMember in recipientMembers)
             {
-                var orgMember = await _organizationMemberRepository.GetByIdAsync(recipientMember.OrganizationMemberId, cancellationToken);
-                if (orgMember is null) continue;
+                // Read = LastReadAt >= message time → recipient already caught up (app open on this chat).
+                var isRead = recipientMember.LastReadAt.HasValue
+                    && recipientMember.LastReadAt.Value >= notification.MessageCreatedAt;
 
-                // 15-minute Cooldown Check: Skip if recipient got a chat notification for this conversation in the last 15 minutes
-                var existingNotifications = await _notificationRepository.ListByOrganizationMemberIdAsync(orgMember.Id, cancellationToken);
-                var recentNotification = existingNotifications.FirstOrDefault(n => n.Type == notificationType && n.CreatedAt >= cooldownCutoff);
-
-                if (recentNotification is not null)
+                if (isRead)
                 {
-                    _logger.LogInformation("Skipping chat push notification for OrgMemberId {OrgMemberId} due to 15-min cooldown", orgMember.Id);
+                    _logger.LogInformation(
+                        "Skipping chat push for OrgMemberId {OrgMemberId}: conversation already read (LastReadAt={LastReadAt})",
+                        recipientMember.OrganizationMemberId,
+                        recipientMember.LastReadAt);
                     continue;
                 }
 
-                var title = $"New message from {notification.SenderName}";
-                var body = notification.Body;
+                var orgMember = await _organizationMemberRepository.GetByIdAsync(
+                    recipientMember.OrganizationMemberId,
+                    cancellationToken);
+                if (orgMember is null) continue;
 
-                // A. Save to notifications table
                 var dbNotification = Notification.Create(
                     conversation.OrganizationId,
                     orgMember.Id,
@@ -81,11 +98,13 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
 
                 await _notificationRepository.AddAsync(dbNotification, cancellationToken);
 
-                // B. Send FCM push notification
                 var devices = await _userDeviceRepository.GetByUserIdAsync(orgMember.UserId, cancellationToken);
                 var tokens = devices.Select(d => d.FcmToken).ToList();
 
-                _logger.LogInformation("Found {Count} active devices for chat recipient UserId: {UserId}", tokens.Count, orgMember.UserId);
+                _logger.LogInformation(
+                    "Sending chat push to OrgMemberId {OrgMemberId} ({Count} devices)",
+                    orgMember.Id,
+                    tokens.Count);
 
                 if (tokens.Count > 0)
                 {
@@ -105,9 +124,16 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
                 }
             }
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error handling ConversationMessageCreatedEvent for ConversationId {ConversationId}", notification.ConversationId);
+            _logger.LogError(
+                ex,
+                "Error handling ConversationMessageCreatedEvent for ConversationId {ConversationId}",
+                notification.ConversationId);
         }
     }
 }
