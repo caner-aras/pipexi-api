@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Pipexi.Application.Abstractions.Notifications;
 using Pipexi.Application.Abstractions.Persistence;
@@ -11,54 +12,57 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
 {
     /// <summary>
     /// Gives open chat clients time to mark the conversation read via realtime
-    /// (often 1–2s after send) before we decide whether to send a push.
+    /// before we decide whether to send a push. Must NOT run on the request thread —
+    /// domain events are awaited inside SaveChanges and would block the API response.
     /// </summary>
     private static readonly TimeSpan ReadCatchUpDelay = TimeSpan.FromSeconds(3);
 
-    private readonly IConversationRepository _conversationRepository;
-    private readonly IConversationMemberRepository _conversationMemberRepository;
-    private readonly IOrganizationMemberRepository _organizationMemberRepository;
-    private readonly IUserDeviceRepository _userDeviceRepository;
-    private readonly INotificationRepository _notificationRepository;
-    private readonly IPushNotificationService _pushNotificationService;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ConversationMessageCreatedEventHandler> _logger;
 
     public ConversationMessageCreatedEventHandler(
-        IConversationRepository conversationRepository,
-        IConversationMemberRepository conversationMemberRepository,
-        IOrganizationMemberRepository organizationMemberRepository,
-        IUserDeviceRepository userDeviceRepository,
-        INotificationRepository notificationRepository,
-        IPushNotificationService pushNotificationService,
+        IServiceScopeFactory scopeFactory,
         ILogger<ConversationMessageCreatedEventHandler> logger)
     {
-        _conversationRepository = conversationRepository;
-        _conversationMemberRepository = conversationMemberRepository;
-        _organizationMemberRepository = organizationMemberRepository;
-        _userDeviceRepository = userDeviceRepository;
-        _notificationRepository = notificationRepository;
-        _pushNotificationService = pushNotificationService;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
-    public async Task Handle(ConversationMessageCreatedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(ConversationMessageCreatedEvent notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation(
-            "Handling ConversationMessageCreatedEvent for ConversationId: {ConversationId}, SenderMemberId: {SenderMemberId}",
+            "Queueing chat push check for ConversationId: {ConversationId}, SenderMemberId: {SenderMemberId}",
             notification.ConversationId,
             notification.SenderOrganizationMemberId);
 
+        // Fire-and-forget so CreateMessage HTTP response is not blocked by the delay.
+        _ = ProcessInBackgroundAsync(notification);
+
+        return Task.CompletedTask;
+    }
+
+    private async Task ProcessInBackgroundAsync(ConversationMessageCreatedEvent notification)
+    {
         try
         {
-            var conversation = await _conversationRepository.GetByIdAsync(notification.ConversationId, cancellationToken);
+            await Task.Delay(ReadCatchUpDelay);
+
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var sp = scope.ServiceProvider;
+
+            var conversationRepository = sp.GetRequiredService<IConversationRepository>();
+            var conversationMemberRepository = sp.GetRequiredService<IConversationMemberRepository>();
+            var organizationMemberRepository = sp.GetRequiredService<IOrganizationMemberRepository>();
+            var userDeviceRepository = sp.GetRequiredService<IUserDeviceRepository>();
+            var notificationRepository = sp.GetRequiredService<INotificationRepository>();
+            var pushNotificationService = sp.GetRequiredService<IPushNotificationService>();
+            var unitOfWork = sp.GetRequiredService<IUnitOfWork>();
+
+            var conversation = await conversationRepository.GetByIdAsync(notification.ConversationId);
             if (conversation is null) return;
 
-            // Allow recipients with the chat open to mark read before we decide on push.
-            await Task.Delay(ReadCatchUpDelay, cancellationToken);
-
-            var members = await _conversationMemberRepository.ListByConversationIdAsync(
-                notification.ConversationId,
-                cancellationToken);
+            var members = await conversationMemberRepository.ListByConversationIdAsync(
+                notification.ConversationId);
             var recipientMembers = members
                 .Where(m => m.OrganizationMemberId != notification.SenderOrganizationMemberId)
                 .ToList();
@@ -66,6 +70,7 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
             var notificationType = $"chat:{conversation.Id}";
             var title = $"New message from {notification.SenderName}";
             var body = notification.Body;
+            var shouldSave = false;
 
             foreach (var recipientMember in recipientMembers)
             {
@@ -82,9 +87,8 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
                     continue;
                 }
 
-                var orgMember = await _organizationMemberRepository.GetByIdAsync(
-                    recipientMember.OrganizationMemberId,
-                    cancellationToken);
+                var orgMember = await organizationMemberRepository.GetByIdAsync(
+                    recipientMember.OrganizationMemberId);
                 if (orgMember is null) continue;
 
                 var dbNotification = Notification.Create(
@@ -96,9 +100,10 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
                     isRead: false,
                     scheduledTime: null);
 
-                await _notificationRepository.AddAsync(dbNotification, cancellationToken);
+                await notificationRepository.AddAsync(dbNotification);
+                shouldSave = true;
 
-                var devices = await _userDeviceRepository.GetByUserIdAsync(orgMember.UserId, cancellationToken);
+                var devices = await userDeviceRepository.GetByUserIdAsync(orgMember.UserId);
                 var tokens = devices.Select(d => d.FcmToken).ToList();
 
                 _logger.LogInformation(
@@ -115,24 +120,24 @@ public sealed class ConversationMessageCreatedEventHandler : INotificationHandle
                         { "organizationId", conversation.OrganizationId.ToString() }
                     };
 
-                    await _pushNotificationService.SendPushNotificationAsync(
+                    await pushNotificationService.SendPushNotificationAsync(
                         tokens,
                         title,
                         body,
-                        data,
-                        cancellationToken);
+                        data);
                 }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
+
+            if (shouldSave)
+            {
+                await unitOfWork.SaveChangesAsync();
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(
                 ex,
-                "Error handling ConversationMessageCreatedEvent for ConversationId {ConversationId}",
+                "Error processing chat push for ConversationId {ConversationId}",
                 notification.ConversationId);
         }
     }
